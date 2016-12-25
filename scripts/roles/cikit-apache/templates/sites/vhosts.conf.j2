@@ -1,0 +1,65 @@
+{# @todo Rework the template #}
+# {{ ansible_managed }}
+DirectoryIndex index.php index.html
+{# Set up VirtualHosts #}
+{% for vhost in apache_vhosts %}
+{% if vhost.servername != "" and vhost.documentroot != "" %}
+<VirtualHost *:{{ apache_port }}>
+  ServerName {{ vhost.servername }}
+{% if vhost.serveralias is defined %}
+  ServerAlias {{ vhost.serveralias }}
+{% endif %}
+  DocumentRoot {{ vhost.documentroot }}
+
+{% if vhost.serveradmin is defined %}
+  ServerAdmin {{ vhost.serveradmin }}
+{% endif %}
+  <Directory "{{ vhost.documentroot }}">
+    AllowOverride All
+    Options -Indexes +FollowSymLinks
+    Require all granted
+  </Directory>
+{% if vhost.extra_parameters is defined %}
+  {{ vhost.extra_parameters }}
+{% endif %}
+</VirtualHost>
+{% endif %}
+
+{% endfor %}
+
+{# Set up SSL VirtualHosts #}
+{% for vhost in apache_vhosts_ssl %}
+{% if vhost.servername != "" and vhost.documentroot != "" %}
+<VirtualHost *:{{ apache_port_ssl }}>
+  ServerName {{ vhost.servername }}
+{% if vhost.serveralias is defined %}
+  ServerAlias {{ vhost.serveralias }}
+{% endif %}
+  DocumentRoot {{ vhost.documentroot }}
+
+  SSLEngine on
+  SSLCipherSuite {{ cikit_apache.ssl.cipher_suite }}
+  SSLProtocol {{ cikit_apache.ssl.protocol }}
+  SSLHonorCipherOrder On
+  SSLCompression off
+  SSLCertificateFile {{ vhost.certificate_file }}
+  SSLCertificateKeyFile {{ vhost.certificate_key_file }}
+{% if vhost.certificate_chain_file is defined %}
+  SSLCertificateChainFile {{ vhost.certificate_chain_file }}
+{% endif %}
+
+{% if vhost.serveradmin is defined %}
+  ServerAdmin {{ vhost.serveradmin }}
+{% endif %}
+  <Directory "{{ vhost.documentroot }}">
+    AllowOverride All
+    Options -Indexes +FollowSymLinks
+    Require all granted
+  </Directory>
+{% if vhost.extra_parameters is defined %}
+  {{ vhost.extra_parameters }}
+{% endif %}
+</VirtualHost>
+{% endif %}
+
+{% endfor %}

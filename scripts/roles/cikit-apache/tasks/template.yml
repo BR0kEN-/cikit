@@ -1,0 +1,10 @@
+---
+# http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
+- set_fact:
+    type: "{{ item }}"
+
+- name: 'Create "{{ type }}" configs'
+  template:
+    src: "{{ type }}/{{ item | basename }}"
+    dest: '{{ cikit_apache.dest }}/{{ type }}-available/{{ item | basename | splitext | first }}'
+  with_fileglob: "../templates/{{ type }}/*.j2"

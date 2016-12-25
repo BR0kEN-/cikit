@@ -1,0 +1,35 @@
+---
+apache_version: 2.4.7-1ubuntu4.13
+apache_port: 80
+apache_port_ssl: 443
+
+apache_vhosts:
+  # Additional properties: 'serveradmin, serveralias, extra_parameters'.
+  - servername: local.dev
+    documentroot: /var/www/html
+
+apache_vhosts_ssl: []
+  # Additional properties: 'serveradmin, extra_parameters'.
+  # - servername: "local.dev"
+  #   documentroot: "/var/www/html"
+  #   certificate_file: "/path/to/certificate.crt"
+  #   certificate_key_file: "/path/to/certificate.key"
+  #   # Optional.
+  #   certificate_chain_file: "/path/to/certificate_chain.crt"
+
+apache_data:
+  conf:
+    en:
+      - fqdn.conf
+    dis: []
+  mods:
+    en:
+      - rewrite.load
+      - ssl.load
+      - vhost_alias.load
+    dis: []
+  sites:
+    en:
+      - vhosts
+    dis:
+      - 000-default.conf

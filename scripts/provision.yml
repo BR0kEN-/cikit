@@ -170,7 +170,7 @@
       tags: ["nginx", "php-stack", "security"]
       when: not vagrant
 
-    - role: ansible-role-apache
+    - role: cikit-apache
       tags: ["apache", "php-stack"]
 
     - role: cikit-php

@@ -1,0 +1,11 @@
+---
+cikit_apache:
+  dest: "/etc/apache2"
+  ssl:
+    dest: "/etc/apache2/ssl"
+    protocol: "All -SSLv2 -SSLv3"
+    cipher_suite: "AES256+EECDH:AES256+EDH"
+  packages:
+    - apache2
+    - apache2-mpm-prefork
+    - apache2-utils

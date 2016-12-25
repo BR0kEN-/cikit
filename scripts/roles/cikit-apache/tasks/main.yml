@@ -1,0 +1,9 @@
+---
+- include: setup.yml
+- include: configure.yml
+
+- name: Ensure Apache is started and enabled on boot
+  service:
+    name: apache2
+    state: started
+    enabled: yes

@@ -1,0 +1,7 @@
+Listen {{ apache_port }}
+
+{% for module in ["ssl_module", "mod_gnutls.c"] %}
+  <IfModule {{ module }}>
+      Listen {{ apache_port_ssl }}
+  </IfModule>
+{% endfor %}

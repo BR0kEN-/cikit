@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+
+{% for listenedPort in ["80", "443 ssl"] %}
+server {
+    listen                          {{ listenedPort }};
+    server_name                     {{ inventory_hostname }};
+
+    satisfy                         any;
+    {% for allowed_ip in allowed_ips %}
+    allow                           {{ allowed_ip }};
+    {% endfor %}
+    deny                            all;
+
+    auth_basic                      "Restricted area";
+    auth_basic_user_file            /var/www/.htpasswd;
+
+    {% if listenedPort != "80" %}
+        ssl                             on;
+        ssl_ciphers                     HIGH:!aNULL:!MD5:!kEDH;
+        ssl_session_cache               shared:SSL:10m;
+        ssl_prefer_server_ciphers       on;
+        ssl_session_timeout             5m;
+        ssl_protocols                   TLSv1 TLSv1.1 TLSv1.2;
+        add_header                      Strict-Transport-Security 'max-age=31536000';
+
+        ssl_certificate                 {{ cikit_ssl_folder }}/ssl.crt;
+        ssl_certificate_key             {{ cikit_ssl_folder }}/ssl.key;
+    {% endif %}
+
+    {% for logType in ["access", "error"] %}
+        {{ logType }}_log /var/log/nginx/{{ inventory_hostname.split('.') | first }}.{{ logType }}.log;
+    {% endfor %}
+
+    {% for location, port in nginx_proxies.items() %}
+        location {{ location }} {
+            proxy_pass              http://127.0.0.1:{{ port }};
+            proxy_redirect          off;
+            # HTTP proxy (https://httpoxy.org).
+            proxy_set_header        Proxy "";
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto {{ "https" if listenedPort != "80" else "http" }};
+            proxy_read_timeout      90;
+        }
+    {% endfor %}
+}
+{% endfor %}

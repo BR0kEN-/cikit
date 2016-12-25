@@ -1,0 +1,15 @@
+---
+apache_port: "{{ 80 if vagrant else 8080 }}"
+apache_port_ssl: "{{ 443 if vagrant else 44344 }}"
+jenkins_port: 8079
+jetty_solr_port: 8078
+
+# See "cikit-nginx/templates/cikit.j2".
+nginx_proxies:
+  # Proxy map:
+  # - NGINX: http://example.com:80
+  # - NGINX: https://example.com:443
+  # - <TOOL>: https://127.0.0.1:<PORT>
+  /: "{{ apache_port }}"
+  /solr: "{{ jetty_solr_port }}"
+  /jenkins: "{{ jenkins_port }}"
