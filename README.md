@@ -30,7 +30,7 @@ Global project documentation [available here](docs).
 
 ## Quick Start
 
-- Add your host credentials to the `inventory` file.
+- Add your host credentials to the [inventory](docs/ansible-inventory) file.
 - `./cikit repository --project=<NAME> [--cmf=drupal] [--version=7.53] [--without-sources]`
 - `./cikit provision --project=<NAME> [--limit=<HOST>]`
 
@@ -54,12 +54,6 @@ The `--without-sources` option for `repository` task affected on downloading CMF
 
 ```shell
 ./cikit repository --project=test --cmf=wordpress --version=4.6.1
-```
-
-#### Add Jenkins project to existing CI server
-
-```shell
-./cikit jenkins-job --project=test [--limit=<HOST>]
 ```
 
 **Note**: these commands should be executed on your host, not inside of virtual machine!
