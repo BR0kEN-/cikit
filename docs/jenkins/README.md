@@ -17,7 +17,7 @@ Every CI server can host as much as needed project. By default, when you've fini
 In addition to the project's jobs there are exists some additional:
 
 - `BACKUP_PROD_DB` - for creating snapshots of your production database (disabled by default and should be manually configured).
-- `DISK_USAGE_TRIGGER` - periodically running job (every 10 minutes by default) for checking available free space on the server hard drive (can trigger `SERVER_CLEANER` if free space less than 5%).
+- `DISK_USAGE_TRIGGER` - periodically running job (every 10 minutes by default) for checking available free space on server's hard drive (can trigger `SERVER_CLEANER` if free space less than 5%).
 - `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases).
 
 ## Configuring project jobs
@@ -25,9 +25,9 @@ In addition to the project's jobs there are exists some additional:
 Currently **CIKit** works with GitHub only. To make builds of the project you should host its codebase on GitHub and do couple manual actions to configure the job:
 
 - Set the web URL of a project. ![Pull request builder web URL](images/pr-builder-web-url.png)
-- Set the repository URL of a project and configure an access to it for Jenkins (might not be needed if project is not private). ![Pull request builder repository URL](images/pr-builder-repo.png)
+- Set the repository URL of a project and configure an access for Jenkins (not be needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
 
-Also, don't ignore an advanced configuration of `GitHub Pull Request Builder`. There's you able to set the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, triggering phrases, etc.
+Also, don't ignore advanced configuration of `GitHub Pull Request Builder`. There's you able to set the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, triggering phrases, etc.
 
 ![Pull request builder repository URL](images/pr-builder-ghprb.png)
 
@@ -47,7 +47,7 @@ Nginx - is a global web server. It serving all connections and proxies requests 
 
 ## Technical notes
 
-For setup the Jenkins was designed the [cikit-jenkins](scripts/roles/cikit-jenkins) Ansible role. All related information located there and here is just the list of useful references to it:
+For setup the Jenkins was designed the [cikit-jenkins](../../scripts/roles/cikit-jenkins) Ansible role. All related information located there and here is just the list of useful references to it:
 
-- [Jenkins version](scripts/roles/cikit-jenkins/vars/main.yml#L5)
-- [List of plugins](scripts/roles/cikit-jenkins/defaults/main.yml#L29)
+- [Jenkins version](../../scripts/roles/cikit-jenkins/vars/main.yml#L5)
+- [List of plugins](../../scripts/roles/cikit-jenkins/defaults/main.yml#L29)
