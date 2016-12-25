@@ -12,7 +12,7 @@ The next scheme demonstrating the structure of **CIKit** based server.
 
 ![Proxy structure](images/proxy-structure.png)
 
-Scheme applies similar for `443` port, except serving resources by `/*` path - requests will be proxied to `127.0.0.1:44344`.
+Proxying of HTTPS traffic on 443 port works the same.
 
 Everything is simple in case of **Solr** and **Jenkins**. Here is the answer on question "**for what Apache is needed?**".
 
