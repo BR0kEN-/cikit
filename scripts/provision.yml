@@ -1,0 +1,236 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+
+  vars_files:
+    - ../config.yml
+    - vars/ip.yml
+    - vars/ports.yml
+    - vars/mysql.yml
+    - vars/nginx.yml
+    - vars/apache.yml
+
+  vars_prompt:
+    - name: cikit_php_version
+      prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1)
+      private: no
+      tags: ["php", "php-stack"]
+
+    - name: cikit_nodejs_version
+      prompt: Which version of Node.js you'd want to install? (4/5/6)
+      default: skip
+      private: no
+      tags: ["nodejs", "phantomjs"]
+
+    - name: setup_solr
+      prompt: Do you want to install Solr? (yes/NO)
+      private: no
+      tags: ["solr"]
+
+    - name: setup_swap
+      prompt: Do you want to setup swap? (yes/NO)
+      private: no
+      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
+      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
+      when: not vagrant
+      tags: ["swap"]
+
+    - name: http_auth_user
+      prompt: Username for HTTP authentication
+      default: admin
+      private: no
+      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
+      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
+      when: not vagrant
+      tags: ["security"]
+
+    - name: http_auth_pass
+      prompt: Passowrd for HTTP authentication
+      default: r3str1cteDHere
+      private: yes
+      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
+      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
+      when: not vagrant
+      tags: ["security"]
+
+  vars:
+    vagrant: no
+    cikit_ssl_folder: /etc/ssl/private
+
+    cikit_protected_folders:
+      - path: "{{ webroot }}"
+        user: "{{ http_auth_user }}"
+        pass: "{{ http_auth_pass }}"
+
+    basic_packages:
+      - python
+      - python-dev
+      - python-pycurl
+      - python-simplejson
+      - curl
+      - make
+      - rsync
+      - git
+      - libmysqlclient-dev
+      - apparmor-utils
+      - bsdutils
+      - software-properties-common
+      - python-software-properties
+      - build-essential
+      - libffi-dev
+      - libssl-dev
+
+    pip_packages:
+      - setuptools
+      - paramiko
+      - pyyaml
+      - jinja2
+      - markupsafe
+      - MySQL-python
+      - ansible
+
+  pre_tasks:
+    - include: tasks/detect-vagrant.yml
+      tags: ["always"]
+
+    - name: "Obtain home directory of \"{{ ansible_user }}\" user"
+      shell: "eval echo ~{{ ansible_user }}"
+      register: user_home
+      tags: ["always"]
+
+    - include: tasks/project-variable.yml
+      when: not vagrant
+      tags: ["jenkins"]
+
+    - name: Set name for Jenkins job
+      set_fact:
+        jenkins_job: "{{ project }}"
+      when: not vagrant
+      tags: ["jenkins"]
+
+    - name: Configure hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+      when: not vagrant
+      tags: ["always"]
+
+    - name: Process facts
+      set_fact:
+        extras:
+          swap: "{{ setup_swap | bool }}"
+          solr: "{{ setup_solr | bool }}"
+      tags: ["always"]
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Install basic packages for Ansible
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ basic_packages }}"
+
+    - name: Install EasyInstall
+      shell: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
+      args:
+        warn: no
+
+    - name: Install PIP
+      shell: "easy_install pip"
+
+    - name: Install PIP packages
+      pip:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ pip_packages }}"
+
+    - name: Create CIKit command line utility
+      file:
+        src: "{{ webroot }}/cikit"
+        dest: /usr/bin/cikit
+        state: link
+      when: vagrant
+
+    - name: Generate Bash completion for CIKit utility
+      template:
+        src: templates/cikit.complete.sh.j2
+        dest: /etc/bash_completion.d
+      when: vagrant
+
+  roles:
+    - role: cikit-misc
+      tags: ["misc"]
+
+    - role: cikit-ssl-config
+      tags: ["ssl", "security"]
+
+    - role: cikit-nginx
+      tags: ["nginx", "php-stack", "security"]
+      when: not vagrant
+
+    - role: ansible-role-apache
+      tags: ["apache", "php-stack"]
+
+    - role: cikit-php
+      tags: ["php", "php-stack"]
+
+    - role: cikit-nodejs
+      tags: ["nodejs"]
+
+    - role: cikit-phantomjs
+      tags: ["phantomjs"]
+
+    - role: ansible-composer
+      tags: ["composer", "php-stack"]
+
+    - role: ansible-role-mysql
+      tags: ["mysql", "php-stack"]
+
+    - role: cikit-jetty-solr
+      when: extras.solr
+      tags: ["solr", "php-stack"]
+
+    - role: cikit-sniffers
+      tags: ["sniffers", "php-stack"]
+
+    - role: cikit-mysql-config
+      tags: ["mysql", "php-stack"]
+
+    - role: ansible-role-memcached
+      tags: ["memcache", "php-stack"]
+
+    - role: cikit-swap
+      when: not vagrant and extras.swap and ansible_virtualization_type != "openvz"
+      tags: ["swap"]
+
+    - role: cikit-selenium
+      tags: ["selenium"]
+
+    - role: cikit-security
+      tags: ["security"]
+      when: not vagrant
+
+    - role: cikit-jenkins
+      when: not vagrant
+      tags: ["jenkins"]
+
+  tasks:
+    - name: Starting random rnd-tools service
+      shell: rngd -r /dev/urandom
+      when: not vagrant and ansible_virtualization_type != "openvz"
+      tags: ["always"]
+
+    # @todo Doesn't work using Ansible "gem" module.
+    - name: Install Compass
+      shell: gem install compass
+      tags: ["sass"]
+
+    - name: Restart service
+      service:
+        name: "{{ item }}"
+        state: restarted
+      ignore_errors: yes
+      with_items: ["apache2", "nginx"]
+      tags: ["always"]
