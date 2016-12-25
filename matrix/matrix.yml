@@ -1,0 +1,52 @@
+---
+- hosts: all
+
+  vars:
+    domain: m2.propeople.com.ua
+    application: cikit
+    # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
+    restart: ""
+
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob: vars/*
+
+    - name: Check Ansible compatibility
+      fail:
+        msg: "You need Ansible {{ ansible_version.major }} or better on your host machine!"
+      when: "{{ ansible_version.major }} < 2"
+
+    - name: Configure hostname
+      hostname:
+        name: "{{ domain }}"
+
+  roles:
+    - role: apt
+      tags: ["apt"]
+
+    - role: virtualbox
+      tags: ["vb"]
+
+    - role: ssl
+      tags: ["ssl"]
+
+    - role: php-fpm
+      tags: ["php-fpm"]
+
+    - role: nginx
+      tags: ["nginx"]
+
+    - role: phpvirtualbox
+      tags: ["phpvb"]
+
+    - role: virtualmachine
+      tags: ["vm"]
+
+  tasks:
+    - name: Restart service
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items: "{{ restart.split(',') }}"
+      when: "{{ restart | length > 0 }}"
+      tags: ["always"]
