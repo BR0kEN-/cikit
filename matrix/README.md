@@ -44,6 +44,6 @@ You able to choose two ways to manage your virtual machines: using [Ansible](doc
 
 ## To do
 
-- Allow to add SSH keys to a droplet on creation phase
-- Reuse roles from Matrix in CIKit (`nginx`, `ssl`)
-- Set hostname for every new droplet
+- [ ] Allow to add SSH keys to a droplet on creation phase
+- [ ] Reuse roles from Matrix in CIKit (`nginx`, `ssl`)
+- [ ] Set hostname for every new droplet
