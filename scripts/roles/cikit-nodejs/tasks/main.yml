@@ -1,0 +1,3 @@
+---
+- include: install.yml
+  when: "{{ cikit_nodejs_version | int in [4, 5, 6] }}"
