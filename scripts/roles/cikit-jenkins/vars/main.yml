@@ -1,0 +1,15 @@
+---
+jenkins_dest: /opt/jenkins
+jenkins_lib: /var/lib/jenkins
+jenkins:
+  package: "http://pkg.jenkins-ci.org/debian/binary/jenkins_2.38_all.deb"
+  repo: "deb http://pkg.jenkins.io/debian-stable binary/"
+  key: "https://pkg.jenkins.io/debian/jenkins-ci.org.key"
+  dependencies:
+    - openjdk-7-jre
+    - openjdk-7-jdk
+    - git
+    - curl
+    - daemon
+  cli: "{{ jenkins_dest }}/jenkins-cli.jar"
+  updates: "{{ jenkins_dest }}/updates_jenkins.json"
