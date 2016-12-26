@@ -1,6 +1,6 @@
 # Documentation
 
-- [Basic HTTP authentication](basic-http-auth) - frontier of protection for your server.
+- [Basic HTTP authentication](basic-http-auth) - the frontier of your server protection.
 - [Jenkins](jenkins) - build project instance with incoming changes.
   - [GitHub Bot configuration](jenkins/github-bot) - pull requests manager.
   - [Reinstall Debian package](jenkins/reinstall-deb) - upgrade/downgrade Jenkins version.
