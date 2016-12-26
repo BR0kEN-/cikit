@@ -30,7 +30,7 @@ Global project documentation [available here](docs).
 
 ## Quick Start
 
-- Add your host credentials to the [inventory](docs/ansible-inventory) file.
+- Add your host credentials to the [inventory](docs/ansible/inventory) file.
 - `./cikit repository --project=<NAME> [--cmf=drupal] [--version=7.53] [--without-sources]`
 - `./cikit provision --project=<NAME> [--limit=<HOST>]`
 
