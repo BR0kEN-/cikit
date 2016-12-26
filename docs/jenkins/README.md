@@ -1,6 +1,6 @@
 # Jenkins
 
-After building remote server you will have **Jenkins** installed on `https://YOUR.DOMAIN/jenkins`. It configured in a way that every anonymous user is an administrator. Protection achieved by setting [basic HTTP authentication](../basic-http-auth) for the whole domain using [Nginx](#nginx).
+After building remote server you will have **Jenkins** installed on `https://YOUR.DOMAIN/jenkins`. It configured in a way that each anonymous user is an administrator. Protection achieved by setting [basic HTTP authentication](../basic-http-auth) for the whole domain using [Nginx](#nginx).
 
 Here's the main view of Jenkins home screen:
 
@@ -14,7 +14,7 @@ Every CI server can host as much as needed projects. By default, when you'll fin
 
 - What is [SERVER_NAME_FROM_INVENTORY](../ansible/inventory)?
 
-In addition to the project jobs there are available some additional:
+Some additional jobs are supplied out of the box:
 
 - `BACKUP_PROD_DB` - for creating snapshots of your production database (disabled by default and have to be manually configured).
 - `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases).
