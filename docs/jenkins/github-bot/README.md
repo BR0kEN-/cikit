@@ -20,8 +20,18 @@ Visit the settings screen of GitHub account you want to use as bot and find the 
 
 ## Checking workability
 
-Okay, we did setting up the account and ready to go with it. Now go to `GitHub Pull Request Builder` section of Jenkins configuration (`https://YOUR.DOMAIN/jenkins/configure`). Click on `TEST CREDENTIALS...`, check the `Test basic connection to GitHub` box and press on `CONNECT TO API` button. ![Testing credentials](images/credentials-test.png)
+Okay, we did setting up the account and ready to go with it. Now go to `GitHub Pull Request Builder` section of Jenkins configuration (`https://YOUR.DOMAIN/jenkins/configure`). Click on `TEST CREDENTIALS...`, check the `Test basic connection to GitHub` and press on `CONNECT TO API` button. ![Testing credentials](images/credentials-test.png)
 
 If test passed - you'll see the appropriate message. In case of failure you have to check the internet connection or validity of GitHub account credentials.
 
 Also, you can rename the connection for better identifying it among others if you are planning to setup complementary. Do this by changing the value of `Description` field which is seeing on image above.
+
+## Have questions?
+
+Some points you might be interested in.
+
+### How to work with private repositories?
+
+To do that our bot must be added as collaborator to repository. In case of organization an account can be added as its member to not repeat the action for every repository.
+
+After deciding that you finished configuring on GitHub you can test an access to repository by checking `Test Permissions to a Repository`, typing its name and pressing on `CHECK REPO PERMISSIONS` as visible on the last screenshot.

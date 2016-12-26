@@ -1,6 +1,6 @@
 # Jenkins
 
-After building remote server you will have **Jenkins** installed on `https://YOUR.DOMAIN/jenkins`. It configured in a way that every anonymous user - administrator. Protection achieved by setting [basic HTTP authentication](../basic-http-auth) for the whole domain using [Nginx](#nginx).
+After building remote server you will have **Jenkins** installed on `https://YOUR.DOMAIN/jenkins`. It configured in a way that every anonymous user is an administrator. Protection achieved by setting [basic HTTP authentication](../basic-http-auth) for the whole domain using [Nginx](#nginx).
 
 Here's the main view of Jenkins home screen:
 
@@ -29,7 +29,7 @@ Bot will manage pull request statuses, react on triggering phrases in comments a
 Currently **CIKit** works with GitHub only. For making builds of the project you have to host codebase on GitHub and do several steps to configure the job:
 
 - Set the web URL of a project. ![Pull request builder web URL](images/pr-builder-web-url.png)
-- Set the repository URL of a project and configure an access for Jenkins (not be needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
+- Set the repository URL of a project and configure an access for Jenkins (not needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
 
 Besides, don't ignore advanced configuration of `GitHub Pull Request Builder`. There's you able to edit the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, triggering phrases, etc.
 
