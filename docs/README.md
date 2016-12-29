@@ -5,3 +5,5 @@
   - [GitHub Bot](jenkins/github-bot) - pull requests manager.
 - Ansible
   - [Inventory](ansible/inventory) - list of managed hosts.
+- Project
+  - [Sniffers](project/sniffers) - code quality tests.
