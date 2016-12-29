@@ -99,6 +99,7 @@ export PYTHONUNBUFFERED=1
 export PROJECT=$(echo ${JOB_NAME//_PR_BUILDER/} | tr '[:upper:]' '[:lower:]')
 export BUILD_NAME=${PROJECT}_build_${BUILD_NUMBER}
 export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUILD_NAME}
+export DESTINATION="/var/www/${BUILD_NAME}"
 export ANSIBLE_ARGS="-vvvv"
 
 ./cikit reinstall \
@@ -106,16 +107,18 @@ export ANSIBLE_ARGS="-vvvv"
 --build-id=${BUILD_NAME} \
 --workspace=${WORKSPACE}
 
+# Copy codebase to directory, accessible from web.
+sudo rsync --delete -ra ./docroot/ ${DESTINATION}/
+sudo chown -R www-data:jenkins $_
+
 ./cikit sniffers \
 --workspace=${WORKSPACE} \
 --site-url=${SITE_URL} \
 --build-id=${BUILD_NAME}
 
-sudo chown -R jenkins:jenkins ${WORKSPACE}
-# Move project from workspace to directory available in web.
-sudo rsync --delete -ra ./docroot/ /var/www/${BUILD_NAME}/
-# Set group and owner only for directory with an application.
-sudo chown -R www-data:jenkins $_
+# Move reports to the website directory.
+sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/
+sudo chown -R jenkins:jenkins ./
 </command>
         </hudson.tasks.Shell>
     </builders>

@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Manually build project instances.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.0">
+      <projectUrl>https://github.com/VENDOR/PROJECT/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>BUILD_MODE</name>
+          <description>Full - fully rebuild the project.
+Pull - do not reinstall an application and just grab latest changes from repository and compile SCSS.</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>full</string>
+              <string>pull</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>BUILD_ENV</name>
+          <description></description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>demo</string>
+              <string>default</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_TESTS</name>
+          <description>Run Behat tests?</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_SNIFFERS</name>
+          <description>Test project with PHP/JS/SCSS and security sniffers?</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>git@github.com:VENDOR/PROJECT.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/usr/bin/env bash -e
+
+export PYTHONUNBUFFERED=1
+export PROJECT=$(echo ${JOB_NAME//_BUILDER/} | tr '[:upper:]' '[:lower:]')
+export BUILD_NAME=${PROJECT}_${BUILD_ENV}
+export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUILD_NAME}
+export DESTINATION="/var/www/${BUILD_NAME}"
+export ANSIBLE_ARGS="-vvvv"
+
+./cikit reinstall \
+--env=${BUILD_ENV} \
+--workspace=${WORKSPACE} \
+--site-url=${SITE_URL} \
+--build-id=${BUILD_NAME} \
+--reinstall-mode=${BUILD_MODE}
+
+# Copy codebase to directory, accessible from web.
+sudo rsync --delete -ra ./docroot/ ${DESTINATION}/
+sudo chown -R www-data:jenkins $_
+
+if ${RUN_SNIFFERS}; then
+  ./cikit sniffers \
+  --env=${BUILD_ENV} \
+  --workspace=${WORKSPACE} \
+  --site-url=${SITE_URL} \
+  --build-id=${BUILD_NAME}
+fi
+
+if ${RUN_TESTS}; then
+  ./cikit tests \
+  --run \
+  --headless \
+  --env=${BUILD_ENV} \
+  --workspace=${WORKSPACE} \
+  --site-url=${SITE_URL} \
+  --build-id=${BUILD_NAME}
+fi
+
+# Move reports to the website directory.
+sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/
+sudo chown -R jenkins:jenkins ./
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>
