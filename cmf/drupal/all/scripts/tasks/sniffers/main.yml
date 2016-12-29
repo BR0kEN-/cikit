@@ -1,7 +1,7 @@
 # A custom set of operations could be here. They are will be executed in scope of "sniffers.yml" playbook.
 ---
 - name: Run security review
-  shell: "drush en security_review -y && drush secrev 2>&1 | grep error | awk '{$NF=\"\"}1' > {{ reports.dir }}/security_review.txt"
+  shell: "drush en security_review -y && drush secrev 2>&1 | grep error | awk '{$NF=\"\"}1' > '{{ reports.dir }}/Security review.txt'"
   args:
     chdir: "{{ project_workspace }}"
   environment: "{{ env_vars }}"
