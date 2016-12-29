@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+#  gather_facts: yes
+
+  vars:
+    site_url: https://cibox06.m2.propeople.com.ua/test1_build_1
+
+  tasks:
+    - debug:
+        msg: '{{ site_url.rpartition("//")[-1].partition("/")[0] | regex_escape }}$'

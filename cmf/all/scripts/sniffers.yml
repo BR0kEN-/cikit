@@ -20,58 +20,38 @@
       with_items: ["absent", "directory"]
 
     - name: Run PHPCS
-      shell: "phpcs --standard={{ item }} --extensions={{ phpcs.extensions | join(',') }} -n {{ scan_dirs | join(' ') }} > {{ reports.dir }}/phpcs.{{ item }}.txt"
+      shell: "phpcs --standard={{ item }} --extensions={{ phpcs.extensions | join(',') }} -n {{ scan_dirs | join(' ') }} > '{{ reports.dir }}/[PHPCS] {{ item }}.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ phpcs.standards }}"
       # Needed for ignoring PHP notices in packages with sniffers.
       ignore_errors: yes
 
-    - include: tasks/misc/report-link.yml
-      args:
-        data:
-          type: "phpcs.{{ item }}"
-          title: "[PHPCS] {{ item }}"
-      with_items: "{{ phpcs.standards }}"
-
     - name: Run HTMLCS
-      shell: "htmlcs {{ testing_url }}/{{ item.value.path }} {{ item.value.standard }} > {{ reports.dir }}/htmlcs.{{ item.key }}.txt"
-      with_dict: "{{ htmlcs }}"
-
-    - include: tasks/misc/report-link.yml
-      args:
-        data:
-          type: "htmlcs.{{ item.key }}"
-          title: "[HTMLCS] {{ item.key }}"
+      shell: "htmlcs {{ testing_url }}/{{ item.value.path }} {{ item.value.standard }} > '{{ reports.dir }}/[HTMLCS] {{ item.key }}.txt'"
       with_dict: "{{ htmlcs }}"
 
     - name: Run ESLint
-      shell: "eslint {{ item }} --ignore-path ../scripts/configs/.eslintignore -c ../scripts/configs/.eslintrc -o {{ reports.dir }}/eslint.txt"
+      shell: "eslint {{ item }} --ignore-path ../scripts/configs/.eslintignore -c ../scripts/configs/.eslintrc -o '{{ reports.dir }}/ES Lint.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
       # Needed for ignoring exit status codes.
       ignore_errors: yes
-
-    - include: tasks/misc/report-link.yml
-      args:
-        data:
-          type: "eslint"
-          title: "ES Lint"
 
     - name: Run SCSSLint
-      shell: "scss-lint {{ item }} -c ../scripts/configs/scss-lint.yml -o {{ reports.dir }}/scsslint.txt"
+      shell: "scss-lint {{ item }} -c ../scripts/configs/scss-lint.yml -o '{{ reports.dir }}/SCSS Lint.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
       # Needed for ignoring exit status codes.
       ignore_errors: yes
 
-    - include: tasks/misc/report-link.yml
+    - name: Run CodeSpell
+      shell: "codespell.py {{ item }} -S $(cat ../scripts/configs/.codespellignore | tr '\n' ',') > '{{ reports.dir }}/Code Spell.txt'"
       args:
-        data:
-          type: "scsslint"
-          title: "SCSS Lint"
+        chdir: "{{ project_workspace }}"
+      with_items: "{{ scan_dirs }}"
 
     - name: "Check existence of custom sniffers for {{ cmf | capitalize }}"
       stat:
@@ -80,3 +60,12 @@
 
     - include: "{{ is_custom_sniffers.stat.path }}"
       when: "{{ is_custom_sniffers.stat.exists }}"
+
+    - name: Look for available reports
+      # The reason, why "printf" using instead of "echo".
+      # https://github.com/ansible/ansible/issues/5206#issuecomment-38111435
+      shell: >
+        if [ -s "{{ item }}" ]; then
+          printf '\n- <a href="{{ reports.url }}/{{ item | basename }}">{{ item | basename | splitext | first }}</a>' >> {{ reports.comment }}
+        fi
+      with_fileglob: "{{ reports.dir }}/*.txt"

@@ -16,6 +16,7 @@
 .*
 !.git*
 !.eslint*
+!.codespellignore
 
 # File extensions.
 *.retry

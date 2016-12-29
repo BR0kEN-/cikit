@@ -33,6 +33,7 @@ commentinfo.md
 !.rsync-filter
 !.git*
 !.eslint*
+!.codespellignore
 
 !composer.json
 !selenium.sh

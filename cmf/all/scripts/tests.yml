@@ -1,0 +1,64 @@
+# This playbook could be run in various modes:
+#
+# 1. Install Behat, generate "behat.yml" from template and run Selenium hub.
+# cikit tests
+# 2. Actions from first step and run Behat tests.
+# cikit tests --run
+# 3. The same as second variant, but with Xvfb service started. Tests could be run without display.
+# cikit tests --run --headless
+---
+- hosts: localhost
+  gather_facts: yes
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+    - vars/main.yml
+    - vars/tests.yml
+
+  vars:
+    run: no
+    headless: no
+
+  tasks:
+    - include: tasks/environment/initialize.yml
+
+    - name: Ensure Xvfb service started
+      service:
+        name: xvfb
+        state: restarted
+        args: :99 -ac -screen 0 1024x768x24
+      when: run and headless
+
+    - name: Ensure Selenium service started
+      service:
+        name: selenium
+        state: restarted
+        args: "{{ '' if headless else '-role hub' }} -log selenium.log"
+      environment:
+        DISPLAY: "{{ ':99' if headless else '' }}"
+
+    - name: Wait for establish Selenium connection
+      wait_for:
+        port: 4444
+        host: 127.0.0.1
+        delay: 10
+      when: run
+
+    - name: Create behat.yml
+      template:
+        src: templates/behat.j2
+        dest: ../tests/behat/behat.yml
+
+    - name: Run Behat tests
+      shell: "cd ../tests/behat && ../../bin/behat"
+      ignore_errors: yes
+      when: run
+
+    - name: Create Behat report
+      shell: >
+        printf '\n- <a href="{{ reports.url }}/behat/index.html">Behat</a>' >> {{ reports.comment }}
+      args:
+        removes: "{{ reports.dir }}/behat/*.html"
+      when: run
