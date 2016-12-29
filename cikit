@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+# Dependencies:
+# - bash
+# - cd
+# - dirname
+# - pwd
+# - readlink
+# - ls
+# - time
+# - eval
+# - ansible-playbook
+
+# List of allowed variables for passing as parameters for "ansible-playbook".
+APB_VARS="limit tags list-tags module-path become-user"
+
+locate_path()
+{
+  local LINK=$(readlink ${1})
+
+  if [ -n "${LINK}" ]; then
+    echo $(dirname ${LINK})
+  else
+    local PATH=$(cd -P -- $(dirname -- ${1}) && pwd -P)
+
+    while [ -h "${PATH}" ]; do
+      # 1) Go to the directory with a symlink.
+      # 2) Go to the directory to which the symlink points.
+      # 3) Get the path.
+      PATH=$(cd $(dirname -- ${PATH}) && cd $(dirname -- $(readlink ${PATH})) && pwd)
+    done
+
+    echo ${PATH}
+  fi
+}
+
+exit_with_help()
+{
+  ls *.yml > /dev/null 2>&1
+
+  if [ $? -eq 0 ]; then
+    local OPERATIONS=""
+
+    for operation in $(ls *.yml); do
+      OPERATIONS+="${operation%.*} "
+    done
+
+    echo ${OPERATIONS}
+  else
+    echo "No available operations in $(pwd)."
+  fi
+
+  exit
+}
+
+SELF_PATH=$(locate_path "$0")
+SCRIPTS_PATH=${SELF_PATH}/scripts
+
+if [ -z $1 ]; then
+  cd ${SCRIPTS_PATH}
+  exit_with_help
+fi
+
+PLAYBOOK=${1%.*}.yml
+
+for playbook in ${SCRIPTS_PATH}/${PLAYBOOK} ${SELF_PATH}/${PLAYBOOK} ${PLAYBOOK}; do
+  if [ -f ${playbook} ]; then
+    break
+  fi
+done
+
+if [ ! -f ${playbook} ]; then
+  if [ -d $1 ]; then
+    cd $1
+    exit_with_help
+  fi
+
+  echo "Playbook ${playbook} does not exists!"
+  exit 1
+fi
+
+extra_vars=""
+params=""
+
+# Parse extra varaiables.
+for ((i = 2; i <= $#; i++)); do
+  # Remove all data after "=" symbol.
+  var=${!i%=*}
+  val=${!i#*=}
+
+  # Remove leading "--".
+  var=${var#--}
+  val=${val#--}
+
+  for j in ${APB_VARS}; do
+    if [ "${var}" == "${j}" ]; then
+      params+=" --${var}"
+
+      if [ "${var}" != "${val}" ]; then
+        params+="=${val}"
+      fi
+    fi
+  done
+
+  if [ "${var}" == "${val}" ]; then
+    val="True"
+  fi
+
+  # Replace all "-" by "_" in argument name.
+  var=${var//-/_}
+
+  if [[ ${val} != {* && ${val: -1} != "}" ]]; then
+    val="\"${val}\""
+  fi
+
+  extra_vars+="\"${var}\":${val},"
+done
+
+# Remove last comma.
+extra_vars=${extra_vars%%,}
+
+if [ -z "${ANSIBLE_INVENTORY}" ]; then
+  # Move "inventory" into user's home directory because it is not mounted file
+  # system and can be affected via Linux commands (chmod, chown) under Windows.
+  cp ${SELF_PATH}/inventory ~/.inventory
+  chmod a-x ~/.inventory
+  params+=" -i ~/.inventory"
+# The "uname -o" cannot be used due to "-o" option is not supported on OS X.
+elif [[ "$(uname -s)" =~ "CYGWIN" ]]; then
+  ANSIBLE_INVENTORY=$(cygpath ${ANSIBLE_INVENTORY})
+fi
+
+# Pass any extra arguments for "ansible-playbook". Most useful
+# case: "ANSIBLE_ARGS=-vvvv cikit reinstall"
+if [ -n "${ANSIBLE_ARGS}" ]; then
+  params+=" ${ANSIBLE_ARGS}"
+fi
+
+if [ -n "${extra_vars}" ]; then
+  params+=" --extra-vars='{${extra_vars}}'"
+fi
+
+export PYTHONUNBUFFERED=1
+
+# Go to the directory with playbook to set a relative path for tasks.
+# https://groups.google.com/forum/#!topic/ansible-project/QqaBvKVKDDQ
+cd ${playbook%/*}
+
+time eval "ansible-playbook ${playbook} ${params}"
