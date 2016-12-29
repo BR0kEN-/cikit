@@ -1,4 +1,3 @@
-// {{ ansible_managed }}
 {% for name, value in databases.iteritems() %}
 $databases['{{ name }}'] = [
   'default' => [
