@@ -16,7 +16,8 @@ $settings['environment'] = '{{ env }}';
 
 $settings['trusted_host_patterns'] = [
   {# See: http://stackoverflow.com/a/40397212 #}
-  '{{ site_url.rpartition("//")[-1].partition("/")[0] | regex_escape }}$',
+  '^{{ site_url.rpartition("//")[-1].partition("/")[0] | regex_escape }}$',
+  '^{{ "127.0.0.1" | regex_escape }}$',
 ];
 
 $config_directories[CONFIG_SYNC_DIRECTORY] = 'sites/default/config';
