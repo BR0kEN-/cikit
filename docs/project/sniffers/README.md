@@ -15,7 +15,7 @@ Brief pointers on files affecting sniffers configuration. Look for them in a bui
 
 - Global config - `scripts/vars/tests.yml`
 - SCSS rules - `scripts/configs/scss-lint.yml`
-- JS rules: - `scripts/configs/.eslintrc`
+- JS rules - `scripts/configs/.eslintrc`
 
 Below you'll find expanded description of basic configuration, available after constructing the project.
 
