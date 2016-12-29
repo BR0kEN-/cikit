@@ -20,7 +20,6 @@
       <command>COMMAND=&quot;mysql -uroot -proot -se&quot;
 ${COMMAND} &quot;SHOW DATABASES&quot; | grep &quot;build&quot; | xargs -I &quot;@@&quot; ${COMMAND} &quot;DROP DATABASE `@@`&quot;
 
-sudo chown -R jenkins:jenkins ${JENKINS_HOME}
 sudo rm -rf /var/www/*build*
 </command>
     </hudson.tasks.Shell>
