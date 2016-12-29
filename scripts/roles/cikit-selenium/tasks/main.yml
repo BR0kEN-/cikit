@@ -1,0 +1,22 @@
+---
+- name: Install APT keys for Google Chrome
+  apt_key:
+    url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+    state: present
+
+# Google stopped supporting Google Chrome on 32-bit Linux.
+# http://www.webupd8.org/2016/03/fix-failed-to-fetch-google-chrome_3.html
+- name: Adding Chrome APT repo to local database
+  shell: sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Install APT packages
+  apt:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ selenium_packages }}"
+
+- include: dependencies.yml

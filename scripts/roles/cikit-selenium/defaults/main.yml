@@ -1,0 +1,22 @@
+---
+selenium_dependencies:
+  - src: http://chromedriver.storage.googleapis.com/2.14/chromedriver_linux64.zip
+    dest: /var/lib/chrome-driver/chromedriver.zip
+    unzip: yes
+    service: no
+  # The "selenium" variable can be found in global "config.yml".
+  - src: "{{ selenium }}"
+    dest: /var/lib/selenium/selenium.jar
+    unzip: no
+    service: java -jar
+selenium_packages:
+  - default-jre
+  - xfonts-100dpi
+  - xfonts-75dpi
+  - xfonts-scalable
+  - xfonts-cyrillic
+  - imagemagick
+  - firefox
+  - google-chrome-stable
+  - unzip
+  - tar

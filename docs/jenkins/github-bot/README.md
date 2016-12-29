@@ -18,7 +18,7 @@ Actually you can, but would be better to create another one with name, such as `
 
 Visit the settings screen of GitHub account you want to use as bot and find the `Personal access tokens` section in sidebar there (or just visit https://github.com/settings/tokens). If you already have some - chose one with `repo` permission. Create a new if list is empty or no one had `repo` permission.
 
-## Checking workability
+## Testing operability
 
 Okay, we did setting up the account and ready to go with it. Now go to `GitHub Pull Request Builder` section of Jenkins configuration (`https://YOUR.DOMAIN/jenkins/configure`). Click on `TEST CREDENTIALS...`, check the `Test basic connection to GitHub` and press on `CONNECT TO API` button. ![Testing credentials](images/credentials-test.png)
 

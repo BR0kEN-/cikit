@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+
+# WARNING! This file is managed by Ansible and MUST NOT be edited directly.
+# If you familiar with Behat configs then edit "/var/www/scripts/templates/behat.j2"
+# and run "cikit tests" to apply changes.
+default:
+  formatters:
+    html:
+      output_path: {{ reports.dir }}/behat
+  suites:
+    default:
+      contexts:
+        - FeatureContext: ~
+        - Behat\MinkExtension\Context\MinkContext: ~
+  extensions:
+    emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension:
+      name: html
+      renderer: Twig
+      file_name: Index
+      print_args: true
+      print_outp: true
+      loop_break: true
+    Behat\MinkExtension:
+      goutte:
+        guzzle_parameters:
+          # Ignore cURL error about self-signed SSL certificates.
+          verify: false
+          config:
+            curl:
+              CURLOPT_TIMEOUT: 300
+              CURLOPT_CONNECTTIMEOUT: 0
+      selenium2: ~
+      base_url: {{ testing_url }}
+      files_path: resources
+      default_session: selenium2

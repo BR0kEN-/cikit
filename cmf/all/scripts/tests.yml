@@ -24,22 +24,18 @@
   tasks:
     - include: tasks/environment/initialize.yml
 
-    - name: Ensure Xvfb service started
-      service:
-        name: xvfb
-        state: restarted
-        args: :99 -ac -screen 0 1024x768x24
-      when: run and headless
-
-    - name: Ensure Selenium service started
+    - name: Ensure Selenium started
       service:
         name: selenium
         state: restarted
-        args: "{{ '' if headless else '-role hub' }} -log selenium.log"
-      environment:
-        DISPLAY: "{{ ':99' if headless else '' }}"
+        args: "-role hub -log selenium.log"
+      when: run and not headless
 
-    - name: Wait for establish Selenium connection
+    - name: Ensure PhantomJS started
+      shell: phantomjs --webdriver=4444 --ignore-ssl-errors=true &
+      when: run and headless
+
+    - name: Wait for establish Selenium/PhantomJS connection
       wait_for:
         port: 4444
         host: 127.0.0.1
