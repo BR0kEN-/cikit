@@ -1,20 +1,22 @@
 /*
 
-!.gitignore
-!.gitmodules
-
+# Directories.
 !cmf/
 !docs/
 !matrix/
 !scripts/
 
+# Files.
 !cikit
-!config.yml
-
 !inventory
+!config.yml
 !LICENSE
 
+# Starting from dot.
 .*
-*.retry
+!.git*
+!.eslint*
 
+# File extensions.
+*.retry
 !*.md
