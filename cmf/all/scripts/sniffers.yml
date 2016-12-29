@@ -67,7 +67,7 @@
       # The reason, why "printf" using instead of "echo".
       # https://github.com/ansible/ansible/issues/5206#issuecomment-38111435
       shell: >
-        if [ -s "{{ item }}" ]; then
+        if [ ! -z "$(cat '{{ item }}' | xargs)" ]; then
           printf '\n- <a href="{{ reports.url }}/{{ item | basename }}">{{ item | basename | splitext | first }}</a>' >> {{ reports.comment }}
         fi
       with_fileglob: "{{ reports.dir }}/*.txt"
