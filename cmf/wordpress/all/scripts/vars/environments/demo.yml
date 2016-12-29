@@ -1,0 +1,11 @@
+---
+plugins:
+  - install: []
+  - uninstall: []
+
+commands: []
+
+wordpress:
+  user:
+    name: admin
+    pass: propeople

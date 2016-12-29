@@ -1,0 +1,18 @@
+---
+phpcs:
+  standards: ["WordPress", "Security"]
+  extensions: ["php"]
+
+# Available standards:
+# - WCAG2A
+# - WCAG2AA
+# - WCAG2AAA
+# - Section508
+htmlcs:
+  - name: Frontpage
+    path: /
+    standard: Section508
+
+scan_dirs:
+  - "wp-content/plugins"
+  - "wp-content/themes"
