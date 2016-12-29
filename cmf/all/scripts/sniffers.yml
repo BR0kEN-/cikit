@@ -60,7 +60,7 @@
           title: "ES Lint"
 
     - name: Run SCSSLint
-      shell: 'find {{ item }} -name "*.scss" -print0 | xargs -0 -r scss-lint -c ../scripts/configs/scss-lint.yml > {{ reports.dir }}/scsslint.txt'
+      shell: "scss-lint {{ item }} -c ../scripts/configs/scss-lint.yml -o {{ reports.dir }}/scsslint.txt"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
