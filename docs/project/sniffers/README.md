@@ -53,11 +53,11 @@ Configuration:
 - Drupal
   - [standards](../../../cmf/drupal/all/scripts/vars/tests.yml#L3)
   - [file extensions](../../../cmf/drupal/all/scripts/vars/tests.yml#L4)
-  - [directories](../../../cmf/drupal/all/scripts/vars/tests.yml#L16)
+  - [directories](../../../cmf/drupal/all/scripts/vars/tests.yml#L17)
 - WordPress
   - [standards](../../../cmf/wordpress/all/scripts/vars/tests.yml#L3)
   - [file extensions](../../../cmf/wordpress/all/scripts/vars/tests.yml#L4)
-  - [directories](../../../cmf/wordpress/all/scripts/vars/tests.yml#L16)
+  - [directories](../../../cmf/wordpress/all/scripts/vars/tests.yml#L17)
 
 According to above list it means, that listed standards will be applied for files, having listed extensions, in specified directories.
 

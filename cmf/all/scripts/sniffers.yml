@@ -32,7 +32,7 @@
       with_dict: "{{ htmlcs }}"
 
     - name: Run ESLint
-      shell: "find {{ item }} -type d -print0 | xargs -r0 eslint --ignore-path ../scripts/configs/.eslintignore -c ../scripts/configs/.eslintrc -o '{{ reports.dir }}/ES Lint.txt'"
+      shell: "eslint {{ item }} --ignore-path ../scripts/configs/.eslintignore -c ../scripts/configs/.eslintrc -o '{{ reports.dir }}/ES Lint.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
@@ -40,7 +40,7 @@
       ignore_errors: yes
 
     - name: Run SCSSLint
-      shell: "find {{ item }} -type d -print0 | xargs -r0 scss-lint -c ../scripts/configs/scss-lint.yml -o '{{ reports.dir }}/SCSS Lint.txt'"
+      shell: "scss-lint {{ item }} -c ../scripts/configs/scss-lint.yml -o '{{ reports.dir }}/SCSS Lint.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"

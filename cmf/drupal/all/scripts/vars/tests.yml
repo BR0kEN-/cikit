@@ -1,7 +1,7 @@
 ---
 phpcs:
-  standards: ["WordPress", "Security"]
-  extensions: ["php"]
+  standards: ["Drupal", "DrupalSecure", "Security"]
+  extensions: ["php", "inc", "install", "module"]
 
 # Available standards:
 # - WCAG2A
@@ -15,5 +15,4 @@ htmlcs:
 
 # If you ending a pattern by asterisk then put trailing slash at the end!
 scan_dirs:
-  - "wp-content/plugins"
-  - "wp-content/themes"
+  - "profiles/{{ profile }}/*/custom"
