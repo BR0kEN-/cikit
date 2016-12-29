@@ -11,7 +11,7 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
     <org.jenkinsci.plugins.scripttrigger.ScriptTrigger plugin="scripttrigger@0.34">
-      <spec>H/10 * * * *</spec>
+      <spec>H/5 * * * *</spec>
       <labelRestriction>false</labelRestriction>
       <enableConcurrentBuild>false</enableConcurrentBuild>
       <script>sudo chown -R jenkins:jenkins ${JENKINS_HOME}

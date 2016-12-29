@@ -18,7 +18,7 @@ Some additional jobs are supplied out of the box:
 
 - `BACKUP_PROD_DB` - for creating snapshots of your production database (disabled by default and have to be manually configured).
 - `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases).
-- `DISK_USAGE_TRIGGER` - periodically running job (every 10 minutes by default) for checking available free space on server's hard drive (will trigger `SERVER_CLEANER` if occupied more than 92%).
+- `DISK_USAGE_TRIGGER` - periodically running job (every 5 minutes by default) for checking available free space on server's hard drive (will trigger `SERVER_CLEANER` if occupied more than 92%).
 
 ## Configuring bot
 
