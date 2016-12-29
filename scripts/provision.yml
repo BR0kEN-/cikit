@@ -19,7 +19,6 @@
 
     - name: cikit_nodejs_version
       prompt: Which version of Node.js you'd want to install? (4/5/6)
-      default: skip
       private: no
       tags: ["nodejs", "phantomjs"]
 
