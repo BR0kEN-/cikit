@@ -8,6 +8,7 @@ During project lifecycle developers produce tons of code which cannot be compreh
 - [HTML_CodeSniffer](https://github.com/squizlabs/HTML_CodeSniffer)
 - [SCSS Lint](https://github.com/brigade/scss-lint)
 - [ES Lint](https://github.com/eslint/eslint)
+- [Code Spell](https://github.com/lucasdemarchi/codespell)
 
 ## Configuration
 
@@ -110,6 +111,16 @@ Example command for manual execution:
 
 ```shell
 eslint -c /var/www/scripts/configs/.eslintrc --ignore-path /var/www/scripts/configs/.eslintignore  profiles/pp/*/custom
+```
+
+### Code Spell
+
+For fixing common misspellings in text files the `codespell.py` command line utility is used. Use [.codespellignore](../../../cmf/all/scripts/configs/.codespellignore) to exclude files from processing.
+
+Example command for manual execution:
+
+```shell
+codespell.py -S .DS_Store,*.png,*.gif,*.jpg,*.jpeg profiles/pp/*/custom
 ```
 
 ## Hooking into the process
