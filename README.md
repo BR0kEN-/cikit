@@ -22,6 +22,7 @@ The power of the system - simplicity. All provisioning is the same for local and
 - Multi CMS/CMF support. To add support of a new one, you just need to put pre-configurations to `cmf/<NAME>/<MAJOR_VERSION>` and ensure that core files can be downloaded as an archive.
 - Opportunity to keep multiple projects on the same CI server.
 - Triggering builds via comments in pull requests.
+- Applying [sniffers](docs/project/sniffers) to control code quality.
 - Midnight server cleaning :)
 
 ## Documentation
