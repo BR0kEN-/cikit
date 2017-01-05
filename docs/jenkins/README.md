@@ -16,7 +16,7 @@ Each CI server can host as much as needed projects. By default, when you finish 
 
 Some additional jobs are supplied out of the box:
 
-- `BACKUP_PROD_DB` - for creating your production database snapshots(disabled by default and should be manually configured).
+- `BACKUP_PROD_DB` - for creating snapshots of your production database (disabled by default and have to be manually configured).
 - `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases).
 - `DISK_USAGE_TRIGGER` - periodically running job (every 5 minutes by default) for checking available free space on server's hard drive (will trigger `SERVER_CLEANER` if occupied more than 92%).
 
@@ -29,7 +29,7 @@ Bot will manage pull requests statuses, will react on triggering phrases in comm
 Currently **CIKit** works with GitHub only. For making project builds you have to host codebase on GitHub and implement several steps to configure the job:
 
 - Set the web URL of a project. ![Pull request builder web URL](images/pr-builder-web-url.png)
-- Set the repository URL of a project and configure an access for Jenkins (no needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
+- Set the repository URL of a project and configure an access for Jenkins (not needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
 
 Besides, don't ignore advanced configuration of `GitHub Pull Request Builder`. Here you able to edit the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, to trigger phrases etc.
 
