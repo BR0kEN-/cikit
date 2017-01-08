@@ -11,10 +11,6 @@ selenium_dependencies:
     service: java -jar
 selenium_packages:
   - default-jre
-  - xfonts-100dpi
-  - xfonts-75dpi
-  - xfonts-scalable
-  - xfonts-cyrillic
   - imagemagick
   - firefox
   - google-chrome-stable
