@@ -1,0 +1,65 @@
+---
+cikit_php_version: 7.1
+cikit_php:
+  repo: ppa:ondrej/php
+  xdebug: 2.5.0
+  config:
+    global:
+      memory_limit: 512M
+      post_max_size: 64M
+      date.timezone: America/Chicago
+      sendmail_path: /usr/sbin/sendmail -t -i
+      short_open_tag: no
+      display_errors: Off
+      error_reporting: E_ALL & ~E_DEPRECATED & ~E_STRICT
+      max_execution_time: 300
+      realpath_cache_size: 32K
+      upload_max_filesize: 64M
+    cli:
+      memory_limit: -1
+  extensions:
+    pcntl:
+      config: {}
+    apc:
+      config:
+        stat: 1
+        rfc1867: 1
+        shm_size: 96M
+        enable_cli: 0
+        cache_by_default: 1
+    xdebug:
+      type: zend_extension
+      config:
+        idekey: PHPSTORM
+        remote_log: /tmp/xdebug.log
+        remote_port: 9000
+        remote_host: localhost
+        remote_enable: 1
+        remote_handler: dbgp
+        default_enable: 1
+        coverage_enable: 1
+        overload_var_dump: 0
+        max_nesting_level: 1000
+        remote_connect_back: 1
+  packages:
+    - dev
+    - mcrypt
+    - curl
+    - mysql
+    - json
+    - intl
+    - imap
+    - gd
+    - cli
+    - bz2
+    - common
+    - dba
+    - gmp
+    - odbc
+    - mbstring
+    - soap
+    - xml
+    - xsl
+    - zip
+    - apc
+    - xmlrpc
