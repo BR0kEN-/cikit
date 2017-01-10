@@ -1,4 +1,4 @@
-# GitHub Bot
+# GitHub Bot configuration
 
 We have a hosting for code in face of **GitHub** and continuous integration server -  **Jenkins**. Two unlinked chain items. To setup the connection between them we should tune CI server and below located a "step-by-step" tutorial for achieving this.
 

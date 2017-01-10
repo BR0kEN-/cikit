@@ -1,26 +1,6 @@
 ---
 - include: repo.yml
-
-- name: Download Jenkins
-  get_url:
-    url: "{{ jenkins.package }}"
-    dest: ~/jenkins.deb
-    mode: 440
-
-- name: Create default config
-  template:
-    src: jenkins.j2
-    dest: /etc/default/jenkins
-
-- name: Install Jenkins
-  # Do not override previously created Jenkins config during installation.
-  shell: "yes N | dpkg -i ~/jenkins.deb"
-
-- name: Restart service
-  service:
-    name: jenkins
-    state: restarted
-
+- include: install-deb.yml
 - include: cli.yml
 
 - name: Copy configs
@@ -69,3 +49,5 @@
   lineinfile:
     dest: /etc/sudoers
     line: "{{ jenkins_data.user }} ALL=(ALL) NOPASSWD:ALL"
+
+- include: jobs.yml

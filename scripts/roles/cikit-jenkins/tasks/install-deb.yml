@@ -1,0 +1,21 @@
+---
+- name: Download Jenkins
+  get_url:
+    url: "{{ jenkins.package }}"
+    dest: ~/jenkins.deb
+    mode: 440
+    force: "{{ jenkins_reinstall_deb | bool }}"
+
+- name: Create default config
+  template:
+    src: jenkins.j2
+    dest: /etc/default/jenkins
+
+- name: Install Jenkins
+  # Do not override previously created Jenkins config during installation.
+  shell: "yes N | dpkg -i ~/jenkins.deb"
+
+- name: Restart service
+  service:
+    name: jenkins
+    state: restarted

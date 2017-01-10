@@ -99,13 +99,13 @@
       tags: ["always"]
 
     - include: tasks/project-variable.yml
-      when: not vagrant
+      when: not vagrant and not jenkins_reinstall_deb
       tags: ["jenkins"]
 
     - name: Set name for Jenkins job
       set_fact:
         jenkins_job: "{{ project }}"
-      when: not vagrant
+      when: not vagrant and not jenkins_reinstall_deb
       tags: ["jenkins"]
 
     - name: Configure hostname

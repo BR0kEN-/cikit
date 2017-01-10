@@ -1,0 +1,11 @@
+---
+- name: Prepare variables
+  set_fact:
+    jenkins_job: "{{ jenkins_job | upper }}"
+    jenkins_host: "http://localhost:{{ jenkins_port }}/{{ jenkins_prefix }}"
+
+- include: install.yml
+  when: "{{ jenkins_install and not jenkins_reinstall_deb }}"
+
+- include: install-deb.yml
+  when: "{{ jenkins_reinstall_deb }}"
