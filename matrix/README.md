@@ -20,6 +20,27 @@ Every droplet has it own private network, which forwarded to a host. For example
 
 That's all! And that's cool! Every virtual server can be additionally provisioned by main `cikit` tool to convert it to CI server.
 
+## Before you begin
+
+Physical server must be provisioned with a superuser which has no-password access for `sudo` (e.g. `your_user ALL=(ALL) NOPASSWD:ALL` entry in `/etc/sudoers`). So, make sure the user is properly configured if you have set value for `ansible_user`, different from `root`, in your [inventory](../docs/ansible/inventory).
+
+The recommendation is to run the provisioning using `root` user. But you may choose. Besides, please MAKE SURE you took care about security!
+
+Mandatory (someday *you'll pay for this* in case of skip):
+
+- [Name and password for user to run `VBoxWeb` service](vars/phpvirtualbox.yml#L10-L11). This user is permitted to connect via SSH so don't be lazy inventing the password!
+- [Password for `admin` user for VirtualBox GUI](vars/phpvirtualbox.yml#L7-L8). CRUD operations for users and virtual machines. Please don't use the same password as for `VBoxWeb` service!
+
+**Remember that default values are publicly accessible since you've took them from public repository!**
+
+Recommended (will work as untrusted connection):
+
+- [SSL certificates](vars/ssl.yml#L3). Use trusted certificates to provide secure connection.
+
+Not recommended (general credentials - not good for each virtual machine):
+
+- [Basic HTTP authentication](vars/nginx.yml#L4-L12). Not recommended to set it up for the whole server - better to do this for every particular virtual machine.
+
 ## Usage
 
 Add your own host inside of `inventory` file and run the following command:
