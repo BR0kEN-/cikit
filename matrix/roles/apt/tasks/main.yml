@@ -1,0 +1,27 @@
+---
+- name: Add key
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  # That's funny, but "apt.keys" returns a method of the object.
+  # Just add execution brackets and get the object keys.
+  with_items: "{{ apt['keys'] }}"
+
+- name: Add repository
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items: "{{ apt.repositories }}"
+
+- name: Update APT keys
+  shell: apt-key update
+
+- name: Install package
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  # Ignoring errors could prevent an error when installed packages are running and cannot be processed.
+  ignore_errors: yes
+  with_items: "{{ apt.packages }}"
