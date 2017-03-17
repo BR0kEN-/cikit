@@ -1,7 +1,4 @@
 ---
-- name: Create config
-  shell: "cp {{ phpvirtualbox.path }}/config.php-example {{ phpvirtualbox.path }}/config.php"
-
 - name: Configure
   replace:
     dest: "{{ phpvirtualbox.path }}/config.php"
@@ -20,9 +17,15 @@
 - name: Create user
   user:
     name: "{{ phpvirtualbox.user.user }}"
-    password: "{{ phpvirtualbox.user.pass }}"
+    password: "{{ phpvirtualbox.user.pass | password_hash('sha512') }}"
 
-- name: Configure VBoxWeb user
+- name: Configure service
   template:
     src: phpvirtualbox.j2
     dest: /etc/default/virtualbox
+
+- name: Restart service
+  service:
+    name: vboxweb-service
+    state: restarted
+    enabled: yes

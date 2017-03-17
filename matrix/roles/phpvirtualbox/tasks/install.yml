@@ -14,4 +14,5 @@
 - name: Rename directory
   shell: "cp -r {{ phpvirtualbox_source }}/* {{ phpvirtualbox.path }} && chown -R {{ ansible_user }}:{{ ansible_user }} {{ phpvirtualbox.path }}"
 
-- include: configure.yml
+- name: Create config
+  shell: "cp {{ phpvirtualbox.path }}/config.php-example {{ phpvirtualbox.path }}/config.php"
