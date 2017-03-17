@@ -26,16 +26,16 @@ Physical server must be provisioned with a superuser which has no-password acces
 
 The recommendation is to run the provisioning using `root` user. But you may choose. Besides, please MAKE SURE you took care about security!
 
-Mandatory (someday *you'll pay for this* in case of skip):
-
-- [Name and password for user to run `VBoxWeb` service](vars/phpvirtualbox.yml#L10-L11). This user is permitted to connect via SSH so don't be lazy inventing the password!
-- [Password for `admin` user for VirtualBox GUI](vars/phpvirtualbox.yml#L7-L8). CRUD operations for users and virtual machines. Please don't use the same password as for `VBoxWeb` service!
-
-**Remember that default values are publicly accessible since you've took them from public repository!**
-
 Recommended (will work as untrusted connection):
 
 - [SSL certificates](vars/ssl.yml#L3). Use trusted certificates to provide secure connection.
+
+Optional (passwords will be generated automatically if not set):
+
+- [Name and password for user to run `VBoxWeb` service](vars/phpvirtualbox.yml#L10-L11). This user is permitted to connect via SSH.
+- [Password for `admin` user for VirtualBox GUI](vars/phpvirtualbox.yml#L7-L8). CRUD operations for users and virtual machines.
+
+**You can easily omit setting the passwords (especially if you can't invent secure ones).** In this case they'll be automatically generated, used and saved locally in `credentials/HOSTNAME/phpvirtualbox_users_system_pass` and `credentials/HOSTNAME/phpvirtualbox_users_gui_pass`. At any further reprovisioning they'll be looked up from those files, so you may not worry their changed.
 
 Not recommended (general credentials - not good for each virtual machine):
 

@@ -5,7 +5,7 @@ phpvirtualbox:
   users:
     gui:
       # Name is always "admin".
-      pass: pHpvB0KS
+      pass: ""
     system:
       name: vbox
-      pass: unpr0tected
+      pass: ""

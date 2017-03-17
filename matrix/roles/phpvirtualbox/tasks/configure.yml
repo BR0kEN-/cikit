@@ -1,4 +1,16 @@
 ---
+- include: tasks/password.yml
+  args:
+    title: "Determine password for system user"
+    name: phpvirtualbox_users_system_pass
+    for: "{{ phpvirtualbox.users.system.pass }}"
+
+- include: tasks/password.yml
+  args:
+    title: "Determine password for GUI user"
+    name: phpvirtualbox_users_gui_pass
+    for: "{{ phpvirtualbox.users.gui.pass }}"
+
 - name: Configure
   replace:
     dest: "{{ phpvirtualbox.path }}/config.php"
@@ -9,7 +21,7 @@
       replace: "{{ phpvirtualbox.users.system.name }}"
 
     - search: "password"
-      replace: "{{ phpvirtualbox.users.system.pass }}"
+      replace: "{{ phpvirtualbox_users_system_pass }}"
 
     - search: "vrdeports"
       replace: "9001-9100"
@@ -17,13 +29,13 @@
 - name: Configure system user
   user:
     name: "{{ phpvirtualbox.users.system.name }}"
-    password: "{{ phpvirtualbox.users.system.pass | password_hash('sha512') }}"
+    password: "{{ phpvirtualbox_users_system_pass | password_hash('sha512') }}"
 
 - name: Configure GUI user
   include: roles/virtualmachine/tasks/vboxmanage.yml
   args:
     # The "password_hash('sha512')" Jinja filter won't work since it using salt!
-    command: "setextradata global phpvb/users/admin/pass $(echo -n '{{ phpvirtualbox.users.gui.pass }}' | sha512sum | cut -d ' ' -f 1)"
+    command: "setextradata global phpvb/users/admin/pass $(echo -n '{{ phpvirtualbox_users_gui_pass }}' | sha512sum | cut -d ' ' -f 1)"
 
 - name: Configure service
   template:
