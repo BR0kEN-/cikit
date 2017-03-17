@@ -1,6 +1,6 @@
 # Continuous Integration Kit
 
-**CIKit** is [Ansible](https://github.com/ansible/ansible) based system for web application environment development. You are able to deploy a local web-server based on [Vagrant](https://github.com/mitchellh/vagrant) and/or remote one with this tool.
+**CIKit** is [Ansible](https://github.com/ansible/ansible) based system for web application development. You are able to deploy a local web-server based on [Vagrant](https://github.com/mitchellh/vagrant) and/or remote one with this tool.
 
 The power of the system - simplicity. The provisioning is the same whether it's local or remote machine, except of a logic for installing additional software on remote machine (Jenkins, for example), but it's also quite simple (just `when: not vagrant` as a condition for Ansible tasks).
 
@@ -107,7 +107,7 @@ Run with custom set of arguments:
 ANSIBLE_ARGS="-vvvv" ./cikit
 ```
 
-By default, `cikit` is a global utility which looks for a project in `/var/www/`. But if you specify a playbook outside of this directory, then working folder is the path of this playbook.
+By default, `cikit` - is a global utility which looks for a project in `/var/www/`. But if you specify a playbook outside of this directory, then working folder will be the path of this playbook.
 
 ## Dependencies
 
