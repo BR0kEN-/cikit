@@ -31,7 +31,7 @@ Currently **CIKit** works with GitHub only. For making project builds you have t
 - Set the web URL of a project. ![Pull request builder web URL](images/pr-builder-web-url.png)
 - Set the repository URL of a project and configure an access for Jenkins (not needed if project is public). ![Pull request builder repository URL](images/pr-builder-repo.png)
 
-Besides, don't ignore advanced configuration of `GitHub Pull Request Builder`. Here you able to edit the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, to trigger phrases etc.
+Besides, don't ignore advanced configuration of `GitHub Pull Request Builder`. Here you able to edit the list of administrators (GitHub accounts), users allowed to control CI process via comments on Github, phrases-triggers etc.
 
 ![Pull request builder repository URL](images/pr-builder-ghprb.png)
 
