@@ -1,0 +1,11 @@
+---
+phpvirtualbox:
+  path: /var/www/phpvirtualbox
+  package: http://netassist.dl.sourceforge.net/project/phpvirtualbox/phpvirtualbox-5.0-5.zip
+  users:
+    gui:
+      # Name is always "admin".
+      pass: pHpvB0KS
+    system:
+      name: vbox
+      pass: unpr0tected

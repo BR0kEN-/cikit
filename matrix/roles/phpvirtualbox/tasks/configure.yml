@@ -6,18 +6,24 @@
     replace: "var ${{ item.search }} = '{{ item.replace }}';"
   with_items:
     - search: "username"
-      replace: "{{ phpvirtualbox.user.user }}"
+      replace: "{{ phpvirtualbox.users.system.name }}"
 
     - search: "password"
-      replace: "{{ phpvirtualbox.user.pass }}"
+      replace: "{{ phpvirtualbox.users.system.pass }}"
 
     - search: "vrdeports"
       replace: "9001-9100"
 
-- name: Create user
+- name: Configure system user
   user:
-    name: "{{ phpvirtualbox.user.user }}"
-    password: "{{ phpvirtualbox.user.pass | password_hash('sha512') }}"
+    name: "{{ phpvirtualbox.users.system.name }}"
+    password: "{{ phpvirtualbox.users.system.pass | password_hash('sha512') }}"
+
+- name: Configure GUI user
+  include: roles/virtualmachine/tasks/vboxmanage.yml
+  args:
+    # The "password_hash('sha512')" Jinja filter won't work since it using salt!
+    command: "setextradata global phpvb/users/admin/pass $(echo -n '{{ phpvirtualbox.users.gui.pass }}' | sha512sum | cut -d ' ' -f 1)"
 
 - name: Configure service
   template:

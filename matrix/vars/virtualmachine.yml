@@ -9,7 +9,7 @@ droplet_size: no
 droplet_memory: no
 
 virtualmachine:
-  path: "/home/{{ phpvirtualbox.user.user }}/VirtualBox VMs/initvm"
+  path: "/home/{{ phpvirtualbox.users.system.name }}/VirtualBox VMs/initvm"
   # Must be "*.tar.gz".
   package: "http://propeople.com.ua/pub/ffw_ubuntu_14.04_minimal.tar.gz"
   port_forwarding:
