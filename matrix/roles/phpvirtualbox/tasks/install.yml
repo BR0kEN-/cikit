@@ -1,0 +1,17 @@
+---
+- name: Determine directory name
+  set_fact:
+    phpvirtualbox_source: "/tmp/{{ phpvirtualbox.package | basename | splitext | first }}"
+
+- name: Install phpVirtualBox
+  unarchive:
+    src: "{{ phpvirtualbox.package }}"
+    dest: "{{ phpvirtualbox_source | dirname }}"
+    copy: no
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Rename directory
+  shell: "cp -r {{ phpvirtualbox_source }}/* {{ phpvirtualbox.path }} && chown -R {{ ansible_user }}:{{ ansible_user }} {{ phpvirtualbox.path }}"
+
+- include: configure.yml
