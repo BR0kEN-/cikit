@@ -14,6 +14,6 @@ The next scheme demonstrates the structure of **CIKit** based server.
 
 HTTPS traffic proxying on 443 port works the same.
 
-It is a simple case for **Solr** and **Jenkins**. Here is an answer for question "**What is Apache for?**".
+Everything is simple in case of **Solr** and **Jenkins**. Here is an answer for question "**what is Apache for?**".
 
 Historically Apache is older than Nginx and all supported by **CIKit** CMFs are working with it out of the box without additional configuration. Also each project could have its own `.htaccess` to influence server configuration.
