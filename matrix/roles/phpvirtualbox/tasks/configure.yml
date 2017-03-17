@@ -1,0 +1,28 @@
+---
+- name: Create config
+  shell: "cp {{ phpvirtualbox.path }}/config.php-example {{ phpvirtualbox.path }}/config.php"
+
+- name: Configure
+  replace:
+    dest: "{{ phpvirtualbox.path }}/config.php"
+    regexp: '^var \${{ item.search }}.*;$'
+    replace: "var ${{ item.search }} = '{{ item.replace }}';"
+  with_items:
+    - search: "username"
+      replace: "{{ phpvirtualbox.user.user }}"
+
+    - search: "password"
+      replace: "{{ phpvirtualbox.user.pass }}"
+
+    - search: "vrdeports"
+      replace: "9001-9100"
+
+- name: Create user
+  user:
+    name: "{{ phpvirtualbox.user.user }}"
+    password: "{{ phpvirtualbox.user.pass }}"
+
+- name: Configure VBoxWeb user
+  template:
+    src: phpvirtualbox.j2
+    dest: /etc/default/virtualbox
