@@ -22,9 +22,11 @@ That's all! And it's cool! Each virtual server may be additionally provisioned b
 
 ## Before you begin
 
+Remember that host machine must be publicly accessible via internet. Otherwise you will be required to manually configure forwarding to the following ports: `22<NN>`, `80<NN>` and `443<NN>` (where `<NN>` - is a serial number of VM).
+
 Physical server must be provisioned with a superuser which has no-password access for `sudo` (e.g. `your_user ALL=(ALL) NOPASSWD:ALL` entry in `/etc/sudoers`). So, make sure the user is properly configured if you have set value for `ansible_user`, different from `root`, in your [inventory](../docs/ansible/inventory).
 
-The recommendation is to run the provisioning using `root` user. But you may choose. Besides, please MAKE SURE you took care about security!
+The recommendation is to run the provisioning using `root` user. But you may choose. Beside of that, please MAKE SURE you took care about security!
 
 Recommended (will work as untrusted connection):
 
