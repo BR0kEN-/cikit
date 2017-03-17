@@ -3,8 +3,17 @@
 # Directories.
 !cmf/
 !docs/
-!matrix/
 !scripts/
+
+# Droplets Matrix.
+!matrix/
+matrix/*
+!matrix/docs/
+!matrix/roles/
+!matrix/tasks/
+!matrix/templates/
+!matrix/vars/
+!matrix/matrix.yml
 
 # Files.
 !cikit
