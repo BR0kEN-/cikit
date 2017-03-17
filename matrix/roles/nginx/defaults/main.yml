@@ -1,0 +1,10 @@
+---
+nginx:
+  # In case of "no" all lines below are not valuable.
+  httpauth: no
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    user: admin
+    pass: admin
+
+  allowed_ip: []
