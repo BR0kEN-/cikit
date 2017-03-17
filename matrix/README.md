@@ -37,6 +37,8 @@ Optional (passwords will be generated automatically if not set):
 
 **You can easily omit setting the passwords (especially if you can't invent secure ones).** In this case they'll be automatically generated, used and saved locally in `credentials/HOSTNAME/phpvirtualbox_users_system_pass` and `credentials/HOSTNAME/phpvirtualbox_users_gui_pass`. At any further reprovisioning they'll be looked up from those files, so you may not worry their changed.
 
+![Automatically generated passwords](docs/matrix-passwords.png)
+
 Not recommended (general credentials - not good for each virtual machine):
 
 - [Basic HTTP authentication](vars/nginx.yml#L4-L12). Not recommended to set it up for the whole server - better to do this for every particular virtual machine.
