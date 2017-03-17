@@ -3,12 +3,15 @@
   become: yes
 
   vars:
-    domain: m2.propeople.com.ua
     application: cikit
     # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
     restart: ""
 
   pre_tasks:
+    - name: Determine domain
+      set_fact:
+        domain: "{{ domain | default(inventory_hostname) }}"
+
     - include_vars: "{{ item }}"
       with_fileglob: vars/*
 
