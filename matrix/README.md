@@ -55,7 +55,7 @@ New droplets (VMs) will be based on an image, which is assumed as [base](vars/vi
 
 ### Add trusted SSL certificate
 
-There are two files inside the `/path/to/directory/`, they must be located: `*.crt` and `*.key`. They will be copied and NGINX will start use them immediately.
+Inside of the `/path/to/directory/` two files must be located: `*.crt` and `*.key`. They are will be copied and NGINX will start use them immediately.
 
 ```shell
 ./cikit matrix/matrix.yml --limit=<HOSTNAME> --tags=ssl --ssl-src=/path/to/directory/ --restart=nginx
@@ -67,6 +67,6 @@ You are able to choose two ways for managing your virtual machines: whether usin
 
 ## To do
 
-- [ ] Permission to add SSH keys to the droplet on creation phase
+- [ ] Ability to add SSH keys to the droplet on creation phase
 - [ ] Reuse roles from Matrix in CIKit (`nginx`, `ssl`)
-- [ ] Set hostname for each new droplet
+- [x] Set hostname for each new droplet
