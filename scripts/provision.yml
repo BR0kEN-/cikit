@@ -45,7 +45,7 @@
       tags: ["security"]
 
     - name: http_auth_pass
-      prompt: Passowrd for HTTP authentication
+      prompt: Password for HTTP authentication
       default: r3str1cteDHere
       private: yes
       # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
