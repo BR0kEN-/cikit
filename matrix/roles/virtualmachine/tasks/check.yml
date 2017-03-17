@@ -1,0 +1,9 @@
+---
+- name: Check VM existence
+  shell: "find '{{ virtualmachine.path | replace(' ', '\\ ') }}' -name *.vbox"
+  register: vm_check
+  ignore_errors: yes
+
+- name: Set path to VM
+  set_fact:
+    vm_path: "{{ vm_check.stdout }}"
