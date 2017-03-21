@@ -1,34 +1,32 @@
 ---
-coding_standards:
-  Drupal:
-    branch: 8.x-2.x
-    repo: git://git.drupal.org/project/coder.git
+cikit_sniffers:
+  packages:
+    npm:
+      - eslint
+    gem:
+      # @todo Sass 3.5 will no longer support Ruby 1.9.3. Please upgrade to Ruby 2.0.0 or greater ASAP.
+      - scss-lint
+    pip:
+      - codespell
 
-  DrupalSecure:
-    branch: master
-    repo: http://git.drupal.org/sandbox/coltrane/1921926.git
-
-  Security:
-    branch: master
-    repo: https://github.com/FloeDesignTechnologies/phpcs-security-audit.git
-
-  Symfony2:
-    branch: master
-    repo: https://github.com/podarok/Symfony2-coding-standard.git
-
-  WordPress:
-    branch: master
-    repo: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git
-
-  HTML:
-    branch: 2.0.7
-    repo: https://github.com/squizlabs/HTML_CodeSniffer.git
-
-packages:
-  npm:
-    - eslint
-  gem:
-    # @todo Sass 3.5 will no longer support Ruby 1.9.3. Please upgrade to Ruby 2.0.0 or greater ASAP.
-    - scss-lint
-  pip:
-    - codespell
+  coding_standards:
+    dest: /usr/share/coding-standards
+    list:
+      Drupal:
+        version: 8.x-2.x
+        repo: git://git.drupal.org/project/coder.git
+      DrupalSecure:
+        version: master
+        repo: http://git.drupal.org/sandbox/coltrane/1921926.git
+      Security:
+        version: master
+        repo: https://github.com/FloeDesignTechnologies/phpcs-security-audit.git
+      Symfony2:
+        version: master
+        repo: https://github.com/podarok/Symfony2-coding-standard.git
+      WordPress:
+        version: master
+        repo: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git
+      HTML:
+        version: 2.0.7
+        repo: https://github.com/squizlabs/HTML_CodeSniffer.git

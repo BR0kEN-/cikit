@@ -2,9 +2,9 @@
 - name: Clone Git repositories
   git:
     repo: "{{ item.value.repo }}"
-    dest: "{{ cikit_sniffers.dest }}/{{ item.key }}"
-    version: "{{ item.value.branch }}"
-  with_dict: "{{ coding_standards }}"
+    dest: "{{ cikit_sniffers.coding_standards.dest }}/{{ item.key }}"
+    version: "{{ item.value.version }}"
+  with_dict: "{{ cikit_sniffers.coding_standards.list }}"
 
 - name: Create HTMLCS binary
   template:
@@ -14,7 +14,7 @@
 
 - name: Find all installed PHPCS standards
   find:
-    path: "{{ cikit_sniffers.dest }}"
+    path: "{{ cikit_sniffers.coding_standards.dest }}"
     pattern: "ruleset.xml"
     recurse: yes
   register: rulesets
@@ -33,15 +33,15 @@
   npm:
     name: "{{ item }}"
     global: yes
-  with_items: "{{ packages.npm }}"
+  with_items: "{{ cikit_sniffers.packages.npm }}"
 
 - name: Install Gem packages
   shell: "gem install {{ item }}"
-  with_items: "{{ packages.gem }}"
+  with_items: "{{ cikit_sniffers.packages.gem }}"
   ignore_errors: yes
 
 - name: Install PIP packages
   pip:
     name: "{{ item }}"
     state: latest
-  with_items: "{{ packages.pip }}"
+  with_items: "{{ cikit_sniffers.packages.pip }}"
