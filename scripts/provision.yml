@@ -63,31 +63,32 @@
         pass: "{{ http_auth_pass }}"
 
     basic_packages:
-      - python
-      - python-dev
-      - python-pycurl
-      - python-simplejson
-      - curl
-      - make
-      - rsync
-      - git
-      - libmysqlclient-dev
-      - apparmor-utils
-      - bsdutils
-      - software-properties-common
-      - python-software-properties
-      - build-essential
-      - libffi-dev
-      - libssl-dev
+      apt:
+        - python
+        - python-dev
+        - python-pycurl
+        - python-simplejson
+        - curl
+        - make
+        - rsync
+        - git
+        - libmysqlclient-dev
+        - apparmor-utils
+        - bsdutils
+        - software-properties-common
+        - python-software-properties
+        - build-essential
+        - libffi-dev
+        - libssl-dev
 
-    pip_packages:
-      - setuptools
-      - paramiko
-      - pyyaml
-      - jinja2
-      - markupsafe
-      - MySQL-python
-      - ansible
+      pip:
+        - setuptools
+        - paramiko
+        - pyyaml
+        - jinja2
+        - markupsafe
+        - MySQL-python
+        - ansible
 
   pre_tasks:
     - include: tasks/detect-vagrant.yml
@@ -129,7 +130,7 @@
       apt:
         name: "{{ item }}"
         state: present
-      with_items: "{{ basic_packages }}"
+      with_items: "{{ basic_packages.apt }}"
 
     - name: Install EasyInstall
       shell: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
@@ -143,7 +144,7 @@
       pip:
         name: "{{ item }}"
         state: latest
-      with_items: "{{ pip_packages }}"
+      with_items: "{{ basic_packages.pip }}"
 
     - name: Create CIKit command line utility
       file:
