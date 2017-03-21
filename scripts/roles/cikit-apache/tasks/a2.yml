@@ -1,8 +1,11 @@
 ---
-# http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
-- set_fact:
-    list: "{{ item }}"
-
+# The "list" variable must have the following structure:
+# list:
+#   [conf|mods|sites]:
+#     [en|dis]:
+#       - item1
+#       - ...
+#       - itemN
 - shell: "a2{{ item.key }}{{ list.key | regex_replace('s$', '') }} {{ item.value | join(' ') }}"
   args:
     warn: no

@@ -1,8 +1,5 @@
 ---
-# http://docs.ansible.com/ansible/playbooks_loops.html#loops-and-includes-in-2-0
-- set_fact:
-    type: "{{ item }}"
-
+# The "type" variable must be "conf" or "sites".
 - name: 'Create "{{ type }}" configs'
   template:
     src: "{{ type }}/{{ item | basename }}"

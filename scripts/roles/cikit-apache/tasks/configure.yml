@@ -3,6 +3,8 @@
   with_items:
     - conf
     - sites
+  loop_control:
+    loop_var: type
 
 - name: Configure ports
   template:
@@ -11,6 +13,8 @@
 
 - include: a2.yml
   with_dict: "{{ apache_data }}"
+  loop_control:
+    loop_var: list
 
 - name: Ensure that directory for SSL certificates exists
   file:
