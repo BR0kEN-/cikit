@@ -1,0 +1,29 @@
+---
+- name: Set name of source archive
+  set_fact:
+    cikit_phantomjs_package: "phantomjs-{{ cikit_phantomjs_version }}"
+
+- name: Download sources
+  # Unable to use "--strip-components=1" and "-C" since URL contains multiple
+  # redirects. End URL is quite long and complex for direct usage.
+  shell: "wget -qO- https://bitbucket.org/ariya/phantomjs/downloads/{{ cikit_phantomjs_package }}.tar.bz2 | tar -xj"
+  args:
+    # Ansible "unarchive" is not working.
+    warn: no
+    chdir: "{{ cikit_phantomjs.dest | dirname }}"
+
+- name: Rename package
+  shell: "mv {{ cikit_phantomjs.dest | dirname }}/{{ cikit_phantomjs_package }} {{ cikit_phantomjs.dest }}"
+  args:
+    creates: "{{ cikit_phantomjs.dest }}"
+
+- name: Create link to executable script
+  file:
+    src: "{{ cikit_phantomjs.dest }}/bin/phantomjs"
+    dest: "{{ cikit_phantomjs.bin }}/phantomjs"
+    mode: a+x
+    state: link
+
+- name: Mark role as executed
+  set_fact:
+    cikit_phantomjs_role_executed: yes
