@@ -50,44 +50,34 @@ Global project documentation [available here](docs).
 
   ```
   cd <NAME>
-  ./cikit provision --project=<NAME> [--limit=<HOST>]
+  ./cikit provisioning/provision --project=<NAME> [--limit=<HOST>]
   ```
 
 Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.
 
-## Variations
+## Provisioning variations
 
-Currently `provision.yml` playbook is powered with tags, so you can run only part of it.
+**Provision** - is an operation that configure CI server or virtual machine and install necessary software there to convert it to unit for development.
 
-```shell
-./cikit provision --tags=TAGNAME
-```
+Initially (at the very first time) you are required to run full provisioning to build the environment correctly. After that you may decide to reinstall or reset configuration of some part of it. This is feasible thanks to separation of the provisioning.
 
-- php
-- misc
-- sass
-- security
-- nginx
-- selenium
-- memcache
-- php-stack
-- solr
-- nodejs
-- jenkins
-- composer
-- sniffers
-- apache
-- mysql
-- swap
-- ssl
-
-You are also able to specify tags for provisioning Vagrant:
+Get the list of components to provision:
 
 ```shell
-ANSIBLE_ARGS="--tags=TAGNAME" vagrant provision
+./cikit provisioning/provision --list-tags
 ```
 
-As you can see, any set of arguments can be passed for `ansible-playbook` command.
+Run provisioning of specific component (CI server):
+
+```shell
+ANSIBLE_ARGS="--tags=COMPONENT" ./cikit provisioning/provision
+```
+
+Run provisioning of specific component (virtual machine):
+
+```shell
+ANSIBLE_ARGS="--tags=COMPONENT" vagrant provision
+```
 
 ## The power of `cikit` utility
 
@@ -103,7 +93,7 @@ Run with custom set of arguments:
 ANSIBLE_ARGS="-vvvv" ./cikit
 ```
 
-By default, `cikit` - is a global utility which looks for a project in `/var/www/`. But if you specify a playbook outside of this directory, then working folder will be the path of this playbook.
+By default, `cikit` - is a global utility (only inside of VM) which looks for a project in `/var/www/`. But if you specify a playbook outside of this directory, then working folder will be the path of this playbook.
 
 ## Dependencies
 
