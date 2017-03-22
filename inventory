@@ -1,0 +1,2 @@
+# This is Ansible inventory file. It includes hosts where playbooks will run.
+# Visit for more information: http://docs.ansible.com/ansible/intro_inventory.html
