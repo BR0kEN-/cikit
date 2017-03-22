@@ -31,11 +31,16 @@ Global project documentation [available here](docs).
 
 ## Quick Start
 
-- Create CIKit-based project.
+- Get the **CIKit**.
 
   ```shell
   git clone https://github.com/BR0kEN-/cikit.git
   cd cikit
+  ```
+
+- Create CIKit-based project.
+
+  ```shell
   ./cikit repository --project=<NAME> [--cmf=drupal|wordpress] [--version=7.53|8.3.x-dev|4.6.1] [--without-sources]
   git init
   git add .
@@ -43,6 +48,19 @@ Global project documentation [available here](docs).
   ```
 
   The `--without-sources` option for project creation task affects CMF sources downloading. Use it if you want to create an empty project (CIKit-structured package with empty `docroot` directory, where you have to store the source code of Drupal/WordPress/whatever).
+
+- Build virtual machine for local development.
+
+  ```shell
+  vagrant up --provision
+  ```
+
+  Build website inside of ready VM (will be accessible at `https://<NAME>.dev`).
+
+  ```shell
+  vagrant ssh
+  cikit reinstall
+  ```
 
 - Add your host credentials to the [inventory](docs/ansible/inventory) file.
 
