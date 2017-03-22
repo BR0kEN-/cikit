@@ -19,7 +19,7 @@ The power of the system - simplicity. The provisioning is the same whether it's 
 
 - [Create matrix of virtual servers (droplets).](matrix)
 - Automated builds for each commit in a pull request on GitHub (private repositories are supported).
-- Multi CMS/CMF support. You just need to put pre-configurations to `cmf/<NAME>/<MAJOR_VERSION>` and ensure that core files may be downloaded as an archive for adding the support of a new one.
+- Multi CMS/CMF support (`Drupal` and `WordPress` at the moment). To introduce a new one, you just have to add pre-configurations to `cmf/<NAME>/<MAJOR_VERSION>` and make sure that system is downloadable as an archive.
 - Opportunity to keep multiple projects on the same CI server.
 - Triggering builds via comments in pull requests.
 - Applying [sniffers](docs/project/sniffers) to control code quality.
@@ -31,33 +31,29 @@ Global project documentation [available here](docs).
 
 ## Quick Start
 
+- Create CIKit-based project.
+
+  ```shell
+  git clone https://github.com/BR0kEN-/cikit.git
+  cd cikit
+  ./cikit repository --project=<NAME> [--cmf=drupal|wordpress] [--version=7.53|8.3.x-dev|4.6.1] [--without-sources]
+  git init
+  git add .
+  git commit -m 'Init of CIKit project'
+  ```
+
+  The `--without-sources` option for project creation task affects CMF sources downloading. Use it if you want to create an empty project (CIKit-structured package with empty `docroot` directory, where you have to store the source code of Drupal/WordPress/whatever).
+
 - Add your host credentials to the [inventory](docs/ansible/inventory) file.
-- `./cikit repository --project=<NAME> [--cmf=drupal] [--version=7.53] [--without-sources]`
-- `./cikit provision --project=<NAME> [--limit=<HOST>]`
 
-The `--without-sources` option for `repository` task is affected on downloading CMF sources. If you want to create an empty project - use it.
+- Provision remote CI server.
 
-### Examples
+  ```
+  cd <NAME>
+  ./cikit provision --project=<NAME> [--limit=<HOST>]
+  ```
 
-#### Drupal 7
-
-```shell
-./cikit repository --project=test
-```
-
-#### Drupal 8
-
-```shell
-./cikit repository --project=test --version=8.3.x-dev
-```
-
-#### WordPress 4
-
-```shell
-./cikit repository --project=test --cmf=wordpress --version=4.6.1
-```
-
-**Note**: these commands should be executed on your host, not inside the virtual machine!
+Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.
 
 ## Variations
 

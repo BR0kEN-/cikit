@@ -1,6 +1,6 @@
 # Ansible Inventory
 
-The [inventory](../../inventory) file stores an information about hosts, managed by **CIKit**.
+The [inventory](../../../inventory) file stores an information about hosts, managed by **CIKit**.
 
 To specify a new host you have to use the following lines:
 
