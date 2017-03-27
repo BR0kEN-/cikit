@@ -115,6 +115,19 @@
       when: not vagrant
       tags: ["always"]
 
+    - name: Create CIKit command line utility
+      file:
+        src: "{{ webroot }}/cikit"
+        dest: /usr/bin/cikit
+        state: link
+      when: vagrant
+
+    - name: Generate Bash completion for CIKit utility
+      template:
+        src: templates/cikit.complete.sh.j2
+        dest: /etc/bash_completion.d
+      when: vagrant
+
     - name: Process facts
       set_fact:
         extras:
@@ -145,19 +158,6 @@
         name: "{{ item }}"
         state: latest
       with_items: "{{ basic_packages.pip }}"
-
-    - name: Create CIKit command line utility
-      file:
-        src: "{{ webroot }}/cikit"
-        dest: /usr/bin/cikit
-        state: link
-      when: vagrant
-
-    - name: Generate Bash completion for CIKit utility
-      template:
-        src: templates/cikit.complete.sh.j2
-        dest: /etc/bash_completion.d
-      when: vagrant
 
   roles:
     - role: cikit-misc
