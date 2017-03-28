@@ -30,3 +30,6 @@ matrix/*
 # File extensions.
 *.retry
 !*.md
+
+# Slack configurations.
+!.slack/

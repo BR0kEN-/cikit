@@ -29,6 +29,10 @@ The power of the system - simplicity. The provisioning is the same whether it's 
 
 Global project documentation [available here](docs).
 
+## Slack
+
+All communications are available in our Slack account at https://cikit.slack.com
+
 ## Quick Start
 
 - Get the **CIKit**.
