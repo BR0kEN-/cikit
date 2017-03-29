@@ -87,7 +87,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   config.vm.box_url = "#{boxes[ENV["VAGRANT_DEFAULT_PROVIDER"]]}"
   # Automatically name the box.
   config.vm.box = File.basename(config.vm.box_url)
-  # Hosts Updated plugin insert this value to "hosts".
+  # The "hostsupdater" plugin insert this value to "hosts".
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
   config.vm.hostname = configValues["site_url"].split('//').last
