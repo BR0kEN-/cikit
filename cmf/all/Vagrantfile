@@ -1,4 +1,3 @@
-require "mkmf"
 require "yaml"
 
 VAGRANT_API_VERSION = "2"
@@ -14,9 +13,9 @@ configValues = YAML::load_file("config.yml")
 
 # Check whether CIKit cannot be bootstrapped properly.
 if (arguments.include?("up") or arguments.include?("provision")) and not arguments.include?("no-provision")
-  ANSIBLE = find_executable "ansible"
+  ANSIBLE = `which ansible`.chomp
 
-  if ANSIBLE.nil?
+  if ANSIBLE.empty?
     puts "You have to install Ansible #{ANSIBLE_MIN_VERSION} or better before continue."
     exit 1
   end
