@@ -60,6 +60,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 "
 
   config.vm.provider :virtualbox do |vb|
+    vb.name = configValues["project"]
+
     configValues["vm"]["virtualbox"]["modifyvm"].each do |key, value|
       vb.customize ["modifyvm", :id, "--#{key}", "#{value}"]
     end
