@@ -1,13 +1,58 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.require_version ">= 1.7.0"
-
+require "mkmf"
 require "yaml"
 
+VAGRANT_API_VERSION = "2"
+VAGRANT_MIN_VERSION = "1.7.0"
+ANSIBLE_MIN_VERSION = "2.1.0"
+
+Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
+
+# Basic variables.
+arguments = ARGV.join(" ")
 isWindows = Vagrant::Util::Platform.windows?
 configValues = YAML::load_file("config.yml")
+
+# Check whether CIKit cannot be bootstrapped properly.
+if (arguments.include?("up") or arguments.include?("provision")) and not arguments.include?("no-provision")
+  ANSIBLE = find_executable "ansible"
+
+  if ANSIBLE.nil?
+    puts "You have to install Ansible #{ANSIBLE_MIN_VERSION} or better before continue."
+    exit 1
+  end
+
+  if Gem::Version.new(`#{ANSIBLE} --version | head -n1 | awk '{print $2}'`) < Gem::Version.new(ANSIBLE_MIN_VERSION)
+    puts "Installed version of Ansible must not be lower than #{ANSIBLE_MIN_VERSION}."
+    exit 2
+  end
+end
+
+# Ensure that configured IP ain't owned by other VM.
+if ["up", "resume"].include?(ARGV[0])
+  # The output looks like:
+  # "Windows7" {0c7dd8ed-8187-44c7-9d6e-c372305fb573}
+  # Iterate over the list of virtual machines.
+  `VBoxManage list vms | awk '{print $1}'`.split("\n").each do |vmName|
+    # The output looks like:
+    # Name: /VirtualBox/GuestInfo/Net/1/V4/IP, value: 192.168.59.101, timestamp: 1489077258093051000, flags: TRANSIENT, TRANSRESET
+    # Property "/VirtualBox/GuestInfo/Net/0/V4/IP" contains internal IP, like "10.0.2.15".
+    vmIp = `VBoxManage guestproperty enumerate #{vmName} --patterns "/VirtualBox/GuestInfo/Net/1/V4/IP" | awk '{print $4}' | tr -d ','`.chomp
+
+    if not vmIp.empty? and vmIp == configValues["vm"]["ip"] and not vmName.include?(configValues["project"])
+      ipSections = vmIp.split(".")
+      # Increase last number of IP by 1.
+      ipSections[-1] = ipSections.last.to_i + 1
+
+      vmIp = ipSections.join(".")
+
+      puts "[IP conflict resolved]: #{configValues["vm"]["ip"]} (used by #{vmName}) was changed to #{vmIp}."
+      configValues["vm"]["ip"] = vmIp
+    end
+  end
+
+  # Smart "hostsupdater" plugin use configured IP of VM to clean up the hosts file, so we don't need to
+  # worry about this at the following commands: "destroy", "suspend", "reload", "halt".
+end
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = ENV.has_key?("VAGRANT_CI") && ENV["VAGRANT_CI"].include?("lxc") ? "lxc" : "virtualbox"
 
@@ -37,7 +82,7 @@ Dir["provisioners/*"].each do |file|
   end
 end
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # Use the box, depending on Vagrant provider.
   config.vm.box_url = "#{boxes[ENV["VAGRANT_DEFAULT_PROVIDER"]]}"
   # Automatically name the box.
