@@ -120,6 +120,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
       config.vm.network :forwarded_port,
         :host => port["host"].to_i,
         :guest => port["guest"].to_i,
+        # https://github.com/mitchellh/vagrant/issues/8395#issuecomment-288379271
+        :host_ip => "127.0.0.1",
         :auto_correct => true
     end
   end
