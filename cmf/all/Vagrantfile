@@ -126,16 +126,19 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
     end
   end
 
-  for folder in configValues["vm"]["synced_folder"];
+  configValues["vm"]["synced_folder"].each do |folder|
+    nfsVersion = folder["nfs"]["version"].to_i
+
     config.vm.synced_folder folder["source"], folder["target"],
       :id => folder["target"],
       # Windows (https://github.com/coreos/coreos-vagrant/issues/185#issuecomment-145260933):
       # - VBoxSF cannot be used due to "Text file busy" error (https://github.com/ansible/ansible/issues/9526#issue-48225420).
       # - NFS cannot be used due to "Device or resource busy - directory may be a mount point?" error.
       :type => isWindows ? "rsync" : "nfs",
+      :nfs_udp => folder["nfs"]["udp"],
+      :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3,
       :rsync__args => ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"],
-      :rsync__exclude => folder["excluded_paths"],
-      :linux__nfs_options => ["rw", "no_subtree_check", "no_root_squash", "async"]
+      :rsync__exclude => folder["excluded_paths"]
   end
 
   config.vm.provision :cikit,

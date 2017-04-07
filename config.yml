@@ -21,6 +21,18 @@ vm:
   synced_folder:
     - source: ./
       target: /var/www
+      # For "rsync" only (Cygwin).
       exclude:
+        - .vagrant/
         - .idea/
         - .git/
+      # Not supported on Cygwin.
+      nfs:
+        # If you're using guest machine more often than host for manipulating
+        # by big file data, then you should configure NFS over TCP connection
+        # to prevent hangs. Generally it's not recommended and we suggest to
+        # use mounted folder on your host. But you may choose.
+        # https://github.com/mitchellh/vagrant/issues/2304
+        udp: true
+        # Do not change this option if don't understand what you're doing!
+        version: 3
