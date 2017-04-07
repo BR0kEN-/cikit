@@ -1,0 +1,26 @@
+# WARNING! This file is not managed by Ansible and should not contain any usage of its features.
+---
+tmproot: /tmp
+webroot: /var/www
+selenium: http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
+APPLICATION_CONFIG: ~
+vm:
+  ip: 192.168.56.132
+  forwarded_port:
+    - host: 8081
+      guest: 80
+    - host: 8083
+      guest: 3306
+    - host: 4444
+      guest: 4444
+  virtualbox:
+    modifyvm:
+      cpus: 1
+      memory: 2048
+      natdnshostresolver1: "on"
+  synced_folder:
+    - source: ./
+      target: /var/www
+      exclude:
+        - .idea/
+        - .git/
