@@ -38,7 +38,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 - Get the **CIKit**.
 
   ```shell
-  git clone https://github.com/BR0kEN-/cikit.git
+  git clone --recursive https://github.com/BR0kEN-/cikit.git
   cd cikit
   ```
 
@@ -66,7 +66,7 @@ All communications are available in our Slack account at https://cikit.slack.com
   cikit reinstall
   ```
 
-- Add your host credentials to the [inventory](docs/ansible/inventory) file.
+- Add your host credentials to the [inventory](docs/ansible/inventory) file (not needed to continue without remote CI server).
 
 - Provision remote CI server.
 
