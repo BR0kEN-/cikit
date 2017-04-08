@@ -80,7 +80,7 @@
     - name: Update config.yml
       lineinfile:
         dest: "../{{ project }}/config.yml"
-        line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | regex_replace('[^A-Za-z\\.\\-\\_]', '') | regex_replace('^[\\.\\-\\_]+', '') }}.dev"
+        line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | regex_replace('[^\\w+\\.\\-\\_]', '') | regex_replace('^[\\.\\-|\\_]+|\\.{2,}', '') }}.dev"
         insertafter: "^---$"
 
     - name: Update config.yml
