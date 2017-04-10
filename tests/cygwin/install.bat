@@ -48,10 +48,10 @@ REM -- https://cygwin.com/faq/faq.html#faq.setup.cli
 SET INSTALLER=%SETUPFILE% --quiet-mode --no-shortcuts --download --local-install --no-verify --site %SITE% --local-package-dir %SETUPDIR% --root %ROOTDIR%
 
 ECHO [INFO] Installing default packages
-REM %INSTALLER%
+%INSTALLER%
 
 ECHO [INFO] Installing custom packages
-REM %INSTALLER% --packages %PACKAGES%
+%INSTALLER% --packages %PACKAGES%
 
 REM -- Update PATH variable.
 SET PATH=%ROOTDIR%\bin;%PATH%
