@@ -3,6 +3,7 @@
 # Directories.
 !cmf/
 !docs/
+!tests/
 !scripts/
 
 # Droplets Matrix.
