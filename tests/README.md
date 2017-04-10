@@ -12,7 +12,10 @@ Script for automate Cygwin installation and configuration for Windows 7, 8 and 1
 install.bat [test-vm] [7.0] [6] [false]
 ```
 
+**Important**: ensure that script will be executed with administrative privileges in case of passing `test-vm` as an argument!
+
 # Todo
 
-- [ ] Add script automate installation of VirtualBox
-- [ ] Add script automate installation of Vagrant
+- [x] Add script for automate installation of Cygwin on Windows
+- [ ] Add script for automate installation of VirtualBox
+- [ ] Add script for automate installation of Vagrant
