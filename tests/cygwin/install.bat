@@ -60,18 +60,18 @@ REM -- Compute path to CWD in Unix style.
 FOR /F %%D IN ('cygpath.exe -u %~dp0') DO SET CWD=%%D
 
 ECHO [INFO] Installing Ansible
-bash.exe --login "%CWD%/../ansible.sh"
+bash.exe --login %CWD%/../ansible.sh
 
 ECHO [INFO] Installing VirtualBox
-bash.exe --login "%CWD%/../virtualbox.sh"
+bash.exe --login %CWD%/../virtualbox.sh
 
 ECHO [INFO] Installing Vagrant
-bash.exe --login "%CWD%/../vagrant.sh"
+bash.exe --login %CWD%/../vagrant.sh
 
 REM -- Provision the VM.
 if /I "test-vm" == "%1" (
   REM -- "cikit-php-version" -- "cikit-nodejs-version" -- "setup-solr".
-  bash.exe --login "%CWD%/../cikit.sh %2 %3 %4"
+  bash.exe --login %CWD%/../cikit.sh "%2" "%3" "%4"
 )
 
 :end
