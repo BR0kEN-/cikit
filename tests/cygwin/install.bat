@@ -3,11 +3,9 @@ ECHO --------------------------------------------------------------------------
 ECHO Automated Cygwin setup
 ECHO --------------------------------------------------------------------------
 
-SETLOCAL
+SETLOCAL EnableDelayedExpansion
 
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET OS=32 || SET OS=64
-
-FOR /F %%D IN ("%CD%") DO SET DRIVE=%%~dD
 
 SET CYGWIN=setup-x86
 
@@ -15,15 +13,14 @@ if 64 == %OS% (
   SET CYGWIN=%CYGWIN%_%OS%
 )
 
-SET CYGWIN=%CYGWIN%.exe
-
 SET SITE=http://cygwin.mirrors.pair.com/
-SET ROOTDIR=%DRIVE%\cygwin%OS%
-SET SETUPFILE=%DRIVE%\Temp\%CYGWIN%
-REM -- Packages to installin in addition to the default.
-SET PACKAGES=mintty,vim,wget,curl,ctags,diffutils,git,git-completion,tar,gawk,bzip2
-SET PACKAGES=%PACKAGES%,openssh,openssl,openssl-devel,python-2.7,python-jinja,python-crypto,python-openssl,python-setuptools
+SET CYGWIN=%CYGWIN%.exe
+SET ROOTDIR=%SystemDrive%\cygwin%OS%
+SET SETUPFILE=%SystemDrive%\Temp\%CYGWIN%
 
+REM -- Read packages from the file.
+FOR /F %%L in (%~dp0\packages.txt) DO SET PACKAGES=!PACKAGES!%%L,
+REM -- Compute path to directory with Cygwin.
 FOR %%F IN (%SETUPFILE%) DO SET SETUPDIR=%%~dpF
 
 if not exist %SETUPDIR% (
@@ -51,7 +48,7 @@ ECHO [INFO] Installing default packages
 %INSTALLER%
 
 ECHO [INFO] Installing custom packages
-%INSTALLER% --packages %PACKAGES%
+%INSTALLER% --packages %PACKAGES:~0,-1%
 
 REM -- Update PATH variable.
 SET PATH=%ROOTDIR%\bin;%PATH%
