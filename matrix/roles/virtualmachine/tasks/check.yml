@@ -1,6 +1,6 @@
 ---
 - name: Check VM existence
-  shell: "find '{{ virtualmachine.path | replace(' ', '\\ ') }}' -name *.vbox"
+  shell: "find {{ virtualmachine.path | replace(' ', '\\ ') }} -name *.vbox"
   register: vm_check
   ignore_errors: yes
 
