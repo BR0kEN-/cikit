@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
-\easy_install-2.7 pip
-\pip install ansible
+
+\pip --version
+
+if [ $? -gt 0 ]; then
+  \easy_install-2.7 pip
+fi
+
 \ansible --version
+
+if [ $? -gt 0 ]; then
+  \pip install ansible
+fi
