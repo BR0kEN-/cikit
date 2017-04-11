@@ -16,6 +16,6 @@ install.bat [test-vm] [7.0] [6] [false]
 
 # Todo
 
-- [x] Add script for automate installation of Cygwin on Windows
-- [ ] Add script for automate installation of VirtualBox
-- [ ] Add script for automate installation of Vagrant
+- [x] Add script to automate installation of Cygwin on Windows
+- [ ] Add script to automate installation of VirtualBox
+- [ ] Add script to automate installation of Vagrant
