@@ -1,0 +1,5 @@
+---
+- name: Clone VM
+  include: ../vboxmanage.yml
+  args:
+    command: "clonevm '{{ name }}' --name '{{ new }}' --register --mode all"
