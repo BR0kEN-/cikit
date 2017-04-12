@@ -1,0 +1,29 @@
+$base_url = '{{ site_url }}';
+
+{% for name, value in databases.iteritems() %}
+$databases['{{ name }}'] = [
+  'default' => [
+    'port' => '{{ value.port | default(3306) }}',
+    'host' => '{{ value.host | default('localhost') }}',
+    'driver' => '{{ value.driver | default('mysql') }}',
+    'prefix' => '{{ value.prefix | default }}',
+    'database' => '{{ value.name }}',
+    'username' => '{{ value.user | default(mysql.user) }}',
+    'password' => '{{ value.pass | default(mysql.pass) }}',
+  ],
+];
+{% endfor %}
+
+// Settings of the "Domain Access" module.
+$domain_access_settings = DRUPAL_ROOT . '/profiles/{{ profile }}/modules/contrib/domain/settings.inc';
+
+if (file_exists($domain_access_settings)) {
+  require_once $domain_access_settings;
+}
+
+$conf['https'] = TRUE;
+$conf['environment'] = '{{ env }}';
+
+// Search API overrides.
+$conf['search_api_override_mode'] = 'default';
+$conf['search_api_override_servers']['default_solr']['options']['path'] = '/solr/{{ env }}';
