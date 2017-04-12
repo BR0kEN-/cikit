@@ -102,6 +102,8 @@ export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUIL
 export DESTINATION="/var/www/${BUILD_NAME}"
 export ANSIBLE_ARGS="-vvvv"
 
+chmod a+x ./cikit
+
 ./cikit reinstall \
 --site-url=${SITE_URL} \
 --build-id=${BUILD_NAME} \
