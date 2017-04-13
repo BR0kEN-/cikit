@@ -22,24 +22,28 @@
 
 - name: Set remote host
   set_fact:
-    dump_remote_path: "{{ item.value.source.dir }}/{{ item.value.source.db }}.gz"
-    # Need to process the name of host and store it in variable because any logic
-    # and templating engine are not available for "delegate_to" parameter.
-    dump_from: "{{ hostvars[hostname].inventory_hostname }}"
+    dump_remote_path: "{{ item.value.source.dir | default(dump_local_path | dirname) }}/{{ item.value.source.db }}.gz"
+  when: "{{ not local_dump.stat.exists }}"
+
+- name: Check for remote snapshot
+  stat:
+    path: "{{ dump_remote_path }}"
+  register: remote_dump
+  delegate_to: "{{ hostvars[hostname].inventory_hostname }}"
   when: "{{ not local_dump.stat.exists }}"
 
 # The "mysql_db" module isn't used because the "mysqldb" module for Python might not be installed on remote.
 - name: Create snapshot
-  shell: "ssh {{ hostname_ssh.args }} {{ hostname_ssh.host }} \"mysqldump -P{{ item.value.source.port | default('3306') }} -h{{ item.value.source.host | default('localhost') }} -u{{ item.value.source.user | default(mysql.user) }} -p{{ item.value.source.pass | default(mysql.pass) }} {{ item.value.source.db }} | gzip -c > {{ dump_remote_path }}\""
-  register: fetch_dump
-  when: "{{ not local_dump.stat.exists }}"
+  shell: "ssh {{ hostname_ssh.args }} {{ hostname_ssh.host }} \"mysqldump -P{{ item.value.source.port | default(3306) }} -h{{ item.value.source.host | default('localhost') }} -u{{ item.value.source.user | default(mysql.user) }} -p{{ item.value.source.pass | default(mysql.pass) }} {{ item.value.source.db }} | gzip -c > {{ dump_remote_path }}\""
+  register: dump_created
+  when: "{{ not local_dump.stat.exists and not remote_dump.stat.exists }}"
 
-# @todo The "synchronize" isn't work with Ansible 2.0.1 with "delegate_to" parameter.
+# @todo The "synchronize" isn't work with Ansible 2.2.2.0 with "delegate_to" parameter.
 # Instead of correct SSH credentials for remote it take your WAN IP. Do not be shy test
 # this as often as possible, because Ansible is pretty fast developing.
 - name: Fetch snapshot
   shell: "rsync --delay-updates -F --compress --archive --rsh 'ssh {{ hostname_ssh.args }}' {{ hostname_ssh.host }}:{{ dump_remote_path }} {{ dump_local_path }}"
-  when: "{{ fetch_dump.changed }}"
+  when: "{{ not local_dump.stat.exists and (remote_dump.stat.exists or dump_created.changed) }}"
 
 - name: Import snapshot
   mysql_db:

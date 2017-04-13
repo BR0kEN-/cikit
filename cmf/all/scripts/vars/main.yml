@@ -20,15 +20,15 @@ databases:
 #    source:
 #      # Database name on remote host.
 #      db: ""
-#      # The directory for database dump on remote host.
-#      dir: ""
-#      # Host name, from the inventory file, where make a dump.
+#      # Host name, from the inventory file, where to make a snapshot.
 #      from: ""
-#      # MySQL port on remote host.
+#      # Path to directory to place database snapshot on remote host ("/var/www/backup" by default).
+#      dir: ""
+#      # MySQL port on remote host ("3306" by default).
 #      port: ""
-#      # MySQL user on remote host.
-#      user: ""
-#      # MySQL host on remote host.
+#      # MySQL host on remote host ("localhost" by default).
 #      host: ""
-#      # MySQL password on remote host.
+#      # MySQL user on remote host ("{{ mysql.user }}" by default).
+#      user: ""
+#      # MySQL password on remote host ("{{ mysql.pass }}" by default).
 #      pass: ""
