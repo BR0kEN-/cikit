@@ -118,6 +118,8 @@ sudo chown -R www-data:jenkins $_
 --site-url=${SITE_URL} \
 --build-id=${BUILD_NAME}
 
+echo -e "\n\nJenkins URL: ${BUILD_URL}" >> ${WORKSPACE}/docroot/commentinfo.md
+
 # Move reports to the website directory.
 sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/
 sudo chown -R jenkins:jenkins ./
