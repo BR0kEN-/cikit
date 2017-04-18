@@ -1,0 +1,46 @@
+---
+- include: tasks/database/database.yml name="Remove databases" state="absent"
+- include: tasks/database/database.yml name="Create databases" state="present"
+- include: tasks/environment/prepare.yml
+
+- name: Create settings.php
+  shell: "cp default.settings.php {{ settings | basename }}"
+  args:
+    chdir: "{{ project_workspace }}/{{ settings | dirname }}"
+
+- name: Update settings.php
+  lineinfile:
+    dest: "{{ project_workspace }}/{{ settings }}"
+    line: "{{ lookup('template', 'templates/settings.php.j2') }}"
+
+- include: tasks/drush.yml name="Installing Drupal"
+  with_dict:
+    si: "{{ profile }} --db-url=mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ mysql.host | default('127.0.0.1') }}:{{ mysql.port | default('3306') }}/{{ databases.default.name }} --uri={{ site_url }}"
+  when: "{{ not sql_workflow }}"
+
+- include: tasks/environment/prepare.yml
+  when: "{{ not sql_workflow }}"
+
+# Download and import databases.
+- include: tasks/database/import.yml
+  when: "{{ sql_workflow and 'source' in item.value }}"
+  with_dict: "{{ databases }}"
+
+- include: tasks/drush.yml
+  with_items: "{{ commands.pre }}"
+
+- include: tasks/drush.yml name="Run database updates" command="updb"
+  when: "{{ sql_workflow }}"
+
+- include: tasks/drush.yml name="Rebuild registry" command="rr"
+  when: "{{ sql_workflow }}"
+
+# Unique way for both workflows.
+- name: "Set credentials for super user: ({{ drupal.user.name }}/{{ drupal.user.pass }})"
+  include: tasks/drush.yml
+  with_dict:
+    sqlq: "'UPDATE <USERS_INFO_TABLE> SET name=\"{{ drupal.user.name }}\" WHERE uid=1'"
+    upwd: "{{ drupal.user.name }} --password={{ drupal.user.pass }}"
+
+- include: tasks/drush.yml
+  with_items: "{{ commands.post }}"

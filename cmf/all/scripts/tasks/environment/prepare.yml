@@ -1,0 +1,17 @@
+---
+- name: Set accesses for directories
+  file:
+    mode: 0777
+    dest: "{{ item }}"
+    state: directory
+    recurse: yes
+  with_items:
+    - "{{ tmproot }}"
+    - "{{ webroot }}/backup"
+    - "{{ project_workspace }}/{{ filesystem }}"
+
+- name: Ensure correct permissions for settings
+  file:
+    mode: 0666
+    dest: "{{ project_workspace }}/{{ settings }}"
+    state: touch
