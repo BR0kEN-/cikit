@@ -40,7 +40,7 @@
       ignore_errors: yes
 
     - name: Run SCSSLint
-      shell: "scss-lint {{ item }} -c ../scripts/configs/scss-lint.yml -o '{{ reports.dir }}/SCSS Lint.txt'"
+      shell: "scss-lint $(find {{ item }} -name '*.scss' -print) -c ../scripts/configs/scss-lint.yml -o '{{ reports.dir }}/SCSS Lint.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
