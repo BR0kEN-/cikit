@@ -48,7 +48,7 @@
       ignore_errors: yes
 
     - name: Run CodeSpell
-      shell: "codespell.py {{ item }} -S $(cat ../scripts/configs/.codespellignore | tr '\n' ',') > '{{ reports.dir }}/Code Spell.txt'"
+      shell: "codespell {{ item }} -S $(cat ../scripts/configs/.codespellignore | tr '\n' ',') > '{{ reports.dir }}/Code Spell.txt'"
       args:
         chdir: "{{ project_workspace }}"
       with_items: "{{ scan_dirs }}"
