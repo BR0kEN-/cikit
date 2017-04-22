@@ -3,9 +3,6 @@ cikit_sniffers:
   packages:
     npm:
       - eslint
-    gem:
-      # @todo Sass 3.5 will no longer support Ruby 1.9.3. Please upgrade to Ruby 2.0.0 or greater ASAP.
-      - scss-lint
     pip:
       - codespell
 

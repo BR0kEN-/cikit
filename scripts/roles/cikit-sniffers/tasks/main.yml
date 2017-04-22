@@ -25,20 +25,11 @@
 - name: Register all found PHPCS standards
   shell: "phpcs --config-set installed_paths {{ rulesets.files | selectattr('path') | map(attribute='path') | map('dirname') | map('dirname') | unique | join(',') }}"
 
-# @todo Update to Ruby 2.x.
-- name: Update ruby alternatives for using ruby 1.9.1(3) version
-  shell: "update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 400 --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby1.9.1.1.gz --slave /usr/bin/ri ri /usr/bin/ri1.9.1 --slave /usr/bin/irb irb /usr/bin/irb1.9.1 --slave /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.1"
-
 - name: Install NPM packages
   npm:
     name: "{{ item }}"
     global: yes
   with_items: "{{ cikit_sniffers.packages.npm }}"
-
-- name: Install Gem packages
-  shell: "gem install {{ item }}"
-  with_items: "{{ cikit_sniffers.packages.gem }}"
-  ignore_errors: yes
 
 - name: Install PIP packages
   pip:
