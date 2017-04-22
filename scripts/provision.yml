@@ -6,6 +6,7 @@
   vars_files:
     - ../config.yml
     - vars/ip.yml
+    - vars/ruby.yml
     - vars/ports.yml
     - vars/mysql.yml
     - vars/nginx.yml
@@ -21,6 +22,12 @@
       prompt: Which version of Node.js you'd want to install? (4/5/6)
       private: no
       tags: ["nodejs", "phantomjs"]
+
+    - name: cikit_ruby_version
+      prompt: Which version of Ruby you'd want to install? (2.4.0/2.3.3/2.2.6/2.1.10)
+      default: 2.4.0
+      private: no
+      tags: ["sniffers", "sass", "ruby"]
 
     - name: setup_solr
       prompt: Do you want to install Solr? (yes/NO)
@@ -192,6 +199,9 @@
       when: extras.solr
       tags: ["solr", "php-stack"]
 
+    - role: cikit-ruby
+      tags: ["sniffers", "sass", "ruby"]
+
     - role: cikit-sniffers
       tags: ["sniffers", "php-stack"]
 
@@ -221,11 +231,6 @@
       shell: rngd -r /dev/urandom
       when: not vagrant and ansible_virtualization_type != "openvz"
       tags: ["always"]
-
-    # @todo Doesn't work using Ansible "gem" module.
-    - name: Install Compass
-      shell: gem install compass
-      tags: ["sass"]
 
     - name: Restart service
       service:
