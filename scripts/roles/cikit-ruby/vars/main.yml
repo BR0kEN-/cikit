@@ -1,0 +1,14 @@
+---
+cikit_ruby:
+  # Values have to be of "string" type.
+  versions:
+    - "2.4.0"
+    - "2.3.3"
+    - "2.2.6"
+    - "2.1.10"
+  # https://gorails.com/setup/ubuntu/14.04#ruby-rbenv
+  repositories:
+    - repo: https://github.com/rbenv/rbenv.git
+      dest: ~/.rbenv
+    - repo: https://github.com/rbenv/ruby-build.git
+      dest: ~/.rbenv/plugins/ruby-build

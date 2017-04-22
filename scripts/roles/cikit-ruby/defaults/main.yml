@@ -1,0 +1,5 @@
+---
+cikit_ruby_version: 2.4.0
+cikit_ruby_gems:
+  - scss_lint
+  - compass

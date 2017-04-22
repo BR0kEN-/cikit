@@ -1,0 +1,54 @@
+---
+- name: Check whether Ruby version supported
+  fail:
+    msg: "Ruby of {{ cikit_ruby_version }} version is unsupported. Choose between {{ cikit_ruby.versions | join(', ') }}"
+  when: "{{ cikit_ruby_version not in cikit_ruby.versions }}"
+
+- name: Update repositories
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest | replace('~', user_home.stdout) }}"
+    update: yes
+  with_items: "{{ cikit_ruby.repositories }}"
+
+- name: Set value for updated PATH variable
+  set_fact:
+    cikit_ruby_shell_path_export: |-
+      export PATH="{{ cikit_ruby.repositories | map(attribute='dest') | join('/bin:') | replace('~', '$HOME') + '/bin:$PATH' }}"
+
+- name: Ensure environment
+  lineinfile:
+    line: "{{ item }}"
+    regexp: "^{{ item | regex_escape }}$"
+    dest: "{{ user_home.stdout }}/.profile"
+  with_items:
+    - '{{ cikit_ruby_shell_path_export }}'
+    - 'eval "$(rbenv init -)"'
+
+- name: Set Ruby version
+  become_user: "{{ ansible_user }}"
+  shell: |-
+    {{ cikit_ruby_shell_path_export }}
+    eval "$(rbenv init -)"
+    rbenv install {{ cikit_ruby_version }}
+    rbenv global {{ cikit_ruby_version }}
+  args:
+    executable: /bin/bash
+  register: ruby_installation
+  ignore_errors: yes
+
+- name: Check whether Ruby installed successfully
+  fail:
+    msg: "{{ ruby_installation.stderr }}"
+  when: "{{ ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + cikit_ruby_version) < 0 }}"
+
+- name: Reinstall Gem for particular Ruby version
+  become_user: "{{ ansible_user }}"
+  shell: |-
+    {{ cikit_ruby_shell_path_export }}
+    eval "$(rbenv init -)"
+    gem install {{ item }}
+  args:
+    warn: no
+    executable: /bin/bash
+  with_items: "{{ cikit_ruby_gems }}"
