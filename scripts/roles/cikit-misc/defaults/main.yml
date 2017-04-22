@@ -1,0 +1,30 @@
+---
+apt_repos:
+  - ppa:ansible/ansible
+  - ppa:chris-lea/node.js
+  - ppa:nginx/stable
+
+apt_packages:
+  - imagemagick
+  - libmagickcore-dev
+  - libmagickwand-dev
+  - htop
+  - vim
+  - time
+  - tree
+  - make
+  - apparmor-utils
+  - python-software-properties
+  - software-properties-common
+  - rsync
+  - libssl-dev
+  - zlib1g-dev
+  - ansible
+  - rng-tools
+  - python-passlib
+  - cgroup-bin
+  - git
+  - build-essential
+  - libssl-dev
+  - zlib1g-dev
+  - nodejs
