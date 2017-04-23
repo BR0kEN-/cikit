@@ -29,6 +29,7 @@ jenkins_data:
       template: root.xml.j2
 
 plugins:
+  ansible: latest
   ansicolor: latest
   token-macro: latest
   ssh-agent: latest
@@ -45,7 +46,6 @@ plugins:
   matrix-project: latest
   project-description-setter: latest
   ssh-credentials: latest
-  scripttrigger: latest
   parameterized-trigger: latest
   slack: latest
   simple-theme-plugin: latest
