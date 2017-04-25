@@ -36,12 +36,10 @@ locate_path()
 
 exit_with_help()
 {
-  ls *.yml > /dev/null 2>&1
-
-  if [ $? -eq 0 ]; then
+  if ls *.yml > /dev/null 2>&1; then
     local OPERATIONS=""
 
-    for operation in $(ls *.yml); do
+    for operation in *.yml; do
       OPERATIONS+="${operation%.*} "
     done
 
