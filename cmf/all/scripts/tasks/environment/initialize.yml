@@ -42,5 +42,7 @@
   register: is_composer_json
 
 - name: Install Composer packages
-  shell: "cd ../ && composer install"
+  shell: "composer install"
+  args:
+    chdir: ../
   when: not is_vendor_dir.stat.exists and is_composer_json.stat.exists
