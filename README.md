@@ -72,7 +72,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 
   ```
   cd <NAME>
-  ./cikit provisioning/provision --project=<NAME> [--limit=<HOST>]
+  ./cikit .cikit/provision --project=<NAME> [--limit=<HOST>]
   ```
 
 Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.
@@ -86,13 +86,13 @@ Initially (at the very first time) you are required to run full provisioning to 
 Get the list of components to provision:
 
 ```shell
-./cikit provisioning/provision --list-tags
+./cikit .cikit/provision --list-tags
 ```
 
 Run provisioning of specific component (CI server):
 
 ```shell
-ANSIBLE_ARGS="--tags=COMPONENT" ./cikit provisioning/provision
+ANSIBLE_ARGS="--tags=COMPONENT" ./cikit .cikit/provision
 ```
 
 Run provisioning of specific component (virtual machine):
