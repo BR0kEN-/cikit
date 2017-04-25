@@ -15,9 +15,6 @@ behat.yml
 !scripts/
 # Behat tests.
 !tests/
-# Ansible provision scripts for VM.
-!provisioning/
-!provisioners/
 
 # Ignore hidden files.
 .*
@@ -34,6 +31,11 @@ commentinfo.md
 !.git*
 !.eslint*
 !.codespellignore
+
+# Provisioning CI server.
+!.cikit/
+# Provisioner for VM.
+!.cikit/.vagrant/
 
 !composer.json
 !selenium.sh

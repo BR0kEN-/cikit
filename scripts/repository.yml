@@ -58,7 +58,9 @@
         dest: "../{{ project }}/{{ item.dest | default('') }}"
         archive: no
         recursive: yes
-        rsync_opts: ["--exclude=*.retry", "--exclude=.git"]
+        rsync_opts:
+          - "--exclude=*.retry"
+          - "--exclude=.git"
       with_items:
         - src: "../cmf/all/"
         - src: "../cmf/{{ cmf }}/all/"
@@ -68,14 +70,21 @@
         - src: "../inventory"
 
         - src: "../scripts/"
-          dest: "provisioning"
+          dest: ".cikit/"
 
     - name: Setting permissions for project tree
+      shell: "find ../{{ project }} -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
+      with_dict:
+        d: 755
+        f: 664
+
+    - name: Setting executable permissions for Bash scripts
       file:
-        mode: 0755
-        path: "../{{ project }}"
-        state: directory
-        recurse: yes
+        path: "../{{ project }}/{{ item }}"
+        mode: a+x
+      with_items:
+        - cikit
+        - selenium.sh
 
     - name: Update config.yml
       lineinfile:
@@ -102,7 +111,7 @@
         path: "../{{ project }}/{{ item }}"
         state: absent
       with_items:
-        - provisioning/repository.yml
+        - .cikit/repository.yml
         - docroot/.gitignore
         - docroot/.git
         - APPLICATION_CONFIG.yml

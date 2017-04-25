@@ -81,7 +81,7 @@ if not Vagrant.has_plugin?("vagrant-hostsupdater")
 end
 
 # Automatically load custom provisioners.
-Dir["provisioners/*"].each do |file|
+Dir[".cikit/.vagrant/provisioners/*"].each do |file|
   file += "/#{File.basename(file)}.rb"
 
   if File.exist?(file)
@@ -151,7 +151,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   config.vm.provision :cikit,
     :controller => "./cikit",
-    :playbook => "provisioning/provision"
+    :playbook => ".cikit/provision"
 
   if ENV["REINSTALL"]
     config.vm.provision :shell,
