@@ -15,11 +15,13 @@
   vars_prompt:
     - name: cikit_php_version
       prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1)
+      default: 7.0
       private: no
       tags: ["php", "php-stack"]
 
     - name: cikit_nodejs_version
       prompt: Which version of Node.js you'd want to install? (4/5/6)
+      default: 6
       private: no
       tags: ["nodejs", "phantomjs"]
 
@@ -31,6 +33,7 @@
 
     - name: setup_solr
       prompt: Do you want to install Solr? (yes/NO)
+      default: false
       private: no
       tags: ["solr"]
 
