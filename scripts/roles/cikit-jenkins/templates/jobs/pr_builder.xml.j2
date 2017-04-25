@@ -124,7 +124,28 @@ sudo chown -R jenkins:jenkins ./
 </command>
         </hudson.tasks.Shell>
     </builders>
-    <publishers/>
+    <publishers>
+        <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.33">
+            <configs>
+                <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+                    <configs>
+                        <hudson.plugins.parameterizedtrigger.BooleanParameters>
+                            <configs>
+                                <hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
+                                    <name>FORCE</name>
+                                    <value>false</value>
+                                </hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
+                            </configs>
+                        </hudson.plugins.parameterizedtrigger.BooleanParameters>
+                    </configs>
+                    <projects>SERVER_CLEANER</projects>
+                    <condition>ALWAYS</condition>
+                    <triggerWithNoParameters>false</triggerWithNoParameters>
+                    <triggerFromChildProjects>false</triggerFromChildProjects>
+                </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+            </configs>
+        </hudson.plugins.parameterizedtrigger.BuildTrigger>
+    </publishers>
     <buildWrappers>
         <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
             <colorMapName>xterm</colorMapName>

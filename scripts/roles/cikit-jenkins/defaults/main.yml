@@ -29,7 +29,6 @@ jenkins_data:
       template: root.xml.j2
 
 plugins:
-  ansible: latest
   ansicolor: latest
   token-macro: latest
   ssh-agent: latest

@@ -1,8 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>Remove all files and databases of currently existing builds. Not applicable for &quot;demo&quot;, &quot;stage&quot; etc.</description>
   <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>FORCE</name>
+          <description>Forcibly remove all builds files and databases. Otherwise data will be deleted only in case when device has less than 90% of free space.</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
   <properties/>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
@@ -18,9 +29,16 @@
   <builders>
     <hudson.tasks.Shell>
       <command>COMMAND=&quot;mysql -uroot -proot -se&quot;
-${COMMAND} &quot;SHOW DATABASES&quot; | grep &quot;build&quot; | xargs -I &quot;@@&quot; ${COMMAND} &quot;DROP DATABASE @@&quot;
 
-sudo rm -rf /var/www/*build*
+if ! ${FORCE}; then
+  # Return "force" state if empty space on device is coming to the end.
+  FORCE=&quot;[ $(df -H | head -2 | tail -1 | awk &apos;{printf &quot;%d&quot;, $5}&apos;) -gt 90 ]&quot;
+fi
+
+if ${FORCE}; then
+  ${COMMAND} &quot;SHOW DATABASES&quot; | grep &quot;build&quot; | xargs -I &quot;@@&quot; ${COMMAND} &quot;DROP DATABASE @@&quot;
+  sudo rm -rf /var/www/*build*
+fi
 </command>
     </hudson.tasks.Shell>
   </builders>
