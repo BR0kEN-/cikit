@@ -29,10 +29,7 @@
 - include: tasks/drush.yml
   with_items: "{{ commands.pre }}"
 
-- include: tasks/drush.yml
-  with_items:
-    - rr: []
-    - updb: []
+- include: tasks/drush.yml name="Run database updates" command="updb"
   when: sql_workflow
 
 # Unique way for both workflows.
