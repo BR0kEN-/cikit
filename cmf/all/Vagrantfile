@@ -13,6 +13,7 @@ configValues = YAML::load_file("config.yml")
 
 if isCygwin
   # Prevent "hostsupdater" to fail with impossibility to write hosts.
+  # TODO: Remove this requirement since running of VMs must not use admin privileges.
   if not Vagrant::Util::Platform.windows_admin?
     puts "You have to run Cygwin with administrative privileges to continue."
     exit 6
