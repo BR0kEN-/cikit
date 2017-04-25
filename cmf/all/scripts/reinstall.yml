@@ -24,7 +24,7 @@
     - name: Obtain home directory of a user, who triggered this script
       shell: "echo ~{{ ansible_env.SUDO_USER }}"
       register: user_home
-      when: "SUDO_USER" in ansible_env
+      when: "'SUDO_USER' in ansible_env"
 
     - name: Set the user's home directory
       set_fact:

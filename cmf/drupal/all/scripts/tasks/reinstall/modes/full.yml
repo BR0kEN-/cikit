@@ -24,7 +24,7 @@
 # Download and import databases.
 - include: tasks/database/import.yml
   with_dict: "{{ databases }}"
-  when: sql_workflow and "source" in item.value
+  when: "sql_workflow and 'source' in item.value"
 
 - include: tasks/drush.yml
   with_items: "{{ commands.pre }}"
