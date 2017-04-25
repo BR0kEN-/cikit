@@ -12,7 +12,6 @@ module VagrantPlugins::CIKit
         @machine.env.ui.info(data, {
           :new_line => false,
           :prefix => false,
-          :color => io_name == :stderr ? :red : :green,
         })
       end
 

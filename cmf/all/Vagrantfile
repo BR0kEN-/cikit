@@ -155,11 +155,13 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   if ENV["REINSTALL"]
     config.vm.provision :shell,
+      :keep_color => true,
       :inline => "cikit reinstall"
   end
 
   # Create Selenium hub.
   config.vm.provision :shell,
+    :keep_color => true,
     :inline => "cikit tests",
     :run => "always"
 
