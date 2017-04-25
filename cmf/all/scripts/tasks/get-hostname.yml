@@ -1,0 +1,24 @@
+# This list of tasks depends on variables:
+# - name: the name of group from inventory file.
+# Used built-in variables:
+# - groups: list of groups from inventory file.
+---
+- name: "Check for {{ name }} hostname"
+  fail:
+    msg: "{{ name }} hostname is undefined. Configure it inside of inventory file in [{{ name }}] group."
+  when: name not in groups
+
+- name: "Set the {{ name }} hostname"
+  set_fact:
+    hostname: "{{ groups[name] | join }}"
+
+- name: "Build SSH aguments for the {{ hostname }} host"
+  set_fact:
+    hostname_ssh:
+      host: "{{ hostvars[hostname].ansible_user + '@' if 'ansible_user' in hostvars[hostname] else '' }}{{ hostname }}"
+      args: "{{ '-i ' + hostvars[hostname].ansible_ssh_private_key_file.replace('~', become_home) if 'ansible_ssh_private_key_file' in hostvars[hostname] else '' }} -S none -o StrictHostKeyChecking=no {{ '-p ' + hostvars[hostname].ansible_port | string if 'ansible_port' in hostvars[hostname] else '' }}"
+
+- name: "Register the {{ name }} hostname"
+  shell: "echo '{{ hostname }}'"
+  register: "{{ name }}"
+  delegate_to: localhost

@@ -1,0 +1,17 @@
+---
+- name: Process WP-CLI command
+  set_fact:
+    utility: "{{ command | default('') }}"
+    subcommand: "{{ item | join(' ') }}"
+
+- name: Set WP-CLI command arguments
+  set_fact:
+    arguments: "{{ (item[subcommand] or []) | join(' ') }}"
+
+- name: "{{ name | default('command') }}"
+  shell: "wp {{ utility }} {{ subcommand }} {{ arguments }} --allow-root"
+  args:
+    chdir: ../docroot
+  when: arguments | length
+  register: wp_cli_result
+  environment: "{{ env_vars }}"

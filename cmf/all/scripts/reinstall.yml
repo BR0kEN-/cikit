@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+    - vars/main.yml
+
+  tasks:
+    - include: tasks/environment/initialize.yml
+
+    - name: Check existence of installation mode
+      stat:
+        path: "tasks/reinstall/modes/{{ reinstall_mode }}.yml"
+      register: is_reinstall_mode
+
+    - name: Check existence of environment configuration
+      stat:
+        path: "vars/environments/{{ env }}.yml"
+      register: is_env
+
+    - name: Obtain home directory of a user, who triggered this script
+      shell: "echo ~{{ ansible_env.SUDO_USER }}"
+      register: user_home
+      when: "SUDO_USER" in ansible_env
+
+    - name: Set the user's home directory
+      set_fact:
+        become_home: "{{ ansible_env.HOME if 'skipped' in user_home else user_home.stdout }}"
+        become_name: "{{ ansible_env.USER if 'skipped' in user_home else ansible_env.SUDO_USER }}"
+
+    - name: Ensure directory for backup data exists
+      file:
+        path: "{{ webroot }}/backup"
+        state: directory
+        owner: "{{ become_name }}"
+      # Inside of Vagrant an error may be occur. The reason - mounted file system,
+      # which inherit group and owner from host-OS and it cannot be changed.
+      ignore_errors: yes
+
+    - name: Copy SSH keys
+      become_user: "{{ become_name }}"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ become_home }}/.ssh/{{ item | basename }}"
+        mode: 0400
+      with_fileglob: files/ssh-keys/*.private.key
+
+    - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
+    - include: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"
+    - include: "tasks/reinstall/main.yml"

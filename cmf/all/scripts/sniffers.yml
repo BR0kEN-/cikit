@@ -61,7 +61,7 @@
       register: is_custom_sniffers
 
     - include: "{{ is_custom_sniffers.stat.path }}"
-      when: "{{ is_custom_sniffers.stat.exists }}"
+      when: is_custom_sniffers.stat.exists
 
     - name: Look for available reports
       # The reason, why "printf" using instead of "echo".

@@ -1,0 +1,20 @@
+---
+- name: Process Drush command
+  set_fact:
+    utility: "{{ command | default('') }}"
+    subcommand: ""
+    arguments: ""
+
+- name: Set Drush command arguments
+  set_fact:
+    subcommand: "{{ item.key if 'key' in item else item | join(' ') }}"
+    arguments: "{{ item.value if 'key' in item else (item[item | join(' ')] or []) | join(' ') }}"
+  when: item is defined
+
+- name: "{{ name | default('drush ' + utility + ' ' + subcommand + ' ' + arguments) }}"
+  shell: "drush {{ utility }} {{ subcommand }} {{ arguments }} -y"
+  args:
+    chdir: "{{ project_workspace }}"
+  register: drush_result
+  environment: "{{ env_vars }}"
+  ignore_errors: "{{ ignore_errors | default(false) }}"

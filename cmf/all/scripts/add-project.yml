@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+
+  tasks:
+    - name: Check for required variables
+      fail:
+        msg: "You need to sepcify an argument: --{{ item }}=<VALUE>"
+      when: item is undefined
+      with_items: ["repo", "name"]
+
+    - name: Clone repository
+      become: no
+      git:
+        repo: "{{ repo }}"
+        dest: "{{ webroot }}/{{ name }}"
+        clone: yes
+        recursive: yes
+        accept_hostkey: yes
+
+    # Override config of the main project.
+    - include_vars: "{{ webroot }}/{{ name }}/config.yml"
+
+    - name: Set path to the project web directory
+      set_fact:
+        project_webroot: "{{ webroot }}/{{ name }}/docroot"
+
+    - name: Create Apache virtual host
+      shell: "cp vhosts.conf {{ name }}.conf"
+      args:
+        chdir: /etc/apache2/sites-enabled
+
+    - name: Configure virtual host
+      replace:
+        dest: "/etc/apache2/sites-enabled/{{ name }}.conf"
+        regexp: '({{ item.key }} )(".*"|.*)'
+        replace: '\1{{ item.value }}'
+      with_dict:
+        Directory: "{{ project_webroot }}"
+        ServerName: "{{ site_url }}"
+        DocumentRoot: "{{ project_webroot }}"
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
