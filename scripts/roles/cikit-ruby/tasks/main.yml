@@ -25,6 +25,13 @@
     - '{{ cikit_ruby_shell_path_export }}'
     - 'eval "$(rbenv init -)"'
 
+- name: Ensure filesystem
+  file:
+    path: "{{ cikit_ruby.repositories[0].dest | replace('~', user_home.stdout) }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+
 - name: Set Ruby version
   become_user: "{{ ansible_user }}"
   shell: |-
@@ -42,7 +49,7 @@
     msg: "{{ ruby_installation.stderr }}"
   when: "{{ ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + cikit_ruby_version) < 0 }}"
 
-- name: Reinstall Gem for particular Ruby version
+- name: Install Gem for particular Ruby version
   become_user: "{{ ansible_user }}"
   shell: |-
     {{ cikit_ruby_shell_path_export }}

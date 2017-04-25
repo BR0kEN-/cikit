@@ -8,6 +8,7 @@ cikit_ruby:
     - "2.1.10"
   # https://gorails.com/setup/ubuntu/14.04#ruby-rbenv
   repositories:
+    # All "dest" MUST be subfolders of first destination.
     - repo: https://github.com/rbenv/rbenv.git
       dest: ~/.rbenv
     - repo: https://github.com/rbenv/ruby-build.git
