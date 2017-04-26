@@ -37,14 +37,6 @@
       private: no
       tags: ["solr"]
 
-    - name: setup_swap
-      prompt: Do you want to setup swap? (yes/NO)
-      private: no
-      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
-      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
-      when: not vagrant
-      tags: ["swap"]
-
     - name: http_auth_user
       prompt: Username for HTTP authentication
       default: admin
@@ -141,7 +133,6 @@
     - name: Process facts
       set_fact:
         extras:
-          swap: "{{ setup_swap | bool }}"
           solr: "{{ setup_solr | bool }}"
       tags: ["always"]
 
@@ -213,10 +204,6 @@
 
     - role: ansible-role-memcached
       tags: ["memcache", "php-stack"]
-
-    - role: cikit-swap
-      when: not vagrant and extras.swap and ansible_virtualization_type != "openvz"
-      tags: ["swap"]
 
     - role: cikit-selenium
       tags: ["selenium"]
