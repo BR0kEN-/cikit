@@ -20,7 +20,7 @@
       tags: ["php", "php-stack"]
 
     - name: cikit_nodejs_version
-      prompt: Which version of Node.js you'd want to install? (4/5/6)
+      prompt: Which version of Node.js you'd want to install? (4/5/6/7)
       default: 6
       private: no
       tags: ["nodejs", "phantomjs"]
