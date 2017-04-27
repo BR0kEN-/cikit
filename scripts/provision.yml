@@ -146,13 +146,14 @@
         state: present
       with_items: "{{ basic_packages.apt }}"
 
-    - name: Install EasyInstall
-      shell: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
+    - name: Install EasyInstall and PIP
+      shell: "[ $(which {{ item.key }}) ] || {{ item.value }}"
       args:
         warn: no
-
-    - name: Install PIP
-      shell: "easy_install pip"
+        executable: /bin/bash
+      with_dict:
+        easy_install: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
+        pip: "easy_install pip"
 
     - name: Install PIP packages
       pip:
