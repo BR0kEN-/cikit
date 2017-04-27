@@ -147,13 +147,17 @@
       with_items: "{{ basic_packages.apt }}"
 
     - name: Install EasyInstall and PIP
-      shell: "[ $(which {{ item.key }}) ] || {{ item.value }}"
+      shell: "[ $(which {{ item.tool }}) ] || {{ item.script }}"
       args:
         warn: no
         executable: /bin/bash
-      with_dict:
-        easy_install: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
-        pip: "easy_install pip"
+      # "with_dict" cannot be used since ordering of operations is important!
+      with_items:
+        - tool: easy_install
+          script: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
+
+        - tool: pip
+          script: "easy_install pip"
 
     - name: Install PIP packages
       pip:
