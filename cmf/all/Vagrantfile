@@ -75,7 +75,7 @@ ENV["VAGRANT_DEFAULT_PROVIDER"] = ENV.has_key?("VAGRANT_CI") && ENV["VAGRANT_CI"
 
 boxes = {}
 boxes["lxc"] = "http://cici.ffwua.com/ubuntu14.04provisionedCIBox.lxc.box"
-boxes["virtualbox"] = "http://cici.ffwua.com/ubuntu14.04LTS_cibox.box"
+boxes["virtualbox"] = "http://propeople.com.ua/pub/CIKit_Ubuntu16.04LTS.box"
 
 if not Vagrant.has_plugin?("vagrant-hostsupdater")
   system "vagrant plugin install vagrant-hostsupdater"
