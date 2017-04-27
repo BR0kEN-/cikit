@@ -1,0 +1,14 @@
+---
+cikit_mysql:
+  user: mysql
+  daemon: /etc/init.d/mysql
+  dirs:
+    run: /var/run/mysqld
+    log: /var/log/mysql
+    tmp: /run/shm/mysql
+    base: /usr
+    data: /var/lib/mysql
+    lc_messages: /usr/share/mysql
+  files:
+    pid: mysqld.pid
+    socket: mysqld.sock

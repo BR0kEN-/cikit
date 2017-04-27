@@ -1,0 +1,10 @@
+---
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Ensure MySQL packages are installed
+  apt:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ cikit_mysql_packages }}"

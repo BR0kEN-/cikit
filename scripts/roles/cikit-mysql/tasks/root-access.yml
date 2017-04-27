@@ -1,0 +1,41 @@
+---
+- include: stop-daemon.yml
+
+#- name: Ensure directory for MySQL daemon exists
+#  file:
+#    path: "{{ cikit_mysql.dirs.run }}"
+#    state: directory
+#    owner: "{{ cikit_mysql.user }}"
+#
+#- name: Start MySQL daemon with --skip-grant-tables option for reseting password for root user
+#  shell: mysqld_safe --skip-grant-tables &
+#
+#- name: Wait for MySQL daemon to start
+#  wait_for:
+#    port: "{{ cikit_mysql_network.port }}"
+#    delay: 5
+
+# The "auth_socket" plugin can be loaded only for "sudo" user.
+# Covers the "Plugin 'auth_socket' is not loaded" error.
+- name: Reset password for root user
+  shell: |-
+    mkdir {{ cikit_mysql.dirs.run }}
+    chown {{ cikit_mysql.user }} {{ cikit_mysql.dirs.run }}
+    mysqld_safe --skip-grant-tables &
+    sleep 5
+    mysql -uroot -e "USE mysql; UPDATE user SET authentication_string = PASSWORD('{{ cikit_mysql_user.pass }}') WHERE User = '{{ cikit_mysql_user.name }}'; UPDATE user SET plugin = 'mysql_native_password'; FLUSH PRIVILEGES;"
+  args:
+    # Unfortunately the commented code above isn't working. The "auth_socket"
+    # plugin loads for "sudo" session only at the stage when you starting the
+    # "mysqld_safe". That's why we cannot split out this script into multiple
+    # tasks, because "mysql -uroot -e [...]" already will not have it available.
+    # That's why we need this raw Shell script. [MySQL 5.7]
+    # https://bugs.launchpad.net/ubuntu/+source/mysql-5.7/+bug/1571668/comments/3
+    warn: no
+
+- include: stop-daemon.yml
+
+- name: Start previously stopped service
+  service:
+    name: mysql
+    state: restarted

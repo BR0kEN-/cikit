@@ -1,0 +1,38 @@
+[mysqld_safe]
+socket                  = {{ cikit_mysql.dirs.run }}/{{ cikit_mysql.files.socket }}
+nice                    = 0
+
+[mysqld]
+user                    = {{ cikit_mysql.user }}
+pid-file                = {{ cikit_mysql.dirs.run }}/{{ cikit_mysql.files.pid }}
+socket                  = {{ cikit_mysql.dirs.run }}/{{ cikit_mysql.files.socket }}
+port                    = {{ cikit_mysql_network.port }}
+basedir                 = {{ cikit_mysql.dirs.base }}
+datadir                 = {{ cikit_mysql.dirs.data }}
+tmpdir                  = {{ cikit_mysql.dirs.tmp }}
+lc-messages-dir         = {{ cikit_mysql.dirs.lc_messages }}
+skip-external-locking
+
+# Disabling symbolic-links is recommended to prevent assorted security risks.
+symbolic-links          = 0
+
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = {{ cikit_mysql_network.address }}
+
+myisam-recover-options  = BACKUP
+#max_connections        = 100
+#table_cache            = 64
+#thread_concurrency     = 10
+
+{% for name, value in cikit_mysqld_configuration.iteritems() %}
+{% if "innodb_buffer_pool_size" == name %}
+{{ name }} = {{ cikit_mysql_innodb_buffer_pool_size.stdout | int }}M
+{% elif "innodb_log_file_size" == name %}
+{{ name }} = {{ (cikit_mysql_innodb_buffer_pool_size.stdout | int * value / 100) | int }}M
+{% else %}
+{{ name }} = {{ value }}
+{% endif %}
+{% endfor %}
+
+log_error               = {{ cikit_mysql.dirs.log }}/error.log

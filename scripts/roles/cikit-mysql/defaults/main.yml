@@ -1,0 +1,41 @@
+---
+cikit_mysql_user:
+  name: root
+  pass: root
+
+cikit_mysql_network:
+  port: 3306
+  address: "0.0.0.0"
+
+cikit_mysql_packages:
+  - mysql-server
+  - python-mysqldb
+
+cikit_mysqld_configuration:
+  character_set_server: utf8
+  collation_server: utf8_unicode_ci
+  wait_timeout: 28800
+  max_allowed_packet: 64M
+  thread_stack: 192K
+  thread_cache_size: 8
+  table_open_cache: 256
+  sort_buffer_size: 1M
+  read_buffer_size: 1M
+  read_rnd_buffer_size: 4M
+  # Memory settings (default values optimized ~512MB RAM).
+  key_buffer_size: 256M
+  # Query cache configuration.
+  query_cache_limit: 1M
+  query_cache_size: 16M
+  # Logs.
+  expire_logs_days: 10
+  max_binlog_size: 100M
+  # InnoDB.
+  innodb_file_per_table: 1
+  innodb_log_buffer_size: 8M
+  innodb_flush_log_at_trx_commit: 0
+  innodb_lock_wait_timeout: 50
+  # Percent of the total memory available.
+  innodb_buffer_pool_size: 50
+  # Percent of computed value of "innodb_buffer_pool_size".
+  innodb_log_file_size: 25

@@ -1,0 +1,61 @@
+---
+- name: Check whether MySQL is already installed
+  stat:
+    path: "{{ cikit_mysql.daemon }}"
+  register: cikit_mysql_installed
+
+- include: setup.yml
+  when: not cikit_mysql_installed.stat.exists
+
+- include: stop-daemon.yml
+
+# Temporary directory is configured to be in shared memory (RAM).
+- include: shm-tempdir.yml
+  when: "'shm' in cikit_mysql.dirs.tmp"
+
+- name: Compute memory for InnoDB boofers
+  shell: "cat /proc/meminfo | awk '/MemTotal/ {print $2/1024*{{ cikit_mysqld_configuration.innodb_buffer_pool_size }}/100}'"
+  register: cikit_mysql_innodb_buffer_pool_size
+
+- name: Create MySQL configuration
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: root
+    group: root
+  with_items:
+    - src: mysqld.cnf.j2
+      dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+      # 644
+      mode: go-r,u-w
+
+    - src: python-my.cnf.j2
+      dest: /root/.my.cnf
+      # 600
+      mode: u-w
+
+- name: Ensure MySQL service is enabled on boot
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Check password for root user
+  become: "{{ ansible_user }}"
+  shell: "mysql -u{{ cikit_mysql_user.name }} -p{{ cikit_mysql_user.pass }}"
+  ignore_errors: yes
+  register: cikit_mysql_access
+
+- include: root-access.yml
+  when: cikit_mysql_access.failed is defined
+
+- name: Remove anonymous MySQL user
+  mysql_user:
+    name: ""
+    state: absent
+
+- name: Remove MySQL test database
+  mysql_db:
+    name: test
+    state: absent

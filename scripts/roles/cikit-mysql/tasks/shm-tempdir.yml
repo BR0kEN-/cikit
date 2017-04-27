@@ -1,0 +1,27 @@
+---
+- name: Prepare MySQL temporary directory
+  shell: "rm -rf {{ cikit_mysql.dirs.tmp }} && mkdir {{ cikit_mysql.dirs.tmp }} || true && chown {{ cikit_mysql.user }}:{{ cikit_mysql.user }} {{ cikit_mysql.dirs.tmp }} && chmod 777 {{ cikit_mysql.dirs.tmp }}"
+  args:
+    # Do not consider using "file" module in this case because exactly this
+    # scripts is needed for us to be used in "rc.local".
+    warn: no
+  register: cikit_mysql_shm_script
+
+- name: Adding tmpdir preparation to rc.local
+  lineinfile:
+    dest: /etc/rc.local
+    line: "{{ cikit_mysql_shm_script.cmd }}"
+    regexp: "{{ cikit_mysql_shm_script.cmd | regex_escape }}"
+    insertbefore: "exit 0"
+
+- name: Disable apparmor
+  shell: update-rc.d -f apparmor remove
+  ignore_errors: yes
+
+- shell: "/etc/init.d/apparmor {{ item }}"
+  ignore_errors: yes
+  with_items: ["teardown", "stop"]
+
+- name: Setting mysqld to complain mode
+  shell: aa-complain /usr/sbin/mysqld
+  ignore_errors: yes

@@ -1,0 +1,10 @@
+---
+- name: Kill all MySQL related processes
+  shell: kill $(pgrep mysql)
+  ignore_errors: yes
+
+- name: Wait for MySQL daemon to stop
+  wait_for:
+    port: "{{ cikit_mysql_network.port }}"
+    state: drained
+    delay: 3
