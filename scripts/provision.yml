@@ -191,7 +191,7 @@
     - role: ansible-composer
       tags: ["composer", "php-stack"]
 
-    - role: ansible-role-mysql
+    - role: cikit-mysql
       tags: ["mysql", "php-stack"]
 
     - role: cikit-jetty-solr
@@ -203,9 +203,6 @@
 
     - role: cikit-sniffers
       tags: ["sniffers", "php-stack"]
-
-    - role: cikit-mysql-config
-      tags: ["mysql", "php-stack"]
 
     - role: ansible-role-memcached
       tags: ["memcache", "php-stack"]
