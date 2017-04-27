@@ -27,4 +27,3 @@ apt_packages:
   - build-essential
   - libssl-dev
   - zlib1g-dev
-  - nodejs
