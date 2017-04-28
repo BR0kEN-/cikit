@@ -24,12 +24,14 @@ apache_data:
     dis: []
   mods:
     en:
+      - proxy_http
       - rewrite.load
       - ssl.load
       - vhost_alias.load
     dis: []
   sites:
     en:
+      - solr
       - vhosts
     dis:
       - 000-default.conf

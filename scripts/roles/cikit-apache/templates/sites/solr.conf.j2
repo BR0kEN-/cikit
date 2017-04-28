@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+{% if vagrant and extras.solr %}
+<VirtualHost *:80>
+  ServerName            {{ site_url | regex_replace('^(.*)://', 'solr.') }}
+
+  ProxyPreserveHost     On
+  ProxyRequests         Off
+
+  RewriteEngine         On
+  RewriteRule           ^\/solr(.*)$ $1 [L,R]
+
+  {% for option in ["ProxyPass", "ProxyPassReverse"] %}
+    {{ option }} / http://127.0.0.1:{{ jetty_solr_port }}/solr/
+  {% endfor %}
+</VirtualHost>
+{% endif %}
