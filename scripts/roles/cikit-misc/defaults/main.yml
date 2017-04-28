@@ -1,6 +1,5 @@
 ---
 apt_repos:
-  - ppa:ansible/ansible
   - ppa:chris-lea/node.js
   - ppa:nginx/stable
 
@@ -19,7 +18,6 @@ apt_packages:
   - rsync
   - libssl-dev
   - zlib1g-dev
-  - ansible
   - rng-tools
   - python-passlib
   - cgroup-bin
