@@ -1,6 +1,5 @@
 ---
 apt_repos:
-  - ppa:chris-lea/node.js
   - ppa:nginx/stable
 
 apt_packages:
