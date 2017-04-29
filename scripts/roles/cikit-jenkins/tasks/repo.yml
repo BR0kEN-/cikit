@@ -1,0 +1,17 @@
+---
+- name: Add APT key
+  apt_key:
+    url: "{{ jenkins.key }}"
+    state: present
+
+- name: Add APT repository
+  apt_repository:
+    repo: "{{ jenkins.repo }}"
+    state: present
+  ignore_errors: yes
+
+- name: Install dependencies
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items: "{{ jenkins.dependencies }}"

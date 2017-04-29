@@ -1,0 +1,30 @@
+---
+- name: Create view configuration from template
+  template:
+    src: list-view.xml.j2
+    dest: "{{ jenkins_lib }}/list-view.xml"
+
+# See https://issues.jenkins-ci.org/browse/JENKINS-8927#comment-194588
+- name: Create list view
+  shell: "curl -X POST -d @{{ jenkins_lib }}/list-view.xml -H 'Content-Type: text/xml' {{ jenkins_host }}/createView?name={{ jenkins_job }}"
+  args:
+    # No need to use "synchronize" module because it cannot to do what we need in this case.
+    warn: no
+
+- name: Create folders for jobs
+  file:
+    path: "{{ jenkins_lib }}/jobs/{{ item.name }}"
+    owner: "{{ jenkins_data.user }}"
+    group: "{{ jenkins_data.group }}"
+    state: directory
+  with_items: "{{ jenkins_data.jobs }}"
+
+- name: Copy jobs
+  template:
+    src: "jobs/{{ item.template }}"
+    dest: "{{ jenkins_lib }}/jobs/{{ item.name }}/config.xml"
+    owner: "{{ jenkins_data.user }}"
+    group: "{{ jenkins_data.group }}"
+    force: yes
+  with_items: "{{ jenkins_data.jobs }}"
+  notify: Restart Jenkins

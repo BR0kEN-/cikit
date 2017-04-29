@@ -27,8 +27,8 @@
 - name: Install/update plugins
   # Firstly: plugin downloading.
   # Secondly: install plugin dependencies.
-  shell: >
-    java -jar {{ jenkins.cli }} -s {{ jenkins_host }} install-plugin http://mirrors.jenkins-ci.org/plugins/{{ item.key }}/{{ item.value }}/{{ item.key }}.hpi &&
+  shell: |-
+    java -jar {{ jenkins.cli }} -s {{ jenkins_host }} install-plugin http://mirrors.jenkins-ci.org/plugins/{{ item.key }}/{{ item.value }}/{{ item.key }}.hpi
     curl -X POST -d "<jenkins><install plugin='{{ item.key }}@{{ item.value }}' /></jenkins>" -H 'Content-Type: text/xml' {{ jenkins_host }}/pluginManager/installNecessaryPlugins
   with_dict: "{{ plugins }}"
   notify: Restart Jenkins
