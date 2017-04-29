@@ -4,7 +4,7 @@
 
 The power of the system - simplicity. The provisioning is the same whether it's local or remote machine, except of a logic for installing additional software on remote machine (Jenkins, for example), but it's also quite simple (just `when: not vagrant` as a condition for Ansible tasks).
 
-*Currently based on `Ubuntu 14.04 LTS (64bit)`*.
+*Currently based on [Ubuntu 16.04 LTS (64bit)](docs/vagrant/box)*.
 
 ```ascii
  ██████╗ ██╗    ██╗  ██╗ ██╗ ████████╗
