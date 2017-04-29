@@ -164,11 +164,13 @@
       apt:
         name: "{{ item }}"
         state: present
+      register: cikit_apt_needs_cache_update
       with_items: "{{ basic_packages.apt }}"
 
     - name: Update APT cache
       apt:
         update_cache: yes
+      when: cikit_apt_needs_cache_update.changed
 
     - name: Install EasyInstall and PIP
       shell: "[ $(which {{ item.tool }}) ] || {{ item.script }}"
