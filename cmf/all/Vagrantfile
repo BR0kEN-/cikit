@@ -114,6 +114,10 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
  ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝
 "
 
+  # Change the name of VM.
+  config.vm.define config.vm.hostname do |vm|
+  end
+
   config.vm.provider :virtualbox do |vb|
     vb.name = configValues["project"]
 
