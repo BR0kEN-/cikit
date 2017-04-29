@@ -66,22 +66,34 @@
 
     basic_packages:
       apt:
+        - git
+        - vim
+        - curl
+        - htop
+        - make
+        - time
+        - tree
+        - rsync
         - python
         - python-dev
         - python-pycurl
+        - python-passlib
         - python-simplejson
-        - curl
-        - make
-        - rsync
-        - git
+        - python-software-properties
+        - libmagickcore-dev
+        - libmagickwand-dev
         - libmysqlclient-dev
+        - imagemagick
         - apparmor-utils
         - bsdutils
-        - software-properties-common
-        - python-software-properties
         - build-essential
+        - software-properties-common
         - libffi-dev
         - libssl-dev
+        - rng-tools
+        - zlib1g-dev
+        # Needed for "rbenv".
+        - libreadline-dev
 
       pip:
         - setuptools
@@ -136,15 +148,27 @@
           solr: "{{ setup_solr | bool }}"
       tags: ["always"]
 
-    - name: Update APT cache
-      apt:
-        update_cache: yes
+    - name: Spoof Sendmail if not installed
+      file:
+        src: /bin/true
+        path: /usr/sbin/sendmail
+        state: link
+        force: no
 
-    - name: Install basic packages for Ansible
+    # https://github.com/propeoplemd/cibox/pull/349
+    - name: Recover from possible fail
+      shell: dpkg --configure -a
+      ignore_errors: yes
+
+    - name: Install APT packages
       apt:
         name: "{{ item }}"
         state: present
       with_items: "{{ basic_packages.apt }}"
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
 
     - name: Install EasyInstall and PIP
       shell: "[ $(which {{ item.tool }}) ] || {{ item.script }}"
@@ -166,9 +190,6 @@
       with_items: "{{ basic_packages.pip }}"
 
   roles:
-    - role: cikit-misc
-      tags: ["misc"]
-
     - role: cikit-ssl-config
       tags: ["ssl", "security"]
 
