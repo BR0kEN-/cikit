@@ -170,6 +170,7 @@
     - name: Update APT cache
       apt:
         update_cache: yes
+      # Update cache only if new packages were installed.
       when: cikit_apt_needs_cache_update.changed
 
     - name: Install EasyInstall and PIP
