@@ -9,12 +9,6 @@ jenkins_data:
   user: jenkins
   group: jenkins
   jobs:
-    - name: BACKUP_PROD_DB
-      template: backup_prod_db.xml.j2
-
-    - name: DISK_USAGE_TRIGGER
-      template: disk_usage_trigger.xml.j2
-
     - name: SERVER_CLEANER
       template: server_cleaner.xml.j2
 
