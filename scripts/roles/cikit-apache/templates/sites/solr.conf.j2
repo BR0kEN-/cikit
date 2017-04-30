@@ -11,7 +11,7 @@
   RewriteRule           ^\/solr(.*)$ $1 [L,R]
 
   {% for option in ["ProxyPass", "ProxyPassReverse"] %}
-    {{ option }} / http://127.0.0.1:{{ jetty_solr_port }}/solr/
+    {{ option }} / http://127.0.0.1:{{ solr_port }}/solr/
   {% endfor %}
 </VirtualHost>
 {% endif %}
