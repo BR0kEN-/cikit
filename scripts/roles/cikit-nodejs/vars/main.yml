@@ -1,0 +1,8 @@
+---
+cikit_nodejs:
+  # Values have to be of "string" type.
+  versions:
+    - "4"
+    - "5"
+    - "6"
+    - "7"

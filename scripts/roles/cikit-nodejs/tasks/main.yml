@@ -1,3 +1,19 @@
 ---
-- include: install.yml
-  when: "{{ cikit_nodejs_version | int in [4, 5, 6, 7] }}"
+- name: Fail if version is unsupported
+  fail:
+    msg: "Node.js of {{ nodejs_version }} version is unsupported. Choose between {{ cikit_nodejs.versions | join(', ') }}"
+  when: "{{ nodejs_version not in cikit_nodejs.versions }}"
+
+- name: Build installation instructions
+  shell: "curl -sL https://deb.nodesource.com/setup_{{ nodejs_version }}.x | sudo -E bash -"
+  args:
+    warn: no
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: latest
+
+- name: Mark role as executed
+  set_fact:
+    cikit_nodejs_role_executed: yes
