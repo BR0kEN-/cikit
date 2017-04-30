@@ -1,0 +1,9 @@
+---
+- name: Ensure existing core is deleted
+  shell: >
+    solr delete -c "{{ solr_core }}"
+  ignore_errors: yes
+
+- name: Create core
+  shell: >
+    solr create -c "{{ solr_core }}" -d "{{ cikit_solr.dirs.home | dirname }}/search_api_solr/solr-conf/{{ solr_version.split('.') | first }}.x/"

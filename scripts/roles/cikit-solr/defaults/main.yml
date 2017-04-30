@@ -1,0 +1,7 @@
+---
+solr_port: 8389
+solr_version: 5.5.3
+solr_cores:
+  - default
+  - build
+  - demo

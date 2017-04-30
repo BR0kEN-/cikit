@@ -1,0 +1,23 @@
+---
+cikit_solr:
+  user: solr
+  service: solr
+  package: "http://archive.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
+  dirs:
+    home: /opt/solr
+    # Approximate scheme of "data" directory structure:
+    # data/
+    #   |-- core1/
+    #   |-- coreN/
+    #   |-- solr.xml
+    # log4j.properties
+    # logs/
+    #   |-- solr-8983-console.log
+    #   |-- solr_gc.log
+    #   |-- solr.log
+    # solr-8983.pid
+    data: /var/solr
+  versions:
+  # Values have to be of "string" type.
+  - "5.5.4"
+  - "6.5.1"

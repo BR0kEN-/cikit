@@ -1,0 +1,56 @@
+---
+- name: Fail if version is unsupported
+  fail:
+    msg: "Solr of {{ solr_version }} version is unsupported. Choose between {{ cikit_solr.versions | join(', ') }}"
+  when: "{{ solr_version not in cikit_solr.versions }}"
+
+- name: Download and unarchive
+  shell: |-
+    if [ ! -f "{{ cikit_solr.package | basename }}" ]; then
+      wget "{{ cikit_solr.package }}"
+    fi
+
+    if [ ! -d "{{ cikit_solr.package | basename | splitext | first }}" ]; then
+      tar xzf "{{ cikit_solr.package | basename }}" solr-{{ solr_version }}/bin/install_solr_service.sh --strip-components=2
+    fi
+  args:
+    warn: no
+    chdir: "{{ cikit_solr.dirs.home | dirname }}"
+    executable: /bin/bash
+
+- name: Ensure /sbin/false exists since it needed for installation script
+  file:
+    src: /bin/false
+    dest: /sbin/false
+    state: link
+
+- name: Install
+  shell: "./install_solr_service.sh solr-{{ solr_version }}.tgz -i {{ cikit_solr.dirs.home | dirname }} -d {{ cikit_solr.dirs.data }} -u {{ cikit_solr.user }} -p {{ solr_port }} -f"
+  args:
+    chdir: "{{ cikit_solr.dirs.home | dirname }}"
+
+- name: Ensure executable available
+  file:
+    src: "{{ cikit_solr.dirs.home }}/bin/solr"
+    dest: /bin/solr
+    state: link
+
+- name: Download configs
+  git:
+    repo: git://git.drupal.org/project/search_api_solr.git
+    dest: "{{ cikit_solr.dirs.home | dirname }}/search_api_solr"
+    update: yes
+    version: 7.x-1.x
+
+- include: core.yml
+  with_items: "{{ solr_cores }}"
+  loop_control:
+    loop_var: solr_core
+
+- name: Ensure permissions correctness
+  file:
+    path: "{{ item.value }}/"
+    group: "{{ cikit_solr.user }}"
+    owner: "{{ cikit_solr.user }}"
+    recurse: yes
+  with_dict: "{{ cikit_solr.dirs }}"
