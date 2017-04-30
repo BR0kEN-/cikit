@@ -107,7 +107,9 @@
         - ansible
 
   pre_tasks:
-    - include: tasks/detect-vagrant.yml
+    - name: Check whether virtual machine will be provisioned
+      set_fact:
+        vagrant: "{{ 'virtualbox' == hostvars[inventory_hostname].ansible_virtualization_type }}"
       tags: ["always"]
 
     - name: "Obtain home directory of \"{{ ansible_user }}\" user"
