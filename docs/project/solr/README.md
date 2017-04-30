@@ -6,12 +6,16 @@ By default it's configured to be operable by its own user - `solr` - with home d
 
 ## Usage
 
-Execute `sudo solr` to see the list of available operations.
+Execute `sudo runuser -l solr -c "solr"` to see the list of available operations.
 
 ### Common examples
 
 Check the status, stop, start and/or restart server.
 
 ```shell
-sudo solr [status|stop|start|restart]
+sudo runuser -l solr -c "solr [status|stop|start|restart]"
 ```
+
+### Warning
+
+You may simplify the entire command to execute to `sudo solr` and suppress warning using `-force` option but it's definitely not recommended to run search server that way.
