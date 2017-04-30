@@ -1,8 +1,8 @@
 ---
-- name: Check whether Ruby version supported
+- name: Fail if version is unsupported
   fail:
-    msg: "Ruby of {{ cikit_ruby_version }} version is unsupported. Choose between {{ cikit_ruby.versions | join(', ') }}"
-  when: "{{ cikit_ruby_version not in cikit_ruby.versions }}"
+    msg: "Ruby of {{ ruby_version }} version is unsupported. Choose between {{ cikit_ruby.versions | join(', ') }}"
+  when: "{{ ruby_version not in cikit_ruby.versions }}"
 
 - name: Update repositories
   git:
@@ -37,8 +37,8 @@
   shell: |-
     {{ cikit_ruby_shell_path_export }}
     eval "$(rbenv init -)"
-    rbenv install {{ cikit_ruby_version }}
-    rbenv global {{ cikit_ruby_version }}
+    rbenv install {{ ruby_version }}
+    rbenv global {{ ruby_version }}
   args:
     executable: /bin/bash
   register: ruby_installation
@@ -47,7 +47,7 @@
 - name: Check whether Ruby installed successfully
   fail:
     msg: "{{ ruby_installation.stderr }}"
-  when: "{{ ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + cikit_ruby_version) < 0 }}"
+  when: "{{ ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + ruby_version) < 0 }}"
 
 - name: Install Gem for particular Ruby version
   become_user: "{{ ansible_user }}"
@@ -58,4 +58,4 @@
   args:
     warn: no
     executable: /bin/bash
-  with_items: "{{ cikit_ruby_gems }}"
+  with_items: "{{ ruby_gems }}"
