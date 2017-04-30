@@ -10,9 +10,5 @@ selenium_dependencies:
     unzip: no
     service: java -jar
 selenium_packages:
-  - default-jre
-  - imagemagick
   - firefox
   - google-chrome-stable
-  - unzip
-  - tar
