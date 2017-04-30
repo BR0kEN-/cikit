@@ -2,7 +2,7 @@
 - name: Configure php.ini
   template:
     src: php.ini.j2
-    dest: "/etc/php/{{ cikit_php_version }}/{{ item.key }}php.ini"
+    dest: "/etc/php/{{ php_version }}/{{ item.key }}php.ini"
   with_dict:
     /: global
     cli/: cli
@@ -11,19 +11,19 @@
 - name: Configure extension
   template:
     src: extension.ini.j2
-    dest: "/etc/php/{{ cikit_php_version }}/mods-available/{{ item.key }}.ini"
-  with_dict: "{{ cikit_php.extensions }}"
+    dest: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
+  with_dict: "{{ php.extensions }}"
 
 - name: Link extension configuration for Apache2
   file:
-    src: "/etc/php/{{ cikit_php_version }}/mods-available/{{ item.key }}.ini"
-    dest: "/etc/php/{{ cikit_php_version }}/apache2/conf.d/20-{{ item.key }}.ini"
+    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
+    dest: "/etc/php/{{ php_version }}/apache2/conf.d/20-{{ item.key }}.ini"
     state: link
-  with_dict: "{{ cikit_php.extensions }}"
+  with_dict: "{{ php.extensions }}"
 
 - name: Link extension configuration for CLI
   file:
-    src: "/etc/php/{{ cikit_php_version }}/mods-available/{{ item.key }}.ini"
-    dest: "/etc/php/{{ cikit_php_version }}/cli/conf.d/20-{{ item.key }}.ini"
+    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
+    dest: "/etc/php/{{ php_version }}/cli/conf.d/20-{{ item.key }}.ini"
     state: link
-  with_dict: "{{ cikit_php.extensions }}"
+  with_dict: "{{ php.extensions }}"

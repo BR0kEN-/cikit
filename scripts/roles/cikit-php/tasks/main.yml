@@ -1,34 +1,34 @@
 ---
-- name: Check if PHP version supported
+- name: Fail if version is unsupported
   fail:
-    msg: "PHP of {{ cikit_php_version }} version is unsupported. Choose between {{ cikit_php_versions | join(', ') }}"
-  when: "{{ cikit_php_version not in cikit_php_versions }}"
+    msg: "PHP of {{ php_version }} version is unsupported. Choose between {{ cikit_php.versions | join(', ') }}"
+  when: "{{ php_version not in cikit_php.versions }}"
 
 - name: Add APT repository
   apt_repository:
-    repo: "{{ cikit_php.repo }}"
+    repo: "{{ php.repo }}"
 
 - name: Update APT cache
   apt:
     update_cache: yes
 
 - name: Install PHP packages
-  shell: "apt-get install php{{ cikit_php_version }}-{{ cikit_php.packages | join(' php' + cikit_php_version + '-') }} -y"
+  shell: "apt-get install php{{ php_version }}-{{ php.packages | join(' php' + php_version + '-') }} -y"
   args:
     warn: no
 
 - name: Install Apache module for PHP
   apt:
-    name: "libapache2-mod-php{{ cikit_php_version }}"
+    name: "libapache2-mod-php{{ php_version }}"
     state: latest
 
 - name: Set interpreter version as system default
-  shell: "ln -fs /usr/bin/{{ item }}{{ cikit_php_version }} /etc/alternatives/{{ item }}"
+  shell: "ln -fs /usr/bin/{{ item }}{{ php_version }} /etc/alternatives/{{ item }}"
   with_items: ["php", "phpize", "php-config"]
 
 - include: xdebug.yml
 - include: configure.yml
 
 - name: Enalbe PHP for Apache
-  shell: "a2dismod php* && a2enmod php{{ cikit_php_version }}"
+  shell: "a2dismod php* && a2enmod php{{ php_version }}"
   ignore_errors: yes

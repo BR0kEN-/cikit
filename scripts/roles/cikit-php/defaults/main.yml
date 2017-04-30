@@ -1,6 +1,6 @@
 ---
-cikit_php_version: 7.1
-cikit_php:
+php_version: 7.1
+php:
   repo: ppa:ondrej/php
   xdebug: 2.5.0
   config:

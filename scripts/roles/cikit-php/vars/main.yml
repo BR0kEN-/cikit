@@ -1,0 +1,7 @@
+---
+cikit_php:
+  # Values have to be of "string" type.
+  versions:
+    - "5.6"
+    - "7.0"
+    - "7.1"

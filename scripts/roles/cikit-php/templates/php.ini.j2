@@ -1876,6 +1876,6 @@ ldap.max_links = -1
 ; tab-width: 4
 ; End:
 
-{% for option, value in cikit_php.config[item.value].iteritems() %}
+{% for option, value in php.config[item.value].iteritems() %}
 {{ option }}={{ value }}
 {% endfor %}

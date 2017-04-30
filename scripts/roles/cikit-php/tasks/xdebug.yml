@@ -1,7 +1,7 @@
 ---
 - name: Set name of directory for XDebug
   set_fact:
-    cikit_php_xdebug: "xdebug-{{ cikit_php.xdebug }}"
+    cikit_php_xdebug: "xdebug-{{ php.xdebug }}"
 
 - name: Download XDebug
   get_url:
