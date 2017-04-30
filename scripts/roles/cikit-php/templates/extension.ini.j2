@@ -1,0 +1,8 @@
+; {{ ansible_managed }}
+{% if 'type' in item.value %}
+{{ item.value.type }}={{ item.key }}.so
+{% endif %}
+
+{% for option, value in item.value.config.iteritems() %}
+{{ item.key }}.{{ option }}={{ value }}
+{% endfor %}

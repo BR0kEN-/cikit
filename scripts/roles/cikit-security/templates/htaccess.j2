@@ -1,0 +1,8 @@
+AuthType Basic
+AuthName "Restricted Area"
+AuthUserFile {{ item.path }}/.htpasswd
+Require valid-user
+Require local
+{% for allowed_ip in allowed_ips %}
+Require ip {{ allowed_ip }}
+{% endfor %}

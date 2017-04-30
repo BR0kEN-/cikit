@@ -1,0 +1,17 @@
+---
+- name: Set name of directory for XDebug
+  set_fact:
+    cikit_php_xdebug: "xdebug-{{ cikit_php.xdebug }}"
+
+- name: Download XDebug
+  get_url:
+    url: "https://xdebug.org/files/{{ cikit_php_xdebug }}.tgz"
+    dest: /tmp/xdebug.tgz
+
+- name: Unarchive XDebug
+  shell: "tar -xf /tmp/xdebug.tgz -C /tmp/"
+  args:
+    # Unarchive module does not work properly in Ansible 2.1.1.0.
+    warn: no
+
+- include: fixtures/compile.yml name="XDebug" dir="/tmp/{{ cikit_php_xdebug }}"

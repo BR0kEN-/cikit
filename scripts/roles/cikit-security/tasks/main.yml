@@ -1,0 +1,21 @@
+---
+- name: Create protected folders
+  file:
+    path: "{{ item.path }}"
+    owner: www-data
+    group: adm
+    state: directory
+  with_items: "{{ cikit_protected_folders }}"
+
+- name: Copy .htaccess to the protected folders
+  template:
+    src: htaccess.j2
+    dest: "{{ item.path }}/.htaccess"
+  with_items: "{{ cikit_protected_folders }}"
+
+- name: Generate .htpasswd in protected folders
+  htpasswd:
+    path: "{{ item.path }}/.htpasswd"
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
+  with_items: "{{ cikit_protected_folders }}"

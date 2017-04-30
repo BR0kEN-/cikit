@@ -1,0 +1,33 @@
+---
+- name: Check if item is already downloaded
+  stat:
+    path: "{{ item.dest }}"
+  register: selenium_dependencies_statuses
+  with_items: "{{ selenium_dependencies }}"
+
+- name: Create directory for item
+  file:
+    path: "{{ item.item.dest | dirname }}"
+    state: directory
+  when: "{{ not item.stat.exists }}"
+  with_items: "{{ selenium_dependencies_statuses.results }}"
+
+- name: Download item
+  get_url:
+    url: "{{ item.item.src }}"
+    dest: "{{ item.item.dest }}"
+    force: yes
+  when: "{{ not item.stat.exists }}"
+  with_items: "{{ selenium_dependencies_statuses.results }}"
+
+- name: Unarchive item
+  shell: "cd {{ item.item.dest | dirname }} && unzip {{ item.item.dest | basename }}"
+  when: "{{ not item.stat.exists and item.item.unzip }}"
+  with_items: "{{ selenium_dependencies_statuses.results }}"
+
+- name: Create service
+  template:
+    src: service.j2
+    dest: "/etc/init.d/{{ item.dest.split('.')[0] | basename }}"
+    mode: 0750
+  with_items: "{{ selenium_dependencies | selectattr('service') | list }}"

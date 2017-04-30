@@ -1,0 +1,6 @@
+---
+allowed_ips: []
+cikit_protected_folders:
+  - path: /var/www/html
+    user: root
+    pass: r0Ot_p4assw0Rd
