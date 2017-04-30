@@ -10,3 +10,4 @@
   - [Box](vagrant/box) - information and access details.
 - Project
   - [Sniffers](project/sniffers) - code quality tests.
+  - [Solr](project/solr) - all about the way it's configured.
