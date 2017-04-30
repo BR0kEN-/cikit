@@ -6,10 +6,6 @@ jenkins:
   repo: "deb http://pkg.jenkins.io/debian-stable binary/"
   key: "https://pkg.jenkins.io/debian/jenkins-ci.org.key"
   dependencies:
-    - openjdk-8-jre
-    - openjdk-8-jdk
-    - git
-    - curl
     - daemon
   cli: "{{ jenkins_dest }}/jenkins-cli.jar"
   updates: "{{ jenkins_dest }}/updates_jenkins.json"
