@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% if vagrant and extras.solr %}
+{% if vagrant and install_solr %}
 <VirtualHost *:80>
   ServerName            {{ site_url | regex_replace('^(.*)://', 'solr.') }}
 
