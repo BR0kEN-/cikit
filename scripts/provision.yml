@@ -19,21 +19,21 @@
       private: no
       tags: ["php", "php-stack"]
 
-    - name: cikit_nodejs_version
+    - name: nodejs_version
       prompt: Which version of Node.js you'd want to install? (4/5/6/7)
       default: 6
       private: no
       tags: ["nodejs", "phantomjs"]
 
-    - name: cikit_ruby_version
-      prompt: Which version of Ruby you'd want to install? (2.4.0/2.3.3/2.2.6/2.1.10)
+    - name: ruby_version
+      prompt: Which version of Ruby you'd want to install? (2.1.10/2.2.6/2.3.3/2.4.0)
       default: 2.4.0
       private: no
       tags: ["sniffers", "sass", "ruby"]
 
-    - name: setup_solr
-      prompt: Do you want to install Solr? (yes/NO)
-      default: false
+    - name: solr_version
+      prompt: Which version of Solr you'd want to install? (5.5.4/6.5.1/no)
+      default: "no"
       private: no
       tags: ["solr"]
 
@@ -67,6 +67,7 @@
     basic_packages:
       apt:
         - git
+        - tar
         - vim
         - curl
         - htop
@@ -74,6 +75,7 @@
         - time
         - tree
         - rsync
+        - unzip
         - python
         - python-dev
         - python-pycurl
@@ -143,9 +145,9 @@
       when: vagrant
 
     - name: Process facts
-      set_fact:
-        extras:
-          solr: "{{ setup_solr | bool }}"
+      set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}
+      with_dict:
+        solr: "{{ solr_version }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -218,8 +220,11 @@
     - role: cikit-mysql
       tags: ["mysql", "php-stack"]
 
-    - role: cikit-jetty-solr
-      when: extras.solr
+    - role: cikit-java
+      tags: ["java", "solr", "sniffers", "jenkins"]
+
+    - role: cikit-solr
+      when: install_solr
       tags: ["solr", "php-stack"]
 
     - role: cikit-ruby
