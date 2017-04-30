@@ -1,6 +1,6 @@
 ---
 solr_port: 8389
-solr_version: 5.5.3
+solr_version: "{{ cikit_solr.versions | last }}"
 solr_cores:
   - default
   - build
