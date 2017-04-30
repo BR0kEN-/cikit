@@ -1,0 +1,25 @@
+---
+- name: Install package
+  apt:
+    name: "openjdk-{{ java_version }}-{{ item }}"
+    state: installed
+  with_items: ["jre", "jdk"]
+
+- name: Prepare Java folder
+  file:
+    path: "{{ cikit_java.dir }}"
+    state: directory
+
+- name: Prepare Java binaries for amd64
+  file:
+    src: "/usr/lib/jvm/java-{{ java_version }}-openjdk-amd64"
+    dest: "{{ cikit_java.dir }}/default"
+    state: link
+  when: ansible_machine in ["amd64", "x86_64"]
+
+- name: Prepare Java binaries for i686
+  file:
+    src: "/usr/lib/jvm/java-1.{{ java_version }}.0-openjdk-i386"
+    dest: "{{ cikit_java.dir }}/default"
+    state: link
+  when: ansible_machine in ["i686"]
