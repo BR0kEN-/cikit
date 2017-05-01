@@ -1,6 +1,6 @@
 AuthType Basic
 AuthName "Restricted Area"
-AuthUserFile {{ item.path }}/.htpasswd
+AuthUserFile {{ protected_folder.path }}/.htpasswd
 Require valid-user
 Require local
 {% for allowed_ip in allowed_ips %}

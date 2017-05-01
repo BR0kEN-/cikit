@@ -5,12 +5,12 @@
 
   vars_files:
     - ../config.yml
-    - vars/ip.yml
     - vars/ruby.yml
     - vars/ports.yml
     - vars/mysql.yml
     - vars/nginx.yml
     - vars/apache.yml
+    - vars/security.yml
 
   vars_prompt:
     - name: php_version
@@ -48,7 +48,7 @@
 
     - name: http_auth_pass
       prompt: Password for HTTP authentication
-      default: r3str1cteDHere
+      default: password
       private: yes
       # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
       # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
@@ -56,14 +56,6 @@
       tags: ["security"]
 
   vars:
-    vagrant: no
-    cikit_ssl_folder: /etc/ssl/private
-
-    cikit_protected_folders:
-      - path: "{{ webroot }}"
-        user: "{{ http_auth_user }}"
-        pass: "{{ http_auth_pass }}"
-
     basic_packages:
       apt:
         - git
@@ -197,12 +189,12 @@
       with_items: "{{ basic_packages.pip }}"
 
   roles:
-    - role: cikit-ssl-config
-      tags: ["ssl", "security"]
+    - role: cikit-security
+      tags: ["security"]
 
     - role: cikit-nginx
-      tags: ["nginx", "php-stack", "security"]
       when: not vagrant
+      tags: ["nginx", "php-stack", "security"]
 
     - role: cikit-apache
       tags: ["apache", "php-stack"]
@@ -240,10 +232,6 @@
 
     - role: cikit-selenium
       tags: ["selenium"]
-
-    - role: cikit-security
-      tags: ["security"]
-      when: not vagrant
 
     - role: cikit-jenkins
       when: not vagrant

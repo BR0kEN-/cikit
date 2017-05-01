@@ -1,21 +1,15 @@
 ---
-- name: Create protected folders
+- name: Assures SSL folder exists
   file:
-    path: "{{ item.path }}"
-    owner: www-data
-    group: adm
+    path: "{{ ssl_folder }}"
     state: directory
-  with_items: "{{ cikit_protected_folders }}"
+    recurse: yes
 
-- name: Copy .htaccess to the protected folders
-  template:
-    src: htaccess.j2
-    dest: "{{ item.path }}/.htaccess"
-  with_items: "{{ cikit_protected_folders }}"
+- name: Create self-signed SSL cert
+  command: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=US" -keyout {{ ssl_folder }}/ssl.key -out {{ ssl_folder }}/ssl.crt
 
-- name: Generate .htpasswd in protected folders
-  htpasswd:
-    path: "{{ item.path }}/.htpasswd"
-    name: "{{ item.user }}"
-    password: "{{ item.pass }}"
-  with_items: "{{ cikit_protected_folders }}"
+- include: http-auth.yml
+  with_items: "{{ protected_folders }}"
+  loop_control:
+    loop_var: protected_folder
+  when: not vagrant

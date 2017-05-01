@@ -1,0 +1,12 @@
+---
+ssl_folder: /etc/ssl/private
+
+# Specify here a list of IP addresses for disabling basic HTTP authentication.
+allowed_ips:
+  # Localhost must be without authentication to run Behat tests.
+  - 127.0.0.1
+
+protected_folders:
+  - path: "{{ webroot }}"
+    user: "{{ http_auth_user }}"
+    pass: "{{ http_auth_pass }}"
