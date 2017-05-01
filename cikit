@@ -14,6 +14,11 @@
 # List of allowed variables for passing as parameters for "ansible-playbook".
 APB_VARS="limit tags list-tags module-path become-user"
 
+# JSON formatted "--extra-vars" options.
+extra_vars=""
+# List of parameters for "ansible-playbook" command.
+params=""
+
 locate_path()
 {
   local LINK=$(readlink ${1})
@@ -51,6 +56,40 @@ exit_with_help()
   exit
 }
 
+extra_var()
+{
+  # Remove all data after "=" symbol.
+  local var=${1%=*}
+  local val=${1#*=}
+
+  # Remove leading "--".
+  var=${var#--}
+  val=${val#--}
+
+  for j in ${APB_VARS}; do
+    if [ "${var}" == "${j}" ]; then
+      params+=" --${var}"
+
+      if [ "${var}" != "${val}" ]; then
+        params+="=${val}"
+      fi
+    fi
+  done
+
+  if [ "${var}" == "${val}" ]; then
+    val="true"
+  fi
+
+  # Replace all "-" by "_" in argument name.
+  var=${var//-/_}
+
+  if [[ ${val} != {* && ${val: -1} != "}" ]]; then
+    val="\"${val}\""
+  fi
+
+  extra_vars+="\"${var}\":${val},"
+}
+
 SELF_PATH=$(locate_path "$0")
 SCRIPTS_PATH=${SELF_PATH}/scripts
 
@@ -59,7 +98,7 @@ if [ -z $1 ]; then
   exit_with_help
 fi
 
-PLAYBOOK=${1/%.yml/}.yml
+PLAYBOOK=${1%.*}.yml
 
 for playbook in ${SCRIPTS_PATH}/${PLAYBOOK} ${SELF_PATH}/${PLAYBOOK} ${PLAYBOOK}; do
   if [ -f ${playbook} ]; then
@@ -77,41 +116,17 @@ if [ ! -f ${playbook} ]; then
   exit 1
 fi
 
-extra_vars=""
-params=""
-
-# Parse extra varaiables.
-for ((i = 2; i <= $#; i++)); do
-  # Remove all data after "=" symbol.
-  var=${!i%=*}
-  val=${!i#*=}
-
-  # Remove leading "--".
-  var=${var#--}
-  val=${val#--}
-
-  for j in ${APB_VARS}; do
-    if [ "${var}" == "${j}" ]; then
-      params+=" --${var}"
-
-      if [ "${var}" != "${val}" ]; then
-        params+="=${val}"
-      fi
-    fi
+# The "EXTRA_VARS" passed as environment variable. Parse it first
+# to not allow overwrite explicitly passed options.
+if [ -n "${EXTRA_VARS}" ]; then
+  for var in $(IFS="--" echo "${EXTRA_VARS}"); do
+    extra_var "${var}"
   done
+fi
 
-  if [ "${var}" == "${val}" ]; then
-    val="True"
-  fi
-
-  # Replace all "-" by "_" in argument name.
-  var=${var//-/_}
-
-  if [[ ${val} != {* && ${val: -1} != "}" ]]; then
-    val="\"${val}\""
-  fi
-
-  extra_vars+="\"${var}\":${val},"
+# Parse command options.
+for ((i = 2; i <= $#; i++)); do
+  extra_var "${!i}"
 done
 
 # Remove last comma.
