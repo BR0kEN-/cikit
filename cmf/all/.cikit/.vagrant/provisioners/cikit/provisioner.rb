@@ -4,7 +4,7 @@ module VagrantPlugins::CIKit
       result = Vagrant::Util::Subprocess.execute(
         "bash",
         "-c",
-        "#{config.controller} #{config.playbook} #{ansible_args}",
+        "#{config.controller} #{config.playbook} #{cikit_args}",
         :workdir => @machine.env.root_path.to_s,
         :notify => [:stdout, :stderr],
         :env => environment_variables,
@@ -15,7 +15,7 @@ module VagrantPlugins::CIKit
         })
       end
 
-      if not result.exit_code.zero?
+      if !result.exit_code.zero?
         raise Vagrant::Errors::VagrantError.new(), "CIKit provisioner responded with a non-zero exit status."
       end
     end
@@ -26,6 +26,7 @@ module VagrantPlugins::CIKit
       environment_variables = {}
       environment_variables["ANSIBLE_INVENTORY"] = ansible_inventory
       environment_variables["ANSIBLE_SSH_ARGS"] = ansible_ssh_args
+      environment_variables["ANSIBLE_ARGS"] = ENV["ANSIBLE_ARGS"]
       environment_variables["PATH"] = ENV["VAGRANT_OLD_ENV_PATH"]
 
       return environment_variables
@@ -40,23 +41,28 @@ module VagrantPlugins::CIKit
       return ansible_ssh_args.join(" ")
     end
 
-    def ansible_args
-      ansible_args = []
-      ansible_args << "--limit=#{@machine.name}"
-      ansible_args << ENV["ANSIBLE_ARGS"]
+    def cikit_args
+      args = []
+      # Append the host being provisioned.
+      args << "--limit=#{@machine.name}"
 
       playbook = config.playbook.chomp(File.extname(config.playbook)) + ".yml"
 
       if File.exist?(playbook)
-        playbook = YAML::load_file(playbook)
         taglist = []
+        extra_vars = {}
+        playbook = YAML::load_file(playbook)
 
-        ENV.has_key?("ANSIBLE_ARGS") && ENV["ANSIBLE_ARGS"].split(" ").each do |option|
-          group = option.split("=")
-
-          if "--tags" == group.first
-            taglist = group.last.split(",")
+        parse_env_vars("ANSIBLE_ARGS").each do |var, value|
+          if "tags" == var
+            taglist = value.split(",")
             break
+          end
+        end
+
+        parse_env_vars("EXTRA_VARS").each do |var, value|
+          if !value.nil?
+            extra_vars[var.tr("-", "_")] = value
           end
         end
 
@@ -71,16 +77,23 @@ module VagrantPlugins::CIKit
             else
               puts var_prompt["prompt"] + (default_value.empty? ? "" : " [#{default_value}]") + ":"
 
-              value = $stdin.gets.chomp
-              value = value.empty? ? default_value : value
+              # Preselected value in environment variable.
+              if extra_vars.has_key?(var_prompt["name"])
+                value = extra_vars[var_prompt["name"]]
+                # Show preselected value to the user.
+                puts value
+              else
+                value = $stdin.gets.chomp
+                value = value.empty? ? default_value : value
+              end
             end
 
-            ansible_args << "--#{var_prompt["name"]}=#{value}"
+            args << "--#{var_prompt["name"]}=#{value}"
           end
         end
       end
 
-      return ansible_args.join(" ")
+      return args.join(" ")
     end
 
     # Auto-generate "safe" inventory file based on Vagrantfile.
@@ -129,7 +142,7 @@ module VagrantPlugins::CIKit
       inventory_content = inventory_content.join("\n")
 
       Mutex.new.synchronize do
-        if !File.exists?(inventory_file) or inventory_content != File.read(inventory_file)
+        if !File.exists?(inventory_file) || inventory_content != File.read(inventory_file)
           inventory_file.open("w") do |file|
             file.write(inventory_content)
           end
@@ -137,6 +150,23 @@ module VagrantPlugins::CIKit
       end
 
       return inventory_file
+    end
+
+    def parse_env_vars(env_var)
+      vars = {}
+
+      ENV.has_key?(env_var) && ENV[env_var].scan(/--?([^=\s]+)(?:=(\S+))?/).each do |pair|
+        key, value = pair
+
+        # Trim quotes if string starts and ends by the same character.
+        if !value.nil? && ((value.start_with?('"') && value.end_with?('"')) || (value.start_with?("'") && value.end_with?("'")))
+          value = value[1...-1]
+        end
+
+        vars[key] = value
+      end
+
+      return vars
     end
   end
 end
