@@ -98,7 +98,7 @@ if [ -z $1 ]; then
   exit_with_help
 fi
 
-PLAYBOOK=${1%.*}.yml
+PLAYBOOK=${1/%.yml/}.yml
 
 for playbook in ${SCRIPTS_PATH}/${PLAYBOOK} ${SELF_PATH}/${PLAYBOOK} ${PLAYBOOK}; do
   if [ -f ${playbook} ]; then
