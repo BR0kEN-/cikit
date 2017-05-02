@@ -1,0 +1,5 @@
+cikit_composer:
+  bin: /usr/local/bin
+  dir: /usr/share/composer
+  system_packages:
+    hirak/prestissimo: 0.*

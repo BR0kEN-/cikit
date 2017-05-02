@@ -208,7 +208,7 @@
     - role: cikit-phantomjs
       tags: ["phantomjs"]
 
-    - role: ansible-composer
+    - role: cikit-composer
       tags: ["composer", "php-stack"]
 
     - role: cikit-mysql

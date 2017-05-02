@@ -1,0 +1,7 @@
+---
+dependencies:
+  - role: cikit-composer
+    when: cikit_composer_role_executed is not defined
+
+  - role: cikit-phantomjs
+    when: cikit_phantomjs_role_executed is not defined

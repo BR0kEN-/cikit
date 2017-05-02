@@ -1,0 +1,4 @@
+composer_packages:
+  wp-cli/wp-cli: 0.*
+  drush/drush: 8.*
+  squizlabs/php_codesniffer: 2.*

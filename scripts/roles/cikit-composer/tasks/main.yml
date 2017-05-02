@@ -1,28 +1,28 @@
 ---
 - name: Install Composer
-  shell: "curl -sS https://getcomposer.org/installer | php -- --install-dir={{ composer_bin }}"
+  shell: "curl -sS https://getcomposer.org/installer | php -- --install-dir={{ cikit_composer.bin }}"
   args:
     warn: no
 
 - name: Rename PHAR file
   shell: "mv composer.phar composer"
   args:
-    chdir: "{{ composer_bin }}"
+    chdir: "{{ cikit_composer.bin }}"
 
 - name: Make Composer executable
   file:
-    path: "{{ composer_bin }}/composer"
+    path: "{{ cikit_composer.bin }}/composer"
     mode: 0755
 
 - name: Prepare directory for global Composer packages
   file:
-    path: "{{ composer_dir }}"
+    path: "{{ cikit_composer.dir }}"
     state: directory
 
 - name: Install system packages
   include: packages.yml
   args:
-    composer_packages: "{{ composer_packages_system }}"
+    composer_packages: "{{ cikit_composer.system_packages }}"
 
 - name: Create .config directory
   file:
@@ -39,17 +39,17 @@
   include: packages.yml
 
 - name: Determine Composer packages
-  shell: ls -A {{ composer_dir }}/vendor/bin/ | grep -v '\..*'
+  shell: ls -A {{ cikit_composer.dir }}/vendor/bin/ | grep -v '\..*'
   register: packages
 
 - name: Make Composer packages executable
   file:
-    src: "{{ composer_dir }}/vendor/bin/{{ item }}"
-    dest: "{{ composer_bin }}/{{ item }}"
+    src: "{{ cikit_composer.dir }}/vendor/bin/{{ item }}"
+    dest: "{{ cikit_composer.bin }}/{{ item }}"
     state: link
-  when: "{{ item != 'composer' }}"
+  when: "'composer' != item"
   with_items: "{{ packages.stdout_lines if 'stdout_lines' in packages else [] }}"
 
 - name: Mark role as executed
   set_fact:
-    ansible_composer_role_executed: yes
+    cikit_composer_role_executed: yes

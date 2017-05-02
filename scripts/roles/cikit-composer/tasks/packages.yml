@@ -1,0 +1,5 @@
+---
+- shell: "composer require {{ item.key }}:{{ item.value }} --prefer-dist --no-interaction --no-ansi"
+  args:
+    chdir: "{{ cikit_composer.dir }}"
+  with_dict: "{{ composer_packages }}"
