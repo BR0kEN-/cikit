@@ -25,7 +25,7 @@ locate_path()
       SELF_PATH="$(cd "$(dirname -- "$(readlink -- "$SELF_PATH")")" && pwd)"
     done
   else
-    SELF_PATH="$(cd -P -- "$(dirname -- "$1")" && pwd -P)"
+    SELF_PATH="$(cd -P -- "$(dirname -- "$SELF_PATH")" && pwd -P)"
   fi
 
   echo "$SELF_PATH"
