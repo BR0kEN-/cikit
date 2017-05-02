@@ -9,3 +9,24 @@
   become_user: "{{ cikit_solr.user }}"
   shell: >
     solr create -c "{{ solr_core }}" -d "{{ cikit_solr.dirs.home | dirname }}/search_api_solr/solr-conf/{{ solr_version.split('.') | first }}.x/"
+
+- name: Fix value of variable containing path to contrib directory
+  replace:
+    dest: "{{ cikit_solr.dirs.data }}/data/{{ solr_core }}/conf/solrcore.properties"
+    regexp: '^(solr\.contrib\.dir)(?:\s+)?=(?:\s+)?.*$'
+    replace: '\1={{ cikit_solr.dirs.home }}/contrib'
+    owner: "{{ cikit_solr.user }}"
+    group: "{{ cikit_solr.user }}"
+
+- name: Get list of configs
+  shell: "ls -A {{ cikit_solr.dirs.data }}/data/{{ solr_core }}/conf/*.xml"
+  register: cikit_solr_core_configs
+
+- name: Fix the variable containing path to contrib directory
+  replace:
+    dest: "{{ item }}"
+    regexp: '\$\{(solr\.contrib\.dir)(?:.*)?\}'
+    replace: '${\1}'
+    owner: "{{ cikit_solr.user }}"
+    group: "{{ cikit_solr.user }}"
+  with_items: "{{ cikit_solr_core_configs.stdout_lines }}"
