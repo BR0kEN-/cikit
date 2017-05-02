@@ -160,7 +160,7 @@ cd "${playbook%/*}"
 COMMAND="ansible-playbook $playbook $params"
 
 # Print entire command if verbosity requested.
-if [[ "$params" =~ "-v" ]]; then
+if [[ "$params" =~ -v{1,}[[:space:]] ]]; then
   echo "$COMMAND"
 fi
 
