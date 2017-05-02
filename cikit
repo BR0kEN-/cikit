@@ -18,16 +18,15 @@ params=""
 
 locate_path()
 {
-  local SELF_PATH
+  local SELF_PATH="$1"
 
-  SELF_PATH=$(cd -P -- "$(dirname -- "$1")" && pwd -P)
-
-  while [ -L "$SELF_PATH" ]; do
-    # 1) Go to the directory with a symlink.
-    # 2) Go to the directory to which the symlink points.
-    # 3) Get the path.
-    SELF_PATH=$(cd "$(dirname -- "$SELF_PATH")" && cd "$(dirname -- "$(readlink "$SELF_PATH")")" && pwd)
-  done
+  if [ -L "$SELF_PATH" ]; then
+    while [ -L "$SELF_PATH" ]; do
+      SELF_PATH="$(cd "$(dirname -- "$(readlink -- "$SELF_PATH")")" && pwd)"
+    done
+  else
+    SELF_PATH="$(cd -P -- "$(dirname -- "$1")" && pwd -P)"
+  fi
 
   echo "$SELF_PATH"
 }
