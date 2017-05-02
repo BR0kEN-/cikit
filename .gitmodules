@@ -7,3 +7,6 @@
 [submodule "scripts/roles/ansible-role-nginx"]
 	path = scripts/roles/ansible-role-nginx
 	url = git@github.com:jdauphant/ansible-role-nginx.git
+[submodule "scripts/roles/ansible-role-memcached"]
+	path = scripts/roles/ansible-role-memcached
+	url = git@github.com:geerlingguy/ansible-role-memcached.git
