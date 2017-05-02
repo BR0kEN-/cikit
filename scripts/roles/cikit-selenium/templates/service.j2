@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+SERVICE="{{ item.dest | basename | splitext | first | lower }}"
+PID="$(ps aux | grep '{{ item.dest }}' | grep -v grep | awk '{print $2}')"
+
+STARTED="$SERVICE service (PID: $PID) started."
+STOPPED="$SERVICE service stopped."
+
+ARGS=""
+
+for ((i = 2; i <= $#; i++)); do
+  ARGS+=" ${!i}"
+done
+
+do_start()
+{
+  if [ -n "$PID" ]; then
+    echo "$STARTED"
+  else
+    nohup {{ item.service }} "{{ item.dest }}" ${ARGS} > "/var/log/$SERVICE.out.log" 2> "/var/log/$SERVICE.error.log" < /dev/null &
+  fi
+}
+
+do_stop()
+{
+  if [ -n "$PID" ]; then
+    kill "$PID"
+    unset PID
+  else
+    echo "$STOPPED"
+  fi
+}
+
+case "${1:-''}" in
+  start)
+    do_start
+    ;;
+  stop)
+    do_stop
+    ;;
+  status)
+    if [ -z "$PID" ]; then
+      echo "$STOPPED"
+      exit 2
+    fi
+
+    echo "$STARTED"
+    ;;
+  restart)
+    do_stop
+    do_start
+    ;;
+  *)
+  echo "Usage: /etc/init.d/$SERVICE {start|stop|status|restart}"
+  exit 1
+esac
+
+exit 0
