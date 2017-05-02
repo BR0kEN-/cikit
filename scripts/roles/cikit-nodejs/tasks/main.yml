@@ -2,7 +2,7 @@
 - name: Fail if version is unsupported
   fail:
     msg: "Node.js of {{ nodejs_version }} version is unsupported. Choose between {{ cikit_nodejs.versions | join(', ') }}"
-  when: "{{ nodejs_version not in cikit_nodejs.versions }}"
+  when: nodejs_version not in cikit_nodejs.versions
 
 - name: Build installation instructions
   shell: "curl -sL https://deb.nodesource.com/setup_{{ nodejs_version }}.x | sudo -E bash -"

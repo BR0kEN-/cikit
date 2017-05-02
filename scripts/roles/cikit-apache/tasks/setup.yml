@@ -2,7 +2,7 @@
 - name: Define packages for installation
   set_fact:
     apache_packages: "{{ cikit_apache.packages }}"
-  when: "{{ apache_packages is not defined }}"
+  when: apache_packages is not defined
 
 - name: Purge Apache configs
   apt:

@@ -2,7 +2,7 @@
 - name: Fail if version is unsupported
   fail:
     msg: "Solr of {{ solr_version }} version is unsupported. Choose between {{ cikit_solr.versions | join(', ') }}"
-  when: "{{ solr_version not in cikit_solr.versions }}"
+  when: solr_version not in cikit_solr.versions
 
 - name: Download and unarchive
   shell: |-

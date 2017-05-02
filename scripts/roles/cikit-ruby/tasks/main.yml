@@ -2,7 +2,7 @@
 - name: Fail if version is unsupported
   fail:
     msg: "Ruby of {{ ruby_version }} version is unsupported. Choose between {{ cikit_ruby.versions | join(', ') }}"
-  when: "{{ ruby_version not in cikit_ruby.versions }}"
+  when: ruby_version not in cikit_ruby.versions
 
 - name: Update repositories
   git:
@@ -47,7 +47,7 @@
 - name: Check whether Ruby installed successfully
   fail:
     msg: "{{ ruby_installation.stderr }}"
-  when: "{{ ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + ruby_version) < 0 }}"
+  when: "ruby_installation.stderr and ruby_installation.stderr.find('/versions/' + ruby_version) < 0"
 
 - name: Install Gem for particular Ruby version
   become_user: "{{ ansible_user }}"

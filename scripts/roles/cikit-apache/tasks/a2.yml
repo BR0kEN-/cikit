@@ -9,5 +9,5 @@
 - shell: "a2{{ item.key }}{{ list.key | regex_replace('s$', '') }} {{ item.value | join(' ') }}"
   args:
     warn: no
-  when: "{{ item.value | count }}"
+  when: item.value | count
   with_dict: "{{ list.value }}"

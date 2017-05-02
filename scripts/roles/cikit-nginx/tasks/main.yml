@@ -1,0 +1,24 @@
+---
+- name: Check type of provisioning environment
+  shell: "dmidecode -s system-product-name"
+  register: cikit_nginx_system_product_name
+
+- name: Get IP-gateway if provisioning doing for VM
+  shell: "ip route | head -n1 | awk '{print $3}'"
+  register: cikit_nginx_system_gateway_ip
+  when: "'VirtualBox' == cikit_nginx_system_product_name.stdout"
+
+- name: Set real IP
+  set_fact:
+    nginx_real_ip: "{{ cikit_nginx_system_gateway_ip.stdout }}"
+
+- name: Create global config
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+
+- name: Create virtual hosts
+  template:
+    src: cikit.j2
+    dest: "/etc/nginx/sites-{{ item }}/cikit"
+  with_items: ["enabled", "available"]

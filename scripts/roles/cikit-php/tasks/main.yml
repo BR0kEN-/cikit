@@ -2,7 +2,7 @@
 - name: Fail if version is unsupported
   fail:
     msg: "PHP of {{ php_version }} version is unsupported. Choose between {{ cikit_php.versions | join(', ') }}"
-  when: "{{ php_version not in cikit_php.versions }}"
+  when: php_version not in cikit_php.versions
 
 - name: Add APT repository
   apt_repository:
