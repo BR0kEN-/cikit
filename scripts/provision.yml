@@ -6,6 +6,7 @@
   vars_files:
     - ../config.yml
     - vars/ruby.yml
+    - vars/solr.yml
     - vars/ports.yml
     - vars/mysql.yml
     - vars/nginx.yml

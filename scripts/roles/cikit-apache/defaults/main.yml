@@ -24,7 +24,6 @@ apache_data:
     dis: []
   mods:
     en:
-      - proxy_http
       - rewrite.load
       - ssl.load
       - vhost_alias.load

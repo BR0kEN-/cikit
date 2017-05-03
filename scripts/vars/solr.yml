@@ -1,0 +1,5 @@
+---
+solr_cores:
+  - "{{ project }}_default"
+  - "{{ project }}_build"
+  - "{{ project }}_demo"

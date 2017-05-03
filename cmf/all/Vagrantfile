@@ -99,8 +99,6 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
   config.vm.hostname = configValues["site_url"].split('//').last
-  # Create an alias for subdomain to access Solr.
-  config.hostsupdater.aliases = ["solr.#{config.vm.hostname}"]
   # Handle port collisions.
   config.vm.usable_port_range = (10200..10500)
 

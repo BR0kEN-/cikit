@@ -23,7 +23,3 @@ if (file_exists($domain_access_settings)) {
 
 $conf['https'] = TRUE;
 $conf['environment'] = '{{ env }}';
-
-// Search API overrides.
-$conf['search_api_override_mode'] = 'default';
-$conf['search_api_override_servers']['default_solr']['options']['path'] = '/solr/{{ env }}';
