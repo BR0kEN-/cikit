@@ -2,7 +2,7 @@
 
 **CIKit** - [Ansible](https://github.com/ansible/ansible)-based system for deploying development environments or clusters of them. With this tool everyone is able to create virtual machine (based on [Vagrant](https://github.com/mitchellh/vagrant) using VirtualBox provider) for particular team member, matrix of continuous integration servers or single CI server for project(s).
 
-*Currently based on [Ubuntu 16.04 LTS (64bit)](docs/vagrant/box)*.
+*Currently based on [Ubuntu 16.04 LTS (64 bit)](docs/vagrant/box)*.
 
 ```ascii
  ██████╗ ██╗    ██╗  ██╗ ██╗ ████████╗
