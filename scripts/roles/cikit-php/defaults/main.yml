@@ -63,3 +63,4 @@ php:
     - zip
     - apc
     - xmlrpc
+    - memcached

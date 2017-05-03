@@ -30,7 +30,6 @@ apache_data:
     dis: []
   sites:
     en:
-      - solr
       - vhosts
     dis:
       - 000-default.conf
