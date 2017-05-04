@@ -11,7 +11,7 @@
 - Project
   - [Sniffers](project/sniffers) - code quality tests.
   - [Solr](project/solr) - all about the way it's configured.
-- [Matrix](matrix)
+- [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.
   - Droplet - virtual server on the host.
     - [Ansible](matrix/droplet/ANSIBLE.md) - control droplets by Ansible from command line.

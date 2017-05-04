@@ -15,7 +15,7 @@
 
 ## Main possibilities
 
-- [Create matrix of virtual servers (droplets).](matrix)
+- [Create matrix of virtual servers (droplets)](docs/matrix).
 - Automated builds for each commit in a pull request on GitHub (private repositories are supported).
 - Multi CMS/CMF support (`Drupal` and `WordPress` at the moment). To introduce a new one, you just have to add pre-configurations to `cmf/<NAME>/<MAJOR_VERSION>` and make sure that system is downloadable as an archive.
 - Opportunity to keep multiple projects on the same CI server.
