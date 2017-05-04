@@ -69,6 +69,7 @@ You are able to choose two ways for managing your virtual machines: whether usin
 
 ## To do
 
+- [ ] Monitor the progress on https://github.com/imoore76/phpvirtualbox/issues/19 and remove hack of [phpvirtualbox](roles/phpvirtualbox) role
 - [ ] Ability to add SSH keys to the droplet on creation phase
 - [ ] Reuse roles from Matrix in CIKit (`nginx`, `ssl`)
 - [x] Set hostname for each new droplet
