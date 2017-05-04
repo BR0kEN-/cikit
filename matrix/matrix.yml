@@ -13,6 +13,7 @@
       raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
 
       # "gather_facts" after performing required tasks.
+      # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
     - name: Gather facts
       setup: ~
 
