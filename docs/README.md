@@ -13,6 +13,7 @@
   - [Solr](project/solr) - all about the way it's configured.
 - [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.
+  - [Domain](matrix/domain) - human-readable alias for address of your host.
   - Droplet - virtual server on the host.
     - [Ansible](matrix/droplet/ANSIBLE.md) - control droplets by Ansible from command line.
     - [GUI](matrix/droplet/UI.md) - no, thank you, I'm mouseclicker.
