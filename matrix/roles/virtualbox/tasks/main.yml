@@ -21,3 +21,9 @@
 #
 #- include: network.yml
 #  when: "'vboxnet0' != vboxnet0.stdout"
+
+- name: Enabled VirtualBox Driver service
+  service:
+    name: vboxdrv
+    state: restarted
+    enabled: yes
