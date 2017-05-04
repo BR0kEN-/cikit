@@ -12,4 +12,4 @@ Some points you might be interested in.
 
 ### Whether host for matrix can be a virtual machine?
 
-Yes. But it's **definitely not recommended**, because you will create virtual machines inside of virtual machine. Also, nested virtualization must be operable on hardware level. And be ready for slower usability doing this weird way.
+Yes. But it's **definitely not recommended**, because you will create virtual machines inside of virtual machine. Also, nested virtualization must be supported on hardware level. And be ready for slower usability doing this weird way.
