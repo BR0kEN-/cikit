@@ -35,7 +35,7 @@ Optional (passwords will be generated automatically if not set):
 - [Name and password for user to run `VBoxWeb` service](../../matrix/vars/phpvirtualbox.yml#L10-L11). This user is permitted to connect via SSH.
 - [Password for `admin` user for VirtualBox GUI](../../matrix/vars/phpvirtualbox.yml#L7-L8). CRUD operations for users and virtual machines.
 
-**You can easily omit setting the passwords (especially if you can't invent secure ones).** In this case they'll be automatically generated, used and saved locally in `credentials/HOSTNAME/phpvirtualbox_users_system_pass` and `credentials/HOSTNAME/phpvirtualbox_users_gui_pass`. At any further reprovisioning they'll be looked up from those files, so you may not worry they changed.
+**You can easily omit setting the passwords (especially if you can't invent secure ones).** In this case they'll be automatically generated, used and saved locally in `cikit-credentials/HOSTNAME/phpvirtualbox_users_system_pass` and `cikit-credentials/HOSTNAME/phpvirtualbox_users_gui_pass`. At any further reprovisioning they'll be looked up from those files, so you may not worry they changed.
 
 ![Automatically generated passwords](images/matrix-passwords.png)
 

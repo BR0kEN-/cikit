@@ -1,6 +1,6 @@
 # Basic HTTP authentication
 
-Remote **CIKit** host is Nginx based web server which protects web-traffic using basic HTTP authentication. You will [set the credentials for it during server provisioning](../../scripts/provision.yml#L39-L55).
+Remote **CIKit** host is Nginx based web server which protects web-traffic using basic HTTP authentication. You will [set the credentials for it during server provisioning](../../scripts/provision.yml#L41-57).
 
 Besides, you can set the list of IP addresses which will be whitelisted for authentication omitting. [Add IPs here](../../scripts/vars/ip.yml) before the server setup.
 
