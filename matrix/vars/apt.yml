@@ -1,0 +1,28 @@
+---
+apt:
+  repositories:
+    - "deb http://download.virtualbox.org/virtualbox/debian {{ ansible_distribution_release }} contrib"
+    - "ppa:nginx/stable"
+
+  keys:
+    # See https://www.virtualbox.org/wiki/Linux_Downloads#Debian-basedLinuxdistributions
+    - "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+
+  packages:
+    - "python-software-properties"
+    - "dkms"
+    - "build-essential"
+    - "linux-headers-generic"
+    # {{ ansible_kernel }} is the same as result of "uname -r".
+    - "linux-headers-{{ ansible_kernel }}"
+    - "virtualbox-5.1"
+    - "nginx"
+    - "php"
+    - "php-fpm"
+    # PHP packages below are needed for PHPVirtualBox.
+    # See https://sourceforge.net/p/phpvirtualbox/bugs/56/#c324/900f
+    - "php-xml"
+    - "php-soap"
+    - "php-gd"
+    - "unzip"
+    - "python-passlib"

@@ -13,16 +13,16 @@
 - name: Check VM registration status
   fail:
     msg: "{{ vboxmanage_result.stderr }}"
-  when: "{{ vboxmanage_result.stderr and vboxmanage_result.stderr.find('has the same UUID as an existing virtual machine') < 0 }}"
+  when: vboxmanage_result.stderr and vboxmanage_result.stderr.find('has the same UUID as an existing virtual machine') < 0
 
 - include: droplet/list.yml
-  when: "{{ droplet_list }}"
+  when: droplet_list
 
 - include: droplet/add.yml
-  when: "{{ droplet_add }}"
+  when: droplet_add
 
 - include: droplet/edit.yml
-  when: "{{ droplet_edit != '' }}"
+  when: droplet_edit != ''
 
 - include: droplet/delete.yml
-  when: "{{ droplet_delete != '' }}"
+  when: droplet_delete != ''

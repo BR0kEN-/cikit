@@ -1,0 +1,25 @@
+---
+- name: Start service
+  service:
+    name: vboxweb-service
+    state: stopped
+
+- name: Modify version of supported VirtualBox
+  replace:
+    dest: "{{ phpvirtualbox.path }}/endpoints/lib/config.php"
+    regexp: |-
+      define\('PHPVBOX_VER', '.*'\);
+    replace: |-
+      define('PHPVBOX_VER', '5.1-0');
+
+- name: Create symlink WSDL
+  file:
+    src: "{{ phpvirtualbox.path }}/endpoints/lib/{{ item }}-5.0.wsdl"
+    dest: "{{ phpvirtualbox.path }}/endpoints/lib/{{ item }}-5.1.wsdl"
+    state: link
+  with_items: ["vboxweb", "vboxwebService"]
+
+- name: Start service
+  service:
+    name: vboxweb-service
+    state: started

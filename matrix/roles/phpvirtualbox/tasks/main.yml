@@ -7,9 +7,13 @@
 - name: Check if phpVirtualBox already installed
   stat:
     path: "{{ phpvirtualbox.path }}/vboxinit"
-  register: _phpvirtualbox
+  register: phpvirtualbox_status
 
 - include: install.yml
-  when: not _phpvirtualbox.stat.exists
+  when: not phpvirtualbox_status.stat.exists
 
 - include: configure.yml
+
+# @todo Remove since it is a workaround until https://github.com/imoore76/phpvirtualbox/issues/19 gets resolved.
+# Found at: https://sourceforge.net/p/phpvirtualbox/discussion/general/thread/565b7f31/#2c42
+- include: remove-me.yml

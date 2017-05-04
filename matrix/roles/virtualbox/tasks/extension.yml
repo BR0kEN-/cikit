@@ -1,0 +1,8 @@
+---
+- name: Download extension
+  get_url:
+    url: "{{ virtualbox_extension }}"
+    dest: "{{ _virtualbox.extensions_dir }}/{{ virtualbox_extension | basename }}"
+
+- name: Install extension
+  shell: "yes | VBoxManage extpack install {{ _virtualbox.extensions_dir }}/{{ virtualbox_extension | basename }} --replace"

@@ -1,0 +1,17 @@
+---
+- name: Compute version
+  shell: >
+    php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;"
+  register: php_fpm_version
+
+- name: Configure FPM to work via UNIX socket
+  replace:
+    dest: "/etc/php/{{ php_fpm_version.stdout }}/fpm/pool.d/www.conf"
+    regexp: "^listen.*sock$"
+    replace: "listen={{ php_fpm.socket }}"
+
+- name: Start service and enable it on a boot
+  service:
+    name: "php{{ php_fpm_version.stdout }}-fpm"
+    state: restarted
+    enabled: yes

@@ -19,7 +19,7 @@
     - name: Check Ansible compatibility
       fail:
         msg: "You need Ansible 2.x on your host machine!"
-      when: "{{ ansible_version.major }} < 2"
+      when: "ansible_version.major < 2"
 
     - name: Configure hostname
       hostname:
@@ -53,5 +53,5 @@
         name: "{{ item }}"
         state: restarted
       with_items: "{{ restart.split(',') }}"
-      when: "{{ restart | length > 0 }}"
+      when: restart | length > 0
       tags: ["always"]
