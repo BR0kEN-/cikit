@@ -8,7 +8,6 @@
 # Droplets Matrix.
 !matrix/
 matrix/*
-!matrix/docs/
 !matrix/roles/
 !matrix/tasks/
 !matrix/templates/

@@ -4,7 +4,7 @@ You are able to create your own matrix with virtual servers using this tool.
 
 Let's describe both structure and technologies. First of all, we need to get acquainted with two basic terms: `host` and `droplet`.
 
-- `host` - [physical computer (server)](../docs/matrix/host);
+- `host` - [physical computer (server)](host);
 - `droplet` - virtual machine, located on the `host`.
 
 As much droplets as needed can be created on a host machine (depending on hardware configuration, of course).
@@ -39,7 +39,7 @@ Optional (passwords will be generated automatically if not set):
 
 **You can easily omit setting the passwords (especially if you can't invent secure ones).** In this case they'll be automatically generated, used and saved locally in `credentials/HOSTNAME/phpvirtualbox_users_system_pass` and `credentials/HOSTNAME/phpvirtualbox_users_gui_pass`. At any further reprovisioning they'll be looked up from those files, so you may not worry they changed.
 
-![Automatically generated passwords](docs/matrix-passwords.png)
+![Automatically generated passwords](images/matrix-passwords.png)
 
 Not recommended (general credentials - not good for each virtual machine):
 
@@ -65,7 +65,7 @@ Inside of the `/path/to/directory/` two files must be located: `*.crt` and `*.ke
 
 ## Management
 
-You are able to choose two ways for managing your virtual machines: whether using [Ansible](docs/droplet/ANSIBLE.md) or [UI of PHP Virtual Box](docs/droplet/UI.md).
+You are able to choose two ways for managing your virtual machines: whether using [Ansible](droplet/ANSIBLE.md) or [UI of PHP Virtual Box](droplet/UI.md).
 
 ## To do
 
