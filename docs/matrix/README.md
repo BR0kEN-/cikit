@@ -4,7 +4,7 @@ You are able to create your own matrix with virtual servers using this tool.
 
 Let's describe both structure and technologies. First of all, we need to get acquainted with two basic terms: `host` and `droplet`.
 
-- `host` - [physical computer (server)](host);
+- `host` - [machine for storing and controlling virtual machines](host);
 - `droplet` - virtual machine, located on the `host`.
 
 As much droplets as needed can be created on a host machine (depending on hardware configuration, of course).
