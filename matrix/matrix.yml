@@ -1,6 +1,7 @@
 ---
 - hosts: all
   become: yes
+  gather_facts: no
 
   vars:
     application: cikit
@@ -8,6 +9,13 @@
     restart: ""
 
   pre_tasks:
+    - name: Ensure Python is installed on remote host
+      raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
+
+      # "gather_facts" after performing required tasks.
+    - name: Gather facts
+      setup: ~
+
     - name: Determine domain
       set_fact:
         domain: "{{ domain | default(inventory_hostname) }}"

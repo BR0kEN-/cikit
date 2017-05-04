@@ -11,3 +11,5 @@
 - Project
   - [Sniffers](project/sniffers) - code quality tests.
   - [Solr](project/solr) - all about the way it's configured.
+- Matrix
+  - [Host](matrix/host) - prepare machine for hosting virtual machines.

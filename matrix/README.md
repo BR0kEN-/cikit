@@ -4,8 +4,8 @@ You are able to create your own matrix with virtual servers using this tool.
 
 Let's describe both structure and technologies. First of all, we need to get acquainted with two basic terms: `host` and `droplet`.
 
-- `host` is a physical computer (server) with installed `Ubuntu 16.04 LTS (64 bit)` and `Python 2.7` available as `python` command;
-- `droplet`is a virtual machine, located on the `host`.
+- `host` - [physical computer (server)](../docs/matrix/host);
+- `droplet` - virtual machine, located on the `host`.
 
 As much droplets as needed can be created on a host machine (depending on hardware configuration, of course).
 
