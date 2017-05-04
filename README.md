@@ -26,7 +26,7 @@
 
 ## Documentation
 
-Global project documentation [available here](docs).
+Global project documentation [available here](docs#documentation).
 
 ## Slack
 
