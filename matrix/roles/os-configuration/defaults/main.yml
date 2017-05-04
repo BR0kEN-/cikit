@@ -1,0 +1,9 @@
+---
+os_configuration:
+  sshd:
+    UsePAM: "yes"
+    PermitRootLogin: "prohibit-password"
+    AuthorizedKeysFile: "%h/.ssh/authorized_keys"
+    PubkeyAuthentication: "yes"
+    PasswordAuthentication: "no"
+    ChallengeResponseAuthentication: "yes"

@@ -1,0 +1,7 @@
+---
+- name: Create MOTD file
+  template:
+    src: "{{ item }}"
+    dest: "/etc/update-motd.d/{{ item | basename | splitext | first }}"
+    mode: 0755
+  with_fileglob: templates/motd/*.j2

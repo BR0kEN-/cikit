@@ -1,0 +1,15 @@
+---
+- name: Ensure SSH daemon correctly configured
+  lineinfile:
+    regexp: |-
+      ^(?:#+)?({{ item.key | regex_escape }}).*$
+    line: |-
+      {{ item.key }} {{ item.value }}
+    mode: 0644
+    dest: /etc/ssh/sshd_config
+  with_dict: "{{ os_configuration.sshd }}"
+
+- name: Restart SSH daemon
+  service:
+    name: ssh
+    state: restarted

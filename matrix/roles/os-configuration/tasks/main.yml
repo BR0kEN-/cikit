@@ -1,0 +1,5 @@
+---
+- include: "{{ task_file }}"
+  with_fileglob: tasks/tasks/*.yml
+  loop_control:
+    loop_var: task_file

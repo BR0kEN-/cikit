@@ -11,15 +11,18 @@
   pre_tasks:
     - name: Ensure Python is installed on remote host
       raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
+      tags: ["always"]
 
       # "gather_facts" after performing required tasks.
       # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
     - name: Gather facts
       setup: ~
+      tags: ["always"]
 
     - name: Determine domain
       set_fact:
         domain: "{{ domain | default(inventory_hostname) }}"
+      tags: ["always"]
 
     - include_vars: "{{ item }}"
       with_fileglob: vars/*
@@ -29,12 +32,16 @@
       fail:
         msg: "You need Ansible 2.x on your host machine!"
       when: "ansible_version.major < 2"
+      tags: ["always"]
 
     - name: Configure hostname
       hostname:
         name: "{{ domain }}"
 
   roles:
+    - role: os-configuration
+      tags: ["config"]
+
     - role: apt
       tags: ["apt"]
 
