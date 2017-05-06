@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+satisfy any;
+{% for ip in allowed_hosts %}
+allow {{ ip }};
+{% endfor %}
+deny all;
+
+auth_basic "Restricted";
+auth_basic_user_file {{ nginx.htpasswd.path }};

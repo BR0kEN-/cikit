@@ -1,7 +1,7 @@
 ---
 os_configuration:
   # Enabling strict policy will lead to denied access over SSH for not allowed hosts.
-  strict_ssh_policy: no
+  strict_ssh_policy: yes
   sshd:
     UsePAM: "yes"
     PermitRootLogin: "prohibit-password"
@@ -10,4 +10,6 @@ os_configuration:
     PasswordAuthentication: "no"
     ChallengeResponseAuthentication: "yes"
   # IP addresses uses for whitelisting by NGINX and SSHD. All others will be restricted.
-  allowed_hosts: []
+  allowed_hosts:
+    - 195.182.195.117
+    - 159.224.193.142

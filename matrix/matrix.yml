@@ -9,6 +9,12 @@
     restart: ""
 
   pre_tasks:
+    - name: Check Ansible compatibility
+      fail:
+        msg: "Continuation is possible only with Ansible 2.2.x on host machine."
+      when: "ansible_version.major < 2 and ansible_version.minor < 2"
+      tags: ["always"]
+
     - name: Ensure Python is installed on remote host
       raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
       tags: ["always"]
@@ -28,10 +34,10 @@
       with_fileglob: vars/*
       tags: ["always"]
 
-    - name: Check Ansible compatibility
-      fail:
-        msg: "You need Ansible 2.x on your host machine!"
-      when: "ansible_version.major < 2"
+    - name: Compute allowed hosts
+      set_fact:
+        # Ensure current IP is in the list. Otherwise we're risking to lose access to provisioning machine.
+        allowed_hosts: "{{ os_configuration.allowed_hosts + [ansible_env.SSH_CLIENT.split() | first] }}"
       tags: ["always"]
 
     - name: Configure hostname
