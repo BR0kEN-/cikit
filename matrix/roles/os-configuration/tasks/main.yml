@@ -1,5 +1,10 @@
 ---
-- include: "{{ task_file }}"
-  with_fileglob: tasks/tasks/*.yml
-  loop_control:
-    loop_var: task_file
+- name: Configure MOTD
+  template:
+    src: "{{ item }}"
+    dest: "/etc/update-motd.d/{{ item | basename | splitext | first }}"
+    mode: 0755
+  with_fileglob: templates/motd/*.j2
+
+- include: tasks/tasks/sshd.yml
+- include: tasks/tasks/hosts.yml
