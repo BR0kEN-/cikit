@@ -1,7 +1,7 @@
 ---
 os_configuration:
   # Enabling strict policy will lead to denied access over SSH for not allowed hosts.
-  strict_ssh_policy: yes
+  strict_ssh_policy: no
   sshd:
     UsePAM: "yes"
     PermitRootLogin: "prohibit-password"
