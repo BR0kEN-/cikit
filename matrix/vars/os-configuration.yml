@@ -8,7 +8,7 @@ os_configuration:
     AuthorizedKeysFile: "%h/.ssh/authorized_keys"
     PubkeyAuthentication: "yes"
     PasswordAuthentication: "no"
-    ChallengeResponseAuthentication: "yes"
+    ChallengeResponseAuthentication: "no"
   # IP addresses uses for whitelisting by NGINX and SSHD. All others will be restricted.
   allowed_hosts:
     - 195.182.195.117
