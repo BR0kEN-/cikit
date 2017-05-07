@@ -1,0 +1,10 @@
+---
+- include: poweroff.yml
+  args:
+    droplet_name: "{{ droplet_delete }}"
+
+- name: Delete VM
+  include: ../vboxmanage.yml
+  args:
+    command: "unregistervm '{{ droplet_delete }}' -delete"
+    ignore_errors: yes
