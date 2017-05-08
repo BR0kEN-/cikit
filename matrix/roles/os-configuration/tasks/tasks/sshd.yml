@@ -2,7 +2,7 @@
 - name: Ensure SSH daemon correctly configured
   lineinfile:
     regexp: |-
-      ^(?:#+)?({{ item.key | regex_escape }}).*$
+      ^(?:#+)?{{ item.key | regex_escape }}.*$
     line: |-
       {{ item.key }} {{ item.value }}
     mode: 0644

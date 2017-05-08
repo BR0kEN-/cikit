@@ -22,19 +22,19 @@
   args:
     # Example:
     # Forwarding(5)="jenkins,tcp,127.0.0.1,8199,,443"
-    command: "showvminfo {{ vm_name }} --machinereadable | awk -F '[\",]' '/^Forwarding/ {print $2}'"
+    command: "showvminfo '{{ vm_name }}' --machinereadable | awk -F '[\",]' '/^Forwarding/ {print $2}'"
 
 - name: Remove forwarding port
   include: ../vboxmanage.yml
   args:
-    command: "modifyvm {{ vm_name }} --natpf1 delete {{ item }}"
+    command: "modifyvm '{{ vm_name }}' --natpf1 delete '{{ item }}'"
   with_items: "{{ vboxmanage_result.stdout_lines }}"
 
 - name: Configure port forwarding for a new VM
   include: ../vboxmanage.yml
   args:
     # Scheme: [<name>],tcp|udp,[<hostip>],<hostport>,[<guestip>],<guestport>
-    command: "modifyvm {{ vm_name }} --natpf1 '{{ item.key }},tcp,{{ '127.0.0.1' if item.value.vhost else '' }},{{ item.key }}{{ vm_num }},,{{ item.key }}'"
+    command: "modifyvm '{{ vm_name }}' --natpf1 '{{ item.key }},tcp,{{ '127.0.0.1' if item.value.vhost else '' }},{{ item.key }}{{ vm_num }},,{{ item.key }}'"
   with_dict: "{{ virtualmachine.port_forwarding }}"
 
 - include: startvm.yml

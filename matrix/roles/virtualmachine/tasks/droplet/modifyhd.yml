@@ -1,0 +1,17 @@
+# This file depends on two variables:
+# - droplet_name
+# - droplet_size
+---
+- name: Get hard drive path
+  include: ../vboxmanage.yml
+  args:
+    # Example:
+    # "SATA-0-0"="/home/vbox/VirtualBox VMs/cikit02/cikit02.vdi"
+    command: "showvminfo '{{ droplet_name }}' --machinereadable | awk -F '=' '/SATA-0/ {print $2}'"
+
+- name: Resize hard drive
+  include: ../vboxmanage.yml
+  args:
+    # Unable to decrease size of HD.
+    command: "modifyhd '{{ vboxmanage_result.stdout }}' --resize={{ droplet_size }}"
+    ignore_errors: yes

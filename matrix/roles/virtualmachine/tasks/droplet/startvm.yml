@@ -1,0 +1,5 @@
+---
+- name: Run VM
+  include: ../vboxmanage.yml
+  args:
+    command: "startvm '{{ droplet_name }}' --type headless"

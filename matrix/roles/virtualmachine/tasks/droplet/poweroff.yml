@@ -1,0 +1,6 @@
+---
+- name: Power off VM
+  include: ../vboxmanage.yml
+  args:
+    command: "controlvm '{{ droplet_name }}' poweroff"
+    ignore_errors: yes

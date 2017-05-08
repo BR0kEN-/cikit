@@ -6,7 +6,7 @@
 - name: Configure CPU and RAM
   include: ../vboxmanage.yml
   args:
-    command: "modifyvm {{ droplet_edit }} {{ '--cpus=' + droplet_cpus if droplet_cpus else '' }} {{ '--memory=' + droplet_memory if droplet_memory else '' }}"
+    command: "modifyvm '{{ droplet_edit }}' {{ '--cpus=' + droplet_cpus if droplet_cpus else '' }} {{ '--memory=' + droplet_memory if droplet_memory else '' }}"
     ignore_errors: yes
   when: droplet_cpus | int > 0 or droplet_memory | int > 0
 
