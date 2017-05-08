@@ -1,0 +1,27 @@
+---
+- name: Spoof SSH private key
+  set_fact:
+    ansible_ssh_private_key_file: ./files/ssh-keys/private.key
+
+- name: Test SSH connection
+  shell: >
+    ssh -q -p{{ ansible_port | default(22) }} -o "BatchMode=yes" -i {{ ansible_ssh_private_key_file }} {{ ansible_user }}@{{ ansible_host }} exit
+  become: no
+  register: cikit_ssh_status
+  delegate_to: localhost
+  ignore_errors: yes
+
+- name: Spoof SSH key for very first connect
+  set_fact:
+    ansible_ssh_pass: vagrant
+  when: 0 != cikit_ssh_status.rc
+
+- name: Gather facts
+  setup: ~
+
+- name: 'Obtain home directory of "{{ ansible_user }}" user'
+  shell: "eval echo ~{{ ansible_user }}"
+  register: user_home
+
+- include: tasks/bootstrap-remote.yml
+  when: 0 != cikit_ssh_status.rc
