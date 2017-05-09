@@ -8,17 +8,17 @@
 
 - name: Generate project SSH key pair
   shell: >
-    ssh-keygen -t rsa -b 2048 -C "cikit@{{ project }}" -N '' -q -f private.key && mv $_.pub ${_//private/public}
+    ssh-keygen -t rsa -b 2048 -C "cikit@{{ project }}" -N '' -q -f {{ project }}.private.key && mv $_.pub ${_//private/public}
   args:
     chdir: ./files/ssh-keys
-    creates: private.key
+    creates: "{{ project }}.private.key"
     executable: /bin/bash
   become: no
   delegate_to: localhost
 
 - name: Copy SSH key pair to server
   copy:
-    src: "./files/ssh-keys/{{ item }}.key"
+    src: "./files/ssh-keys/{{ project }}.{{ item }}.key"
     dest: "{{ user_home.stdout }}/.ssh/"
     group: "{{ ansible_user }}"
     owner: "{{ ansible_user }}"
@@ -31,7 +31,7 @@
     regexp: vagrant insecure public key
 
 - name: Read secure key
-  shell: cat ./files/ssh-keys/public.key
+  shell: "cat ./files/ssh-keys/{{ project }}.public.key"
   become: no
   register: cikit_public_key
   delegate_to: localhost

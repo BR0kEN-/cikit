@@ -1,7 +1,7 @@
 ---
 - name: Spoof SSH private key
   set_fact:
-    ansible_ssh_private_key_file: ./files/ssh-keys/private.key
+    ansible_ssh_private_key_file: "./files/ssh-keys/{{ project }}.private.key"
 
 - name: Test SSH connection
   shell: >
@@ -11,7 +11,7 @@
   delegate_to: localhost
   ignore_errors: yes
 
-- name: Spoof SSH key for very first connect
+- name: Use insecure password for very first connection
   set_fact:
     ansible_ssh_pass: vagrant
   when: 0 != cikit_ssh_status.rc
