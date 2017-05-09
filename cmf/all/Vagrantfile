@@ -75,7 +75,8 @@ ENV["VAGRANT_DEFAULT_PROVIDER"] = ENV.has_key?("VAGRANT_CI") && ENV["VAGRANT_CI"
 
 boxes = {}
 boxes["lxc"] = "http://cici.ffwua.com/ubuntu14.04provisionedCIBox.lxc.box"
-boxes["virtualbox"] = "http://propeople.com.ua/pub/CIKit_Ubuntu16.04LTS.box"
+# @todo Update to branch!
+boxes["virtualbox"] = "https://cdn.rawgit.com/BR0kEN-/cikit/issue-25/cmf/metadata.json"
 
 if not Vagrant.has_plugin?("vagrant-hostsupdater")
   system "vagrant plugin install vagrant-hostsupdater"
@@ -91,10 +92,9 @@ Dir[".cikit/.vagrant/provisioners/*"].each do |file|
 end
 
 Vagrant.configure(VAGRANT_API_VERSION) do |config|
+  config.vm.box = "BR0kEN-/cikit"
   # Use the box, depending on Vagrant provider.
   config.vm.box_url = "#{boxes[ENV["VAGRANT_DEFAULT_PROVIDER"]]}"
-  # Automatically name the box.
-  config.vm.box = File.basename(config.vm.box_url)
   # The "hostsupdater" plugin insert this value to "hosts".
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
