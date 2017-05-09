@@ -27,7 +27,7 @@
 
     - name: Determine domain
       set_fact:
-        domain: "{{ domain | default(inventory_hostname) }}"
+        domain: "{{ domain | default(ansible_host) }}"
       tags: ["always"]
 
     - include_vars: "{{ item }}"

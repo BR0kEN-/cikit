@@ -3,7 +3,7 @@
 {% for listenedPort in ["80", "443 ssl"] %}
 server {
     listen                          {{ listenedPort }};
-    server_name                     {{ inventory_hostname }};
+    server_name                     {{ ansible_host }};
 
     satisfy                         any;
     {% for allowed_ip in allowed_ips %}

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <org.codefirst.SimpleThemeDecorator plugin="simple-theme-plugin@0.3">
   {% for asset in ["js", "css"] %}
-    <{{ asset }}Url>//{{ inventory_hostname }}/{{ jenkins_prefix }}/userContent/theme/main.{{ asset }}</{{ asset }}Url>
+    <{{ asset }}Url>//{{ ansible_host }}/{{ jenkins_prefix }}/userContent/theme/main.{{ asset }}</{{ asset }}Url>
   {% endfor %}
 </org.codefirst.SimpleThemeDecorator>
