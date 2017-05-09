@@ -1,0 +1,17 @@
+{
+  "name": "BR0kEN-/CIKit_Ubuntu_16.04_LTS",
+  "description": "Continuous Integration Kit - https://github.com/BR0kEN-/cikit",
+  "versions": [
+    {
+      "version": "0.1",
+      "providers": [
+        {
+          "url": "http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS.box",
+          "name": "virtualbox",
+          "checksum": "c6d45f1625a95dd54efc8f397a0883e4a09f79c7c6b4ad66833f80f2f13fc4a1",
+          "checksum_type": "sha256"
+        }
+      ]
+    }
+  ]
+}
