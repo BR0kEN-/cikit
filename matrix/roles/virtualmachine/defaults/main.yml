@@ -10,7 +10,7 @@ droplet_memory: no
 
 virtualmachine:
   path: "/home/{{ phpvirtualbox.users.system.name }}/VirtualBox VMs/initvm"
-  package: "http://propeople.com.ua/pub/ffw_ubuntu_14.04_minimal.tar.gz"
+  package: "http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS.tar.gz"
   port_forwarding:
     22:
       vhost: no
