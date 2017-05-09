@@ -25,6 +25,10 @@ cd PROJECT
 vagrant up --provision
 ```
 
+## SSH keys protection
+
+In case of provisioning remote server, SSH key-pair will be generated in `PROJECT/scripts/files/ssh-keys/`! You have serious risk to loose data on droplet or entire virtual server if private key become public. Share them only via private channels.
+
 ## Documentation
 
 - [Basic HTTP authentication](basic-http-auth) - the frontier of your server protection.
