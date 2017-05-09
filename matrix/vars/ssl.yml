@@ -1,6 +1,6 @@
 ---
+# Directory (local!) must contain "*.crt" and "*.key" files to be copied to server.
+ssl_src: no
 ssl:
-  # Directory (local!) should contain "*.crt" and "*.key" files to be copied to server.
-  src: no
   dest: /etc/ssl/private
   bits: 2048

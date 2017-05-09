@@ -3,4 +3,4 @@
   copy:
     src: "{{ item }}"
     dest: "{{ ssl.dest }}/ssl.{{ item.split('.') | last }}"
-  with_fileglob: "{{ ssl.src }}/*.{{ item }}"
+  with_fileglob: "{{ ssl_src }}/*.{{ item }}"

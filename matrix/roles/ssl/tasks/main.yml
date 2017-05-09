@@ -17,4 +17,4 @@
 
 - include: tasks/copy.yml
   with_items: ["crt", "key"]
-  when: ssl.src
+  when: ssl_src
