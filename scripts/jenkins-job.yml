@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars_files:
+    - ../config.yml
+    - vars/ruby.yml
+    - vars/solr.yml
+    - vars/ports.yml
+    - vars/mysql.yml
+    - vars/nginx.yml
+    - vars/apache.yml
+    - vars/security.yml
+
+  vars:
+    install: no
+
+  pre_tasks:
+    - include: tasks/project-variable.yml
+
+    - name: Set name for Jenkins job
+      set_fact:
+        jenkins_job: "{{ project }}"
+        jenkins_install: "{{ install | bool }}"
+
+  roles:
+    - role: cikit-jenkins

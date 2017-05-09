@@ -1,4 +1,31 @@
-# Documentation
+## Quick start
+
+Information below is good reminder of commands to run.
+
+```shell
+git clone --recursive https://github.com/BR0kEN-/cikit.git
+cd cikit
+
+echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory
+./cikit matrix/matrix.yml --limit=matrix1
+# Create first droplet - "cikit01".
+./cikit matrix/matrix.yml --limit=matrix1 --tags=vm --droplet-add
+# Note that "ansible_ssh_private_key_file" will be generated and used automatically, so no need to specify it here.
+echo "cikit01 ansible_host=example.com ansible_user=root" >> inventory
+
+./cikit repository --project=PROJECT --cmf=drupal --version=7.54
+cd PROJECT
+
+# Provision remote CI server.
+#./cikit .cikit/provision --limit=cikit01
+# Add project to existing, already provisioned, server.
+#./cikit .cikit/jenkins-job --limit=cikit01
+
+# Provision local virtual machine.
+vagrant up --provision
+```
+
+## Documentation
 
 - [Basic HTTP authentication](basic-http-auth) - the frontier of your server protection.
 - [Jenkins](jenkins) - build project instance with incoming changes.
