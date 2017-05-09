@@ -1,6 +1,7 @@
 ---
 - include: repo.yml
 - include: install-deb.yml
+- include: restart-service.yml
 - include: cli.yml
 
 - name: Copy configs
@@ -19,10 +20,7 @@
     owner: "{{ jenkins_data.user }}"
     group: "{{ jenkins_data.group }}"
 
-- name: Restart service
-  service:
-    name: jenkins
-    state: restarted
+- include: restart-service.yml
 
 - name: Install/update plugins
   # Firstly: plugin downloading.
@@ -31,7 +29,6 @@
     java -jar {{ jenkins.cli }} -s {{ jenkins_host }} install-plugin http://mirrors.jenkins-ci.org/plugins/{{ item.key }}/{{ item.value }}/{{ item.key }}.hpi
     curl -X POST -d "<jenkins><install plugin='{{ item.key }}@{{ item.value }}' /></jenkins>" -H 'Content-Type: text/xml' {{ jenkins_host }}/pluginManager/installNecessaryPlugins
   with_dict: "{{ plugins }}"
-  notify: Restart Jenkins
 
 - name: Restart Nginx
   service:
@@ -51,3 +48,4 @@
     line: "{{ jenkins_data.user }} ALL=(ALL) NOPASSWD:ALL"
 
 - include: jobs.yml
+- include: restart-service.yml

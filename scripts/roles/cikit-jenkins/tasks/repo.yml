@@ -12,6 +12,6 @@
 
 - name: Install dependencies
   apt:
-    pkg: "{{ item }}"
+    name: "{{ item }}"
     state: installed
   with_items: "{{ jenkins.dependencies }}"

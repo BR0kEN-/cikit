@@ -1,9 +1,4 @@
 ---
-- name: Wait for Jenkins service
-  wait_for:
-    port: "{{ jenkins_port }}"
-    delay: 10
-
 - name: Create Jenkins CLI destination directory
   file:
     path: "{{ jenkins_dest }}"
@@ -14,10 +9,10 @@
     url: "{{ jenkins_host }}/jnlpJars/jenkins-cli.jar"
     dest: "{{ jenkins.cli }}"
     mode: 0440
-  delay: 20
-  retries: 5
-  register: cli_downloaded
   until: not "failed" in cli_downloaded
+  register: cli_downloaded
+  retries: 5
+  delay: 10
 
 - name: Get updates
   get_url:
@@ -30,4 +25,3 @@
 - name: Update-center
   shell: "cat {{ jenkins.updates }} | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- {{ jenkins_host }}/updateCenter/byId/default/postBack"
   when: jenkins_updates.changed
-  notify: Restart Jenkins

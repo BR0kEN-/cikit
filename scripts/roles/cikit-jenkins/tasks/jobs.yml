@@ -27,4 +27,3 @@
     group: "{{ jenkins_data.group }}"
     force: yes
   with_items: "{{ jenkins_data.jobs }}"
-  notify: Restart Jenkins

@@ -14,8 +14,3 @@
 - name: Install Jenkins
   # Do not override previously created Jenkins config during installation.
   shell: "yes N | dpkg -i ~/jenkins.deb"
-
-- name: Restart service
-  service:
-    name: jenkins
-    state: restarted

@@ -1,0 +1,10 @@
+---
+- name: Restart service
+  service:
+    name: jenkins
+    state: restarted
+
+- name: Wait until Jenkins start accepting connections
+  wait_for:
+    port: "{{ jenkins_port }}"
+    state: started
