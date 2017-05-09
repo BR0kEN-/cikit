@@ -100,19 +100,7 @@
         - ansible
 
   pre_tasks:
-    - name: Check Ansible compatibility
-      fail:
-        msg: "Continuation is possible only with Ansible 2.2.x on host machine."
-      when: "ansible_version.major < 2 and ansible_version.minor < 2"
-      tags: ["always"]
-
-    - name: Check whether virtual machine will be provisioned
-      set_fact:
-        vagrant: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
-      tags: ["always"]
-
     - include: tasks/setup.yml
-      when: not vagrant
       tags: ["always"]
 
     - include: tasks/project-variable.yml

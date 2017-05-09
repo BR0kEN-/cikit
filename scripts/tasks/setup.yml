@@ -1,7 +1,17 @@
 ---
+- name: Check Ansible compatibility
+  fail:
+    msg: "Continuation is possible only with Ansible 2.2.x on host machine."
+  when: "ansible_version.major < 2 and ansible_version.minor < 2"
+
+- name: Check whether virtual machine will be provisioned
+  set_fact:
+    vagrant: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
+
 - name: Spoof SSH private key
   set_fact:
     ansible_ssh_private_key_file: "./files/ssh-keys/{{ project }}.private.key"
+  when: not vagrant
 
 - name: Test SSH connection
   shell: >
@@ -10,11 +20,12 @@
   register: cikit_ssh_status
   delegate_to: localhost
   ignore_errors: yes
+  when: not vagrant
 
 - name: Use insecure password for very first connection
   set_fact:
     ansible_ssh_pass: vagrant
-  when: 0 != cikit_ssh_status.rc
+  when: not vagrant and 0 != cikit_ssh_status.rc
 
 - name: Gather facts
   setup: ~
@@ -24,4 +35,4 @@
   register: user_home
 
 - include: tasks/bootstrap-remote.yml
-  when: 0 != cikit_ssh_status.rc
+  when: not vagrant and 0 != cikit_ssh_status.rc
