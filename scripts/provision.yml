@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: yes
-  gather_facts: no
+  gather_facts: yes
 
   vars_files:
     - ../config.yml
@@ -100,7 +100,20 @@
         - ansible
 
   pre_tasks:
-    - include: tasks/setup.yml
+    - name: Check Ansible compatibility
+      fail:
+        msg: "Continuation is possible only with Ansible 2.2.x on host machine."
+      when: "ansible_version.major < 2 and ansible_version.minor < 2"
+      tags: ["always"]
+
+    - name: Check whether virtual machine will be provisioned
+      set_fact:
+        vagrant: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
+      tags: ["always"]
+
+    - name: Obtain home directory of "{{ ansible_user }}" user
+      shell: "eval echo ~{{ ansible_user }}"
+      register: user_home
       tags: ["always"]
 
     - include: tasks/project-variable.yml

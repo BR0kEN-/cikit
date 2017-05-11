@@ -1,5 +1,6 @@
 ---
-- shell: "VBoxManage {{ command }}"
+- name: "{{ command }}"
+  shell: "VBoxManage {{ command }}"
   become: yes
   become_user: "{{ phpvirtualbox.users.system.name }}"
   ignore_errors: "{{ ignore_errors | default(false) }}"

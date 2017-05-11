@@ -41,6 +41,9 @@
   args:
     droplet_name: "{{ vm_name }}"
 
+# @todo Wait until machine become started.
+- include: bootstrap.yml
+
 - name: Print name of newly created droplet
   debug:
     msg: "Droplet '{{ vm_name }}' has been created."

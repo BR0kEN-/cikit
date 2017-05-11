@@ -9,9 +9,8 @@ cd cikit
 echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory
 ./cikit matrix/matrix --limit=matrix1
 # Create first droplet - "cikit01".
+# Note that credentials for new droplet automatically will be added to "inventory".
 ./cikit matrix/matrix --limit=matrix1 --tags=vm --droplet-add
-# Note that "ansible_ssh_private_key_file" will be generated and used automatically, so no need to specify it here.
-echo "cikit01 ansible_host=example.com ansible_user=root" >> inventory
 
 ./cikit repository --project=PROJECT --cmf=drupal --version=7.54
 cd PROJECT

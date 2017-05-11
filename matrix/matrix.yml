@@ -4,6 +4,7 @@
   gather_facts: no
 
   vars:
+    credentials_storage: ../cikit-credentials
     application: cikit
     # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
     restart: ""
