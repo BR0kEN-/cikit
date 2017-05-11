@@ -7,9 +7,15 @@
   set_fact:
     droplet_ssh:
       user: root
-      source: "{{ credentials_storage }}/{{ ansible_host }}/ssh-keys/{{ vm_name }}/"
-      destination: "/root/.ssh/"
+      source: "{{ credentials_storage }}/{{ ansible_host }}/ssh-keys/{{ vm_name }}"
+      destination: "/root/.ssh"
+      private_key: "{{ vm_name }}.private.key"
       authorized_keys: "/tmp/authorized_keys"
+
+- name: Compute raw SSH command to access the droplet
+  set_fact:
+    droplet_ssh_raw_command: |-
+      ssh -p 22{{ vm_num }} -o BatchMode=yes -o StrictHostKeyChecking=no -i "{{ droplet_ssh.source }}/{{ droplet_ssh.private_key }}" {{ droplet_ssh.user }}@{{ ansible_host }}
 
 - name: Ensure directory for SSH key-pair exists
   file:
@@ -20,10 +26,10 @@
 
 - name: Generate SSH key-pair for droplet
   shell: >
-    ssh-keygen -t rsa -b 2048 -C "{{ vm_name }}@{{ ansible_host }}" -N '' -q -f {{ vm_name }}.private.key && mv $_.pub ${_//private/public}
+    ssh-keygen -t rsa -b 2048 -C "{{ vm_name }}@{{ ansible_host }}" -N '' -q -f {{ droplet_ssh.private_key }} && mv $_.pub ${_//private/public}
   args:
     chdir: "{{ droplet_ssh.source }}"
-    creates: "{{ vm_name }}.private.key"
+    creates: "{{ droplet_ssh.private_key }}"
     executable: /bin/bash
   become: no
   delegate_to: localhost
@@ -42,6 +48,16 @@
     chdir: "{{ droplet_ssh.destination }}"
     executable: /bin/bash
 
+- name: Wait until droplet starts
+  shell: "{{ droplet_ssh_raw_command }} 'exit'"
+  ignore_errors: yes
+  register: droplet_access_check
+  retries: 5
+  delay: 10
+  until: droplet_access_check.stderr.find('Permission denied') != -1
+  become: no
+  delegate_to: localhost
+
 - include: ../vboxmanage.yml
   args:
     command: "guestcontrol '{{ vm_name }}' --username='{{ droplet_ssh.user }}' --password=vagrant {{ item }}"
@@ -52,14 +68,10 @@
     - "copyto '{{ droplet_ssh.authorized_keys }}' --target-directory='{{ droplet_ssh.destination }}'"
 
 - name: Ensure "vagrant" user does not exists on droplet
-  shell: >
-    ssh -p 22{{ vm_num }} -o BatchMode=yes -o StrictHostKeyChecking=no -i "{{ droplet_ssh.source }}/{{ vm_name }}.private.key" {{ droplet_ssh.user }}@{{ ansible_host }} "deluser --remove-home vagrant"
-  become: no
-  delegate_to: localhost
-
-# @todo
-- name: Create an entry in "inventory" about new connection to new droplet
-  lineinfile:
-
+  shell: "{{ droplet_ssh_raw_command }} 'deluser --remove-home vagrant'"
+  register: user_delete_result
+  # 0 - user has been successfully deleted.
+  # 2 - user doesn't exists, so nothing to delete.
+  failed_when: not user_delete_result.rc in [0, 2]
   become: no
   delegate_to: localhost
