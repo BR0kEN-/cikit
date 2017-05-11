@@ -1,0 +1,65 @@
+# These tasks entirely depends on the following variables:
+# - credentials_storage
+# - vm_name
+# - vm_num
+---
+- name: Compute directory for SSH key-pair
+  set_fact:
+    droplet_ssh:
+      user: root
+      source: "{{ credentials_storage }}/{{ ansible_host }}/ssh-keys/{{ vm_name }}/"
+      destination: "/root/.ssh/"
+      authorized_keys: "/tmp/authorized_keys"
+
+- name: Ensure directory for SSH key-pair exists
+  file:
+    path: "{{ droplet_ssh.source }}"
+    state: directory
+  become: no
+  delegate_to: localhost
+
+- name: Generate SSH key-pair for droplet
+  shell: >
+    ssh-keygen -t rsa -b 2048 -C "{{ vm_name }}@{{ ansible_host }}" -N '' -q -f {{ vm_name }}.private.key && mv $_.pub ${_//private/public}
+  args:
+    chdir: "{{ droplet_ssh.source }}"
+    creates: "{{ vm_name }}.private.key"
+    executable: /bin/bash
+  become: no
+  delegate_to: localhost
+
+- name: Copy SSH key-pair to host
+  copy:
+    src: "{{ droplet_ssh.source }}/{{ vm_name }}.{{ item }}.key"
+    dest: "{{ droplet_ssh.destination }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_items: ["private", "public"]
+
+- name: Generate "authorized_keys" for new droplet
+  shell: "cat {{ vm_name }}.public.key > {{ droplet_ssh.authorized_keys }} && chmod 600 $_"
+  args:
+    chdir: "{{ droplet_ssh.destination }}"
+    executable: /bin/bash
+
+- include: ../vboxmanage.yml
+  args:
+    command: "guestcontrol '{{ vm_name }}' --username='{{ droplet_ssh.user }}' --password=vagrant {{ item }}"
+  with_items:
+    # Ensure ".ssh" directory exists on newly created droplet.
+    - "mkdir '{{ droplet_ssh.destination }}'"
+    # Copy generated "authorized_keys" to new droplet.
+    - "copyto '{{ droplet_ssh.authorized_keys }}' --target-directory='{{ droplet_ssh.destination }}'"
+
+- name: Ensure "vagrant" user does not exists on droplet
+  shell: >
+    ssh -p 22{{ vm_num }} -o BatchMode=yes -o StrictHostKeyChecking=no -i "{{ droplet_ssh.source }}/{{ vm_name }}.private.key" {{ droplet_ssh.user }}@{{ ansible_host }} "deluser --remove-home vagrant"
+  become: no
+  delegate_to: localhost
+
+# @todo
+- name: Create an entry in "inventory" about new connection to new droplet
+  lineinfile:
+
+  become: no
+  delegate_to: localhost
