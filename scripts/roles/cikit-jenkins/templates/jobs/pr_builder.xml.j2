@@ -1,99 +1,99 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
-    <actions/>
-    <description>Create build on every commit to pull request on GitHub.</description>
-    <keepDependencies>false</keepDependencies>
-    <properties>
-        <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.0">
-            <projectUrl>https://github.com/VENDOR/PROJECT/</projectUrl>
-            <displayName></displayName>
-        </com.coravy.hudson.plugins.github.GithubProjectProperty>
-    </properties>
-    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
-        <configVersion>2</configVersion>
-        <userRemoteConfigs>
-            <hudson.plugins.git.UserRemoteConfig>
-                <refspec>+refs/pull/*:refs/remotes/origin/pr/*</refspec>
-                <url>git@github.com:VENDOR/PROJECT.git</url>
-            </hudson.plugins.git.UserRemoteConfig>
-        </userRemoteConfigs>
-        <branches>
-            <hudson.plugins.git.BranchSpec>
-                <name>${sha1}</name>
-            </hudson.plugins.git.BranchSpec>
-        </branches>
-        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-        <submoduleCfg class="list"/>
-        <extensions>
-            <hudson.plugins.git.extensions.impl.WipeWorkspace/>
-            <hudson.plugins.git.extensions.impl.CloneOption>
-                <shallow>true</shallow>
-                <noTags>false</noTags>
-                <reference></reference>
-                <depth>0</depth>
-                <honorRefspec>false</honorRefspec>
-            </hudson.plugins.git.extensions.impl.CloneOption>
-            <hudson.plugins.git.extensions.impl.SubmoduleOption>
-                <disableSubmodules>true</disableSubmodules>
-                <recursiveSubmodules>false</recursiveSubmodules>
-                <trackingSubmodules>false</trackingSubmodules>
-                <reference></reference>
-                <parentCredentials>false</parentCredentials>
-                <timeout>5</timeout>
-            </hudson.plugins.git.extensions.impl.SubmoduleOption>
-        </extensions>
-    </scm>
-    <canRoam>true</canRoam>
-    <disabled>false</disabled>
-    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-    <triggers>
-        <org.jenkinsci.plugins.ghprb.GhprbTrigger plugin="ghprb@1.33.4">
-            <spec>* * * * *</spec>
-            <latestVersion>3</latestVersion>
-            <configVersion>3</configVersion>
-            <adminlist>BR0kEN-</adminlist>
-            <allowMembersOfWhitelistedOrgsAsAdmin>false</allowMembersOfWhitelistedOrgsAsAdmin>
-            <orgslist>propeopleua</orgslist>
-            <cron>* * * * *</cron>
-            <buildDescTemplate>#$pullId: $title</buildDescTemplate>
-            <onlyTriggerPhrase>false</onlyTriggerPhrase>
-            <useGitHubHooks>false</useGitHubHooks>
-            <permitAll>false</permitAll>
-            <whitelist></whitelist>
-            <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
-            <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
-            <whiteListTargetBranches>
-                <org.jenkinsci.plugins.ghprb.GhprbBranch>
-                    <branch></branch>
-                </org.jenkinsci.plugins.ghprb.GhprbBranch>
-            </whiteListTargetBranches>
-            <blackListTargetBranches>
-                <org.jenkinsci.plugins.ghprb.GhprbBranch>
-                    <branch></branch>
-                </org.jenkinsci.plugins.ghprb.GhprbBranch>
-            </blackListTargetBranches>
-            <gitHubAuthId>ee9d2a24-e661-4e54-8078-439d571514c7</gitHubAuthId>
-            <triggerPhrase>.*\[test\W+this\W+please\].*</triggerPhrase>
-            <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
-            <extensions>
-                <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
-                    <commitStatusContext>CIKit</commitStatusContext>
-                    <triggeredStatus></triggeredStatus>
-                    <startedStatus></startedStatus>
-                    <statusUrl></statusUrl>
-                    <addTestResults>false</addTestResults>
-                </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
-                <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbCommentFile>
-                    <commentFilePath>${WORKSPACE}/docroot/commentinfo.md</commentFilePath>
-                </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbCommentFile>
-            </extensions>
-        </org.jenkinsci.plugins.ghprb.GhprbTrigger>
-    </triggers>
-    <concurrentBuild>false</concurrentBuild>
-    <builders>
-        <hudson.tasks.Shell>
-            <command>#!/usr/bin/env bash -e
+  <actions/>
+  <description>Create build on every commit to pull request on GitHub.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.0">
+      <projectUrl>https://github.com/VENDOR/PROJECT/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <refspec>+refs/pull/*:refs/remotes/origin/pr/*</refspec>
+        <url>git@github.com:VENDOR/PROJECT.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${sha1}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.WipeWorkspace/>
+      <hudson.plugins.git.extensions.impl.CloneOption>
+        <shallow>true</shallow>
+        <noTags>false</noTags>
+        <reference></reference>
+        <depth>0</depth>
+        <honorRefspec>false</honorRefspec>
+      </hudson.plugins.git.extensions.impl.CloneOption>
+      <hudson.plugins.git.extensions.impl.SubmoduleOption>
+        <disableSubmodules>true</disableSubmodules>
+        <recursiveSubmodules>false</recursiveSubmodules>
+        <trackingSubmodules>false</trackingSubmodules>
+        <reference></reference>
+        <parentCredentials>false</parentCredentials>
+        <timeout>5</timeout>
+      </hudson.plugins.git.extensions.impl.SubmoduleOption>
+    </extensions>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <org.jenkinsci.plugins.ghprb.GhprbTrigger plugin="ghprb@1.33.4">
+      <spec>* * * * *</spec>
+      <latestVersion>3</latestVersion>
+      <configVersion>3</configVersion>
+      <adminlist>BR0kEN-</adminlist>
+      <allowMembersOfWhitelistedOrgsAsAdmin>false</allowMembersOfWhitelistedOrgsAsAdmin>
+      <orgslist>propeopleua</orgslist>
+      <cron>* * * * *</cron>
+      <buildDescTemplate>#$pullId: $title</buildDescTemplate>
+      <onlyTriggerPhrase>false</onlyTriggerPhrase>
+      <useGitHubHooks>false</useGitHubHooks>
+      <permitAll>false</permitAll>
+      <whitelist></whitelist>
+      <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
+      <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
+      <whiteListTargetBranches>
+        <org.jenkinsci.plugins.ghprb.GhprbBranch>
+          <branch></branch>
+        </org.jenkinsci.plugins.ghprb.GhprbBranch>
+      </whiteListTargetBranches>
+      <blackListTargetBranches>
+        <org.jenkinsci.plugins.ghprb.GhprbBranch>
+          <branch></branch>
+        </org.jenkinsci.plugins.ghprb.GhprbBranch>
+      </blackListTargetBranches>
+      <gitHubAuthId>ee9d2a24-e661-4e54-8078-439d571514c7</gitHubAuthId>
+      <triggerPhrase>.*\[test\W+this\W+please\].*</triggerPhrase>
+      <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
+      <extensions>
+        <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+          <commitStatusContext>CIKit</commitStatusContext>
+          <triggeredStatus></triggeredStatus>
+          <startedStatus></startedStatus>
+          <statusUrl></statusUrl>
+          <addTestResults>false</addTestResults>
+        </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+        <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbCommentFile>
+          <commentFilePath>${WORKSPACE}/docroot/commentinfo.md</commentFilePath>
+        </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbCommentFile>
+      </extensions>
+    </org.jenkinsci.plugins.ghprb.GhprbTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/usr/bin/env bash -e
 
 export PYTHONUNBUFFERED=1
 export PROJECT=$(echo ${JOB_NAME//_PR_BUILDER/} | tr '[:upper:]' '[:lower:]')
@@ -133,33 +133,33 @@ sudo chown -R www-data:jenkins $_
 sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/
 sudo chown -R jenkins:jenkins ./
 </command>
-        </hudson.tasks.Shell>
-    </builders>
-    <publishers>
-        <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.33">
-            <configs>
-                <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-                    <configs>
-                        <hudson.plugins.parameterizedtrigger.BooleanParameters>
-                            <configs>
-                                <hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
-                                    <name>FORCE</name>
-                                    <value>false</value>
-                                </hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
-                            </configs>
-                        </hudson.plugins.parameterizedtrigger.BooleanParameters>
-                    </configs>
-                    <projects>SERVER_CLEANER</projects>
-                    <condition>ALWAYS</condition>
-                    <triggerWithNoParameters>false</triggerWithNoParameters>
-                    <triggerFromChildProjects>false</triggerFromChildProjects>
-                </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-            </configs>
-        </hudson.plugins.parameterizedtrigger.BuildTrigger>
-    </publishers>
-    <buildWrappers>
-        <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
-            <colorMapName>xterm</colorMapName>
-        </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
-    </buildWrappers>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.33">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.BooleanParameters>
+              <configs>
+                <hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
+                  <name>FORCE</name>
+                  <value>false</value>
+                </hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
+              </configs>
+            </hudson.plugins.parameterizedtrigger.BooleanParameters>
+          </configs>
+          <projects>SERVER_CLEANER</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <triggerFromChildProjects>false</triggerFromChildProjects>
+        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.BuildTrigger>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
 </project>
