@@ -36,7 +36,7 @@
         path: "{{ webroot }}/backup"
         state: directory
         owner: "{{ become_name }}"
-      # Inside of Vagrant an error may be occur. The reason - mounted file system,
+      # Inside of Vagrant an error may occur. The reason - mounted file system,
       # which inherit group and owner from host-OS and it cannot be changed.
       ignore_errors: yes
 
