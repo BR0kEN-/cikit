@@ -19,7 +19,7 @@ When the above described is done, then just power on the machine, create new rec
 
 `phpVirtualBox` will be available on the [domain](../domain) of your [host](../host). Imagine that it is `m2.propeople.com.ua`. As you can see on the screenshots, every port ends by `01`. This means that domain for VM will be `cikit01.m2.propeople.com.ua`.
 
-Why `cikit<NN>`? Check out this [variable](../../../matrix/matrix.yml#L7) for the answer.
+Why `cikit<NN>`? Check out this [variable](../../../matrix/matrix.yml#L8) for the answer.
 
 ## Delete droplet
 
