@@ -16,4 +16,13 @@
 # - include: tasks/composer-update.yml
 #   when: "'composer update' in actions"
 ---
-- debug: var=actions
+- hosts: localhost
+  become: yes
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - ../config.yml
+
+  tasks:
+    - debug: var=actions
