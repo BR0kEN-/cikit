@@ -101,22 +101,33 @@ export BUILD_NAME=${PROJECT}_build_${BUILD_NUMBER}
 export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUILD_NAME}
 export DESTINATION="/var/www/${BUILD_NAME}"
 export ANSIBLE_ARGS="-vvvv"
+export BUILD_ACTIONS=$(php -r "echo json_encode(array_map('trim', array_filter(
+  explode(',', '$(git log --format=%B -n1 ${GIT_COMMIT} | awk -vRS="]" -vFS="[" '{print $2}')')
+)));")
 
 chmod a+x ./cikit
 
+if [ "${BUILD_ACTIONS}" != "[]" ]; then
+  ./cikit actions
+    --actions='${BUILD_ACTIONS}' \
+    --site-url=${SITE_URL} \
+    --build-id=${BUILD_NAME} \
+    --workspace=${WORKSPACE}
+fi
+
 ./cikit reinstall \
---site-url=${SITE_URL} \
---build-id=${BUILD_NAME} \
---workspace=${WORKSPACE}
+  --site-url=${SITE_URL} \
+  --build-id=${BUILD_NAME} \
+  --workspace=${WORKSPACE}
 
 # Copy codebase to directory, accessible from web.
 sudo rsync --delete -ra ./docroot/ ${DESTINATION}/
 sudo chown -R www-data:jenkins $_
 
 ./cikit sniffers \
---workspace=${WORKSPACE} \
---site-url=${SITE_URL} \
---build-id=${BUILD_NAME}
+  --site-url=${SITE_URL} \
+  --build-id=${BUILD_NAME} \
+  --workspace=${WORKSPACE}
 
 # Move reports to the website directory.
 sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/

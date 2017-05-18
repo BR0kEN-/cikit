@@ -1,0 +1,19 @@
+# This file is a very early execution of the build on CI server and MUST be
+# used carefully!
+#
+# NOTE: you can control the process by simple conditions, parsed in commit
+# messages.
+#
+# Example:
+# git commit -m '[composer update][skip tests] Update Composer dependencies'
+#
+# As a result this script will have the "actions" variable containing an array
+# with "composer update" and "skip tests" strings. In other words: all data
+# between square brackets will be stored into "actions" variable and available
+# during execution of this script.
+#
+# Based on above explanations you can do the following here:
+# - include: tasks/composer-update.yml
+#   when: "'composer update' in actions"
+---
+- debug: var=actions
