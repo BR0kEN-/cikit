@@ -100,16 +100,16 @@ export PROJECT=$(echo ${JOB_NAME//_PR_BUILDER/} | tr '[:upper:]' '[:lower:]')
 export BUILD_NAME=${PROJECT}_build_${BUILD_NUMBER}
 export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUILD_NAME}
 export DESTINATION="/var/www/${BUILD_NAME}"
-export ANSIBLE_ARGS="-vvvv"
+export ANSIBLE_ARGS="-vv"
 export BUILD_ACTIONS=$(php -r "echo json_encode(array_map('trim', array_filter(
-  explode(',', '$(git log --format=%B -n1 ${GIT_COMMIT} | awk -vRS="]" -vFS="[" '{print $2}')')
+  explode(PHP_EOL, '$(git log --format=%B -n1 ${GIT_COMMIT} | awk -vRS="]" -vFS="[" '{print $2}')')
 )));")
 
 chmod a+x ./cikit
 
 if [ "${BUILD_ACTIONS}" != "[]" ]; then
-  ./cikit actions
-    --actions='${BUILD_ACTIONS}' \
+  ./cikit actions \
+    --actions="${BUILD_ACTIONS}" \
     --site-url=${SITE_URL} \
     --build-id=${BUILD_NAME} \
     --workspace=${WORKSPACE}

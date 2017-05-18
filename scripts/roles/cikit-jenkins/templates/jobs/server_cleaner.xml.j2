@@ -29,6 +29,10 @@
     <hudson.tasks.Shell>
       <command>COMMAND=&quot;mysql -uroot -proot -se&quot;
 
+# This build could be triggered by one of PR builders. Ansible might change the
+# owner of some directories making further builds impossible.
+sudo chown -R "${USER}":"${USER}" "${HOME}"
+
 if ! ${FORCE}; then
   # Return "force" state if empty space on device is coming to the end.
   FORCE=&quot;[ $(df -H | head -2 | tail -1 | awk &apos;{printf &quot;%d&quot;, $5}&apos;) -gt 90 ]&quot;
