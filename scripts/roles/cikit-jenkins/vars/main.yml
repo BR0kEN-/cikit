@@ -2,7 +2,7 @@
 jenkins_dest: /opt/jenkins
 jenkins_lib: /var/lib/jenkins
 jenkins:
-  package: "http://pkg.jenkins-ci.org/debian/binary/jenkins_2.59_all.deb"
+  package: "http://pkg.jenkins-ci.org/debian/binary/jenkins_2.61_all.deb"
   repo: "deb http://pkg.jenkins.io/debian-stable binary/"
   key: "https://pkg.jenkins.io/debian/jenkins-ci.org.key"
   dependencies:

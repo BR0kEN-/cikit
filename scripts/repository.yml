@@ -24,7 +24,7 @@
     - name: Set default version of CMF
       set_fact:
         version: "{{ cmfs[cmf].default_version }}"
-      when: "{{ version is undefined }}"
+      when: version is undefined
 
     - name: Determine major version of CMF
       set_fact:
@@ -38,7 +38,7 @@
     - name: CMF is not available
       fail:
         msg: "You are not allowed to install {{ cmf | capitalize }} {{ version }} because it isn't pre-configured."
-      when: "{{ not cmf_configs.stat.exists }}"
+      when: not cmf_configs.stat.exists
 
     - name: Prepare directory for project
       file:
@@ -50,7 +50,7 @@
       args:
         warn: no
         chdir: "../{{ project }}/docroot"
-      when: "{{ not without_sources }}"
+      when: not without_sources
 
     - name: Prepare CIKit-structured repository
       synchronize:

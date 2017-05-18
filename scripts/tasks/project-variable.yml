@@ -10,4 +10,4 @@
     msg: "Project name should only contain letters, numbers, hyphens or dots. It cannot start with a hyphen or dot."
   # Project name will be used as VM hostname, so use the same regex for validating it as Vagrant.
   # https://github.com/mitchellh/vagrant/blob/6d3ab39b27d7cc4036c01b17d703bdd5dbe1b8ee/plugins/kernel_v2/config/vm.rb#L595
-  when: "{{ not project | replace('_', '-') | match('^[a-z0-9][-.a-z0-9]*$', 'i') }}"
+  when: not project | replace('_', '-') | match('^[a-z0-9][-.a-z0-9]*$', 'i')
