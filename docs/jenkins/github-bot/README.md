@@ -12,7 +12,7 @@ Now we overcame the first frontier. Let's review some questions you might have b
 
 ### Do I need to use my own GitHub account?
 
-Actually you need, but would be better to create another one with a name, such as `CIKit Bot` or similar, and use it only for CI purposes.
+Actually you do, but would be better to create another one with a name, such as `CIKit Bot` or similar, and use it only for CI purposes.
 
 ### Where should I get an access token for filling the `Secret` field?
 

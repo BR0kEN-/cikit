@@ -1,10 +1,12 @@
 # Parameterized builds
 
-I believe everyone can invent or already faced the need to occasionally perform some actions. For instance, run `composer update` when the `vendor` directory is not under VCS. It's easy to get this done locally, but how to achieve this on CI server?
+We believe everyone can invent or already faced the need to occasionally perform some actions. For instance, run `composer update` when the `vendor` directory is not under VCS. It's easy to get this done locally, but how to achieve this on CI server?
+
+Meet the [actions](../../../cmf/all/scripts/tasks/reinstall/actions.yml) - list of Ansible tasks which will be executed on a build if commit message contains constructions with text between square brackets (like `[test action1][test action2] Regular message`).
 
 ## Usage
 
-Meet the [actions](../../../cmf/all/scripts/actions.yml) a.k.a parameterized builds. Needed documentation is written directly inside of the playbook, so let's take a look on a case with Composer there.
+Needed documentation is written directly inside of the playbook, so let's take a look on a case with Composer.
 
 - Create `scripts/tasks/composer-update.yml`:
 
@@ -16,26 +18,11 @@ Meet the [actions](../../../cmf/all/scripts/actions.yml) a.k.a parameterized bui
       chdir: "{{ project_workspace }}"
   ```
 
-- Modify `scripts/actions.yml`:
+- Modify `scripts/tasks/reinstall/actions.yml`:
 
   ```yaml
   ---
-  - include: tasks/environment/initialize.yml
-
-  - name: Obtain home directory of a user, who triggered this script
-    shell: "echo ~{{ ansible_env.SUDO_USER }}"
-    register: user_home
-    when: "'SUDO_USER' in ansible_env"
-
-  - name: Set the user's home directory
-    set_fact:
-      become_home: "{{ ansible_env.HOME if 'skipped' in user_home else user_home.stdout }}"
-      become_name: "{{ ansible_env.USER if 'skipped' in user_home else ansible_env.SUDO_USER }}"
-
-  - include_vars: vars/environments/default.yml
-
-  # Don't worry about condition. This playbook will not be executed if no actions in commit.
-  - include: tasks/composer-update.yml
+  - include: ../tasks/composer-update.yml
     when: "'composer update' in actions"
   ```
 

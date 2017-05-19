@@ -37,7 +37,7 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
 - [Jenkins](jenkins) - build project instance with incoming changes.
   - [GitHub Bot configuration](jenkins/github-bot) - pull requests manager.
   - [Reinstall Debian package](jenkins/reinstall-deb) - upgrade/downgrade Jenkins version.
-  - [Parameterized builds (using commit messages)](jenkins/builds-actions) - define your own tasks, controllable by commit messages.
+  - [Parameterized builds](jenkins/builds-actions) - define your own tasks, controllable by commit messages.
 - Ansible
   - [Inventory](ansible/inventory) - list of managed hosts.
 - Vagrant

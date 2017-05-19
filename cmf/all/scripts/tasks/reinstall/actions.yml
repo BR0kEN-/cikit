@@ -17,15 +17,6 @@
 #   when: "'composer update' in actions"
 #
 # Want to run it locally? Not a big deal!
-# ./cikit actions --actions='["composer update", "my next action"]'
+# ./cikit reinstall --actions='["composer update", "my next action"]'
 ---
-- hosts: localhost
-  become: yes
-  connection: local
-  gather_facts: no
-
-  vars_files:
-    - ../config.yml
-
-  tasks:
-    - debug: var=actions
+- debug: var=actions

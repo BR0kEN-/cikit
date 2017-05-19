@@ -49,5 +49,9 @@
       with_fileglob: files/ssh-keys/*.private.key
 
     - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
+
+    - include: "tasks/reinstall/actions.yml"
+      when: actions is defined and actions | length > 0
+
     - include: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"
     - include: "tasks/reinstall/main.yml"
