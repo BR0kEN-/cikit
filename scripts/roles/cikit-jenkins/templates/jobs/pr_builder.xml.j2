@@ -15,6 +15,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <refspec>+refs/pull/*:refs/remotes/origin/pr/*</refspec>
         <url>git@github.com:VENDOR/PROJECT.git</url>
+        <credentialsId>cikit-bot-ssh</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -73,7 +74,7 @@
           <branch></branch>
         </org.jenkinsci.plugins.ghprb.GhprbBranch>
       </blackListTargetBranches>
-      <gitHubAuthId>ee9d2a24-e661-4e54-8078-439d571514c7</gitHubAuthId>
+      <gitHubAuthId>cikit-bot-token</gitHubAuthId>
       <triggerPhrase>.*\[test\W+this\W+please\].*</triggerPhrase>
       <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
       <extensions>

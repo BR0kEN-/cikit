@@ -27,7 +27,6 @@ Pull - do not reinstall an application and just grab latest changes from reposit
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
               <string>demo</string>
-              <string>default</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
@@ -49,6 +48,7 @@ Pull - do not reinstall an application and just grab latest changes from reposit
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <url>git@github.com:VENDOR/PROJECT.git</url>
+        <credentialsId>cikit-bot-ssh</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

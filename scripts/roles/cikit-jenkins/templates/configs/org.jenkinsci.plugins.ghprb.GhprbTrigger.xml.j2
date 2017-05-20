@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jenkinsci.plugins.ghprb.GhprbTrigger_-DescriptorImpl plugin="ghprb@1.36.2">
+  <configVersion>1</configVersion>
+  <whitelistPhrase>.*add\W+to\W+whitelist.*</whitelistPhrase>
+  <okToTestPhrase>.*ok\W+to\W+test.*</okToTestPhrase>
+  <retestPhrase>.*test\W+this\W+please.*</retestPhrase>
+  <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
+  <cron>H/3 * * * *</cron>
+  <useComments>true</useComments>
+  <useDetailedComments>true</useDetailedComments>
+  <manageWebhooks>true</manageWebhooks>
+  <unstableAs>FAILURE</unstableAs>
+  <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
+  <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
+  <blackListLabels></blackListLabels>
+  <whiteListLabels></whiteListLabels>
+  <githubAuth>
+    <org.jenkinsci.plugins.ghprb.GhprbGitHubAuth>
+      <serverAPIUrl>https://api.github.com</serverAPIUrl>
+      <jenkinsUrl>https://{{ http_auth_user }}:{{ http_auth_pass }}@{{ ansible_host }}/{{ jenkins_prefix }}/</jenkinsUrl>
+      <credentialsId>cikit-bot-token</credentialsId>
+      <id>cikit-bot-token</id>
+      <description>CIKit Bot</description>
+      <secret></secret>
+    </org.jenkinsci.plugins.ghprb.GhprbGitHubAuth>
+  </githubAuth>
+  <adminlist></adminlist>
+  <requestForTestingPhrase>Can one of the admins verify this patch? Use &quot;o+k to test&quot; or &apos;&apos;t+est this please&quot; for manual build execution.</requestForTestingPhrase>
+  <extensions>
+    <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildLog>
+      <logExcerptLines>25</logExcerptLines>
+    </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildLog>
+    <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildStatus>
+      <messages>
+        <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildResultMessage>
+          <message>Test FAILed.</message>
+          <result>FAILURE</result>
+        </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildResultMessage>
+        <org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildResultMessage>
+          <message>Test PASSed.</message>
+          <result>SUCCESS</result>
+        </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildResultMessage>
+      </messages>
+    </org.jenkinsci.plugins.ghprb.extensions.comments.GhprbBuildStatus>
+    <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+      <commitStatusContext></commitStatusContext>
+      <triggeredStatus></triggeredStatus>
+      <startedStatus></startedStatus>
+      <statusUrl></statusUrl>
+      <addTestResults>true</addTestResults>
+    </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+  </extensions>
+</org.jenkinsci.plugins.ghprb.GhprbTrigger_-DescriptorImpl>
