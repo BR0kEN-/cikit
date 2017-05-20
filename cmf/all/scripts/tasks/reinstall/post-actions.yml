@@ -1,0 +1,3 @@
+---
+- include: actions/npm-install.yml
+  when: "'npm install' in actions or 'default' != env"

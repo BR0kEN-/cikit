@@ -1,0 +1,17 @@
+---
+- name: Get path to active theme
+  shell: "<THEME_DEFAULT_COMMAND>"
+  args:
+    chdir: "{{ project_workspace }}"
+  register: theme_path
+
+- name: Check for package.json
+  stat:
+    path: "{{ theme_path.stdout }}/package.json"
+  register: is_package_json
+
+- name: Install NPM packges
+  shell: "npm install"
+  args:
+    chdir: "{{ project_workspace }}"
+  when: is_package_json.stat.exists

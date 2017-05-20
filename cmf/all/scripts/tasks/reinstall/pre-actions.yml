@@ -13,10 +13,11 @@
 # during execution of this script.
 #
 # Based on above explanations you can do the following here:
-# - include: tasks/composer-update.yml
+# - include: tasks/actions/composer-update.yml
 #   when: "'composer update' in actions"
 #
 # Want to run it locally? Not a big deal!
 # ./cikit reinstall --actions='["composer update", "my next action"]'
 ---
-- debug: var=actions
+- include: actions/composer-update.yml
+  when: "'composer update' in actions or 'default' != env"

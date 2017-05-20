@@ -30,6 +30,10 @@
       set_fact:
         become_home: "{{ ansible_env.HOME if 'skipped' in user_home else user_home.stdout }}"
         become_name: "{{ ansible_env.USER if 'skipped' in user_home else ansible_env.SUDO_USER }}"
+        # Do not check for length of array because building stable environments may
+        # bypass conditions like "'action' in actions" in favor of "'default' != env"
+        # to successfully complete the build.
+        run_actions: "{{ actions is defined }}"
 
     - name: Ensure directory for backup data exists
       file:
@@ -50,8 +54,12 @@
 
     - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
 
-    - include: "tasks/reinstall/actions.yml"
-      when: actions is defined and actions | length > 0
+    - include: "tasks/reinstall/pre-actions.yml"
+      when: run_actions
 
     - include: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"
+
+    - include: "tasks/reinstall/post-actions.yml"
+      when: run_actions
+
     - include: "tasks/reinstall/main.yml"

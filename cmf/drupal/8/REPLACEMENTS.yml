@@ -1,0 +1,4 @@
+---
+replacements:
+  USERS_INFO_TABLE: "users_field_data"
+  THEME_DEFAULT_COMMAND: "drush dd $(drush cget system.theme default --format=string)"
