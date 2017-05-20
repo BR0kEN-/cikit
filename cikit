@@ -11,6 +11,7 @@
 # - eval
 # - ansible-playbook
 
+COMMAND="ansible-playbook"
 # JSON formatted "--extra-vars" options.
 extra_vars=""
 # List of parameters for "ansible-playbook" command.
@@ -90,6 +91,7 @@ extra_var()
 }
 
 SELF_PATH="$(locate_path "$0")"
+ENV_CONFIG="${SELF_PATH}/.env-config.yml"
 
 if [ -z "$1" ]; then
   exit_with_help "$SELF_PATH/scripts"
@@ -110,6 +112,33 @@ if [ ! -f "$playbook" ]; then
 
   echo "Playbook \"$playbook\" does not exists!"
   exit 1
+fi
+
+if [ -f "${ENV_CONFIG}" ]; then
+  # It's interesting trick with detecting Python interpreter. Sometimes it may differ. Especially
+  # on MacOS, when Ansible installed via Homebrew. For instance, "which python" returns
+  # the "/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/bin/python2.7",
+  # but this particular setup may not have necessary packages for full Ansible operability. Since
+  # Ansible - is a Python scripts they must have a shadebag line with path to interpreter they
+  # should run by. Grab it and try!
+  # Given:
+  #   $(realpath $(which python)) -c 'import yaml'
+  # Ends by:
+  #   Traceback (most recent call last):
+  #     File "<string>", line 1, in <module>
+  #   ImportError: No module named yaml
+  # But:
+  #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
+  # Just works.
+  PYTHON_INTERPRETER=$(cat $(which "${COMMAND}") | head -n1 | tr -d '#!')
+
+  if [ -x "${PYTHON_INTERPRETER}" ]; then
+    for var in $("${PYTHON_INTERPRETER}" -c "exec(\"import yaml\nfor k, v in yaml.load(open('${ENV_CONFIG}')).iteritems():\n\tprint '--%s=%s' % (k, v)\")"); do
+      extra_var "${var}"
+    done
+  else
+    echo -e "\e[0;33mWARNING: Cannot read environment configuration from \"${ENV_CONFIG}\". Looks like Python setup cannot provide Ansible operability.\e[0m"
+  fi
 fi
 
 # The "EXTRA_VARS" passed as environment variable. Parse it first
@@ -156,7 +185,7 @@ export ANSIBLE_FORCE_COLOR=1
 # https://groups.google.com/forum/#!topic/ansible-project/QqaBvKVKDDQ
 cd "${playbook%/*}"
 
-COMMAND="ansible-playbook $playbook $params"
+COMMAND+=" $playbook $params"
 
 # Print entire command if verbosity requested.
 if [[ "$params" =~ -v{1,}[[:space:]] ]]; then

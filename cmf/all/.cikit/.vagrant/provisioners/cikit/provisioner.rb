@@ -51,7 +51,7 @@ module VagrantPlugins::CIKit
       if File.exist?(playbook)
         taglist = []
         extra_vars = {}
-        prompts_file = "#{@machine.env.local_data_path.to_s}/prompts/#{@machine.config.vm.hostname}"
+        prompts_file = "#{File.dirname(@machine.env.local_data_path)}/.env-config.yml"
         playbook = YAML::load_file(playbook)
         prompts = File.exists?(prompts_file) ? YAML::load_file(prompts_file) : {}
 
