@@ -43,12 +43,17 @@
 
 - name: Check password for root user
   become: "{{ ansible_user }}"
-  shell: "mysql -u{{ cikit_mysql_user.name }} -p{{ cikit_mysql_user.pass }}"
+  shell: >
+    mysql -u{{ cikit_mysql_user.name }} -p{{ cikit_mysql_user.pass }} -se "SELECT plugin FROM mysql.user WHERE User = '{{ cikit_mysql_user.name }}'"
   ignore_errors: yes
   register: cikit_mysql_access
 
+# If provisioning occurs under "root" and the "plugin" column of "mysql.user"
+# table has the "auth_socket", then password will be bypassed in cases when
+# MySQL and system usernames are matched. In other words: "root" password will
+# work for "root" system user, but won't work, for instance, for "jenkins".
 - include: root-access.yml
-  when: cikit_mysql_access.failed is defined
+  when: cikit_mysql_access.failed is defined or 'auth_socket' in cikit_mysql_access.stdout_lines
 
 - name: Remove anonymous MySQL user
   mysql_user:

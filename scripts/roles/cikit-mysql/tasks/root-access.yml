@@ -23,7 +23,7 @@
     chown {{ cikit_mysql.user }} {{ cikit_mysql.dirs.run }}
     mysqld_safe --skip-grant-tables &
     sleep 5
-    mysql -uroot -e "USE mysql; UPDATE user SET authentication_string = PASSWORD('{{ cikit_mysql_user.pass }}') WHERE User = '{{ cikit_mysql_user.name }}'; UPDATE user SET plugin = 'mysql_native_password'; FLUSH PRIVILEGES;"
+    mysql -uroot -e "UPDATE mysql.user SET authentication_string = PASSWORD('{{ cikit_mysql_user.pass }}'), plugin = 'mysql_native_password' WHERE User = '{{ cikit_mysql_user.name }}'; FLUSH PRIVILEGES;"
   args:
     # Unfortunately the commented code above isn't working. The "auth_socket"
     # plugin loads for "sudo" session only at the stage when you starting the
