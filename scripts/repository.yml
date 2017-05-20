@@ -101,7 +101,7 @@
     - include_vars: "../{{ project }}/REPLACEMENTS.yml"
 
     - name: Seeking the placeholders
-      shell: "find ../{{ project }}/scripts/ -type f -exec sed -i {{ \"''\" if ansible_os_family == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value }}/g' {} \\;"
+      shell: "find ../{{ project }}/scripts/ -type f -exec sed -i {{ \"''\" if ansible_os_family == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \\;"
       environment:
         LC_ALL: C
       with_dict: "{{ replacements }}"
