@@ -130,7 +130,7 @@ if [ -f "${ENV_CONFIG}" ]; then
   # But:
   #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
   # Just works.
-  PYTHON_INTERPRETER=$(cat $(which "${COMMAND}") | head -n1 | tr -d '#!')
+  PYTHON_INTERPRETER=$(cat "$(which "${COMMAND}")" | head -n1 | tr -d '#!')
 
   if [ -x "${PYTHON_INTERPRETER}" ]; then
     for var in $("${PYTHON_INTERPRETER}" -c "exec(\"import yaml\nfor k, v in yaml.load(open('${ENV_CONFIG}')).iteritems():\n\tprint '--%s=%s' % (k, v)\")"); do
