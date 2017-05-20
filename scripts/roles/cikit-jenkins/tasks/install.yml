@@ -27,8 +27,17 @@
   # Secondly: install plugin dependencies.
   shell: |-
     java -jar {{ jenkins.cli }} -s {{ jenkins_host }} install-plugin http://mirrors.jenkins-ci.org/plugins/{{ item.key }}/{{ item.value }}/{{ item.key }}.hpi
-    curl -X POST -d "<jenkins><install plugin='{{ item.key }}@{{ item.value }}' /></jenkins>" -H 'Content-Type: text/xml' {{ jenkins_host }}/pluginManager/installNecessaryPlugins
+    curl -d "<jenkins><install plugin='{{ item.key }}@{{ item.value }}' /></jenkins>" -H 'Content-Type: text/xml' {{ jenkins_host }}/pluginManager/installNecessaryPlugins
   with_dict: "{{ plugins }}"
+
+- name: Execute script
+  shell: "curl -d 'script={{ item }}' {{ jenkins_host }}/scriptText"
+  with_items:
+    # Enable HTML markup.
+    - |-
+        import hudson.markup.RawHtmlMarkupFormatter
+        Jenkins.instance.setMarkupFormatter(new RawHtmlMarkupFormatter(false))
+        Jenkins.instance.save()
 
 - name: Restart Nginx
   service:
