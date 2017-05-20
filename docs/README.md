@@ -43,6 +43,7 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
 - Vagrant
   - [Box](vagrant/box) - information and access details.
 - Project
+  - [Shippable environment configuration](project/env-config) - share environment configuration with team members.
   - [Sniffers](project/sniffers) - code quality tests.
   - [Solr](project/solr) - all about the way it's configured.
 - [Matrix](matrix) - storage and controller of virtual servers.

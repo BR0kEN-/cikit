@@ -71,7 +71,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 
   ```
   cd <NAME>
-  ./cikit .cikit/provision --project=<NAME> [--limit=<HOST>]
+  ./cikit .cikit/provision --limit=<HOST>
   ```
 
 Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.
