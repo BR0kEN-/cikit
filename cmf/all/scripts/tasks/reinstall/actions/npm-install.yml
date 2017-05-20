@@ -11,7 +11,8 @@
   register: is_package_json
 
 - name: Install NPM packges
-  shell: "npm install"
+  shell: "sudo npm install"
   args:
-    chdir: "{{ project_workspace }}"
+    warn: no
+    chdir: "{{ theme_path.stdout }}"
   when: is_package_json.stat.exists
