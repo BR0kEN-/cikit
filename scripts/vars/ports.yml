@@ -10,6 +10,12 @@ nginx_proxies:
   # - NGINX: http://example.com:80
   # - NGINX: https://example.com:443
   # - <TOOL>: https://127.0.0.1:<PORT>
-  /: "{{ apache_port }}"
-  /solr: "{{ solr_port }}"
-  /jenkins: "{{ jenkins_port }}"
+  /:
+    port: "{{ apache_port }}"
+    http: yes
+  /solr:
+    port: "{{ solr_port }}"
+    http: yes
+  /jenkins:
+    port: "{{ jenkins_port }}"
+    http: no
