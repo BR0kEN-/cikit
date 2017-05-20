@@ -7,7 +7,7 @@
   set_fact:
     droplet_ssh:
       user: root
-      source: "{{ credentials_storage }}/{{ ansible_host }}/ssh-keys/{{ vm_name }}"
+      source: "{{ credentials_storage }}/{{ inventory_hostname }}/ssh-keys"
       destination: "/root/.ssh"
       private_key: "{{ vm_name }}.private.key"
       authorized_keys: "/tmp/authorized_keys"
