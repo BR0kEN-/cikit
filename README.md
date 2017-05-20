@@ -122,6 +122,6 @@ You should have the following software on your host machine:
 
 | Name        | Version |
 | ----------- | ------- |
-| Vagrant     | 1.8+    |
-| Ansible     | 2.3+    |
-| VirtualBox  | 4.0+    |
+| Vagrant     | 1.9+    |
+| Ansible     | 2.2+    |
+| VirtualBox  | 5.1+    |
