@@ -1,6 +1,6 @@
 # Basic HTTP authentication
 
-Remote **CIKit** host is Nginx based web server which protects web-traffic using basic HTTP authentication. You can configure the credentials for in different ways: using `.env-config.yml`, passing `--http-auth-user=admin --http-auth-pass=password` options to `cikit` utility or leaving everything as is, and get password generated in `cikit-credentials/YOUR_HOSTNAME/http_auth_pass` file.
+Remote **CIKit** host is Nginx based web server which protects web-traffic using basic HTTP authentication. Credentials for it can be configured in different ways: using `.env-config.yml`, passing `--http-auth-user=admin --http-auth-pass=password` options to `cikit` utility or leaving everything as is, and get password generated in `cikit-credentials/YOUR_HOSTNAME/http_auth_pass` file.
 
 Moreover, you can set the list of IP addresses which will be whitelisted for skipping authentication. Use `.env-config.yml` for this, for instance:
 
