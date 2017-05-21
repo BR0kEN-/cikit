@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
 
-CIKIT_PHP_VERSION=$1
-CIKIT_NODEJS_VERSION=$2
-SETUP_SOLR=$3
+export ANSIBLE_ARGS="-vvv"
 
-: ${CIKIT_PHP_VERSION:="7.0"}
-: ${CIKIT_NODEJS_VERSION:="6"}
-: ${SETUP_SOLR:="false"}
+PROJECT="cikit-test"
 
-export ANSIBLE_ARGS="-vvvv"
-# Answer on the questions appearing during Vagrant provisioning.
-export EXTRA_VARS="--cikit-php-version=${CIKIT_PHP_VERSION} --cikit-nodejs-version=${CIKIT_NODEJS_VERSION} --setup-solr=${SETUP_SOLR}"
+VERSION_PHP=$1
+VERSION_NODEJS=$2
+VERSION_SOLR=$3
+VERSION_RUBY=$4
+
+: ${VERSION_PHP:="7.0"}
+: ${VERSION_NODEJS:="6"}
+: ${VERSION_SOLR:="6.5.1"}
+: ${VERSION_RUBY:="2.4.0"}
 
 # Change directory to "tests".
-\cd -P -- $(dirname -- $0)
+\cd -P -- $(dirname -- "$0")
 # Go to root directory of CIKit.
 \cd ../
 
-./cikit repository --project=cikit-test-project
+./cikit repository \
+  --project="${PROJECT}" \
+  --php-version="${VERSION_PHP}" \
+  --nodejs-version="${VERSION_NODEJS}" \
+  --solr-version="${VERSION_SOLR}" \
+  --ruby-version"${VERSION_RUBY}"
 
-\cd cikit-test-project/
+\cd "${PROJECT}"
 \vagrant up
