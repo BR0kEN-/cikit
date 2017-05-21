@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions of the installation profile.
+ */
+
+use Drupal\user\Entity\User;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_install().
+ */
+function pp_install() {
+  $config_factory = \Drupal::configFactory();
+
+  // Enable default permissions for system roles.
+  foreach ([AccountInterface::ANONYMOUS_ROLE, AccountInterface::AUTHENTICATED_ROLE] as $rid) {
+    user_role_grant_permissions($rid, ['access content']);
+  }
+
+  // Assign user 1 the "administrator" role.
+  /* @var \Drupal\user\UserStorageInterface $user_storage */
+  $user_storage = \Drupal::entityTypeManager()->getStorage('user');
+
+  /* @var \Drupal\user\Entity\User $user */
+  $user = $user_storage->load(1);
+  $user->roles[] = 'administrator';
+
+  $user_storage->save($user);
+
+  foreach ([
+    'user.settings' => [
+      // Allow visitor account creation, but with administrative approval.
+      'register' => USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL,
+    ],
+    'node.settings' => [
+      'use_admin_theme' => TRUE,
+    ],
+    'system.theme' => [
+      'admin' => 'seven',
+      'default' => 'stark',
+    ],
+  ] as $setting => $collection) {
+    $config = $config_factory->getEditable($setting);
+
+    foreach ($collection as $key => $value) {
+      $config->set($key, $value);
+    }
+
+    $config->save(TRUE);
+  }
+}

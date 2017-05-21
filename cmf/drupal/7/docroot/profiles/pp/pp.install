@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions of the installation profile.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function pp_install() {
+  db_insert('block')
+    ->fields([
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => variable_get('theme_default', 'bartik'),
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ])
+    ->execute();
+
+  // Enable default permissions for system roles.
+  foreach ([DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID] as $rid) {
+    user_role_grant_permissions($rid, ['access content']);
+  }
+
+  // Allow visitor account creation, but with administrative approval.
+  variable_set('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+}
