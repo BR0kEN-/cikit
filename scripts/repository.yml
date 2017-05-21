@@ -13,7 +13,7 @@
         default_version: "7.54"
       wordpress:
         download_url: "wordpress.org/wordpress"
-        default_version: "4.7"
+        default_version: "4.7.5"
 
   vars_files:
     - ../config.yml

@@ -44,7 +44,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 - Create CIKit-based project.
 
   ```shell
-  ./cikit repository --project=<NAME> [--cmf=drupal|wordpress] [--version=7.53|8.3.x-dev|4.6.1] [--without-sources]
+  ./cikit repository --project=<NAME> [--cmf=drupal|wordpress] [--version=7.54|8.3.x-dev|4.7.5] [--without-sources]
   git init
   git add .
   git commit -m 'Init of CIKit project'
