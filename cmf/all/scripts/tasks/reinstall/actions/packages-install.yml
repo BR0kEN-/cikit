@@ -15,7 +15,7 @@
   # Try to fetch data from cache when no obvious installation requested.
   when: not install
 
-- name: "Check for {{ filename }}"
+- name: "Check for {{ path }}/{{ filename }}"
   stat:
     path: "{{ path }}/{{ filename }}"
   register: is_packages_definition
