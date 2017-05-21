@@ -1,10 +1,16 @@
 ---
+http_auth_user: admin
+# Will be generated and stored locally if empty.
+http_auth_pass: ""
+
 ssl_folder: /etc/ssl/private
 
+# Specify here a list of IP addresses for disabling basic HTTP authentication.
 allowed_ips:
+  # Localhost must be without authentication to run Behat tests.
   - 127.0.0.1
 
 protected_folders:
   - path: /var/www/html
-    user: root
-    pass: r0Ot_p4assw0Rd
+    user: "{{ http_auth_user }}"
+    pass: "{{ http_auth_pass }}"

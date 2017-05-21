@@ -38,25 +38,9 @@
       private: no
       tags: ["solr"]
 
-    - name: http_auth_user
-      prompt: Username for HTTP authentication
-      default: admin
-      private: no
-      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
-      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
-      when: not vagrant
-      tags: ["security"]
-
-    - name: http_auth_pass
-      prompt: Password for HTTP authentication
-      default: password
-      private: yes
-      # WARNING!!! This condition will be processed only inside of Vagrantfile! The "vagrant"
-      # variable is undefined here and "when" construction aren't processed by Ansible for prompts.
-      when: not vagrant
-      tags: ["security"]
-
   vars:
+    credentials_storage: ../cikit-credentials
+
     basic_packages:
       apt:
         - git
@@ -109,6 +93,14 @@
     - name: Check whether virtual machine will be provisioned
       set_fact:
         vagrant: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
+      tags: ["always"]
+
+    - include: tasks/password.yml
+      args:
+        title: "Compute password for basic HTTP authentication"
+        name: http_auth_pass
+        for: "{{ http_auth_pass }}"
+      when: not vagrant and not http_auth_pass
       tags: ["always"]
 
     - name: Obtain home directory of "{{ ansible_user }}" user

@@ -1,4 +1,8 @@
 ---
+http_auth_user: admin
+# Will be generated and stored locally if empty.
+http_auth_pass: ""
+
 ssl_folder: /etc/ssl/private
 
 # Specify here a list of IP addresses for disabling basic HTTP authentication.
