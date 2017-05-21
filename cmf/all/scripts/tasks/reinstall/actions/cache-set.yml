@@ -1,0 +1,8 @@
+---
+- name: "Dump {{ manager }} packages to cache"
+  archive:
+    path: "{{ src }}"
+    dest: "{{ dest }}.bz2"
+    format: bz2
+  # Allow to create cache only by stable or local environments!
+  when: "'default' != env or 'vagrant' == become_name"

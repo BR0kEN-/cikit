@@ -1,3 +1,16 @@
 ---
-- include: actions/npm-install.yml
-  when: "'npm install' in actions or 'default' != env"
+- name: Get path to active theme
+  shell: "<THEME_PATH_COMMAND>"
+  args:
+    chdir: "{{ project_workspace }}"
+  register: theme_path
+
+- include: actions/packages-install.yml
+  args:
+    manager: "NPM"
+    command: "sudo npm install"
+    filename: "package.json"
+    dirname: "node_modules"
+    install: "{{ npm_install }}"
+    cache: "{{ npm_cache }}"
+    path: "{{ theme_path.stdout }}"

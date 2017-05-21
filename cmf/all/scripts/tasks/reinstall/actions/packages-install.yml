@@ -1,0 +1,38 @@
+# Required variables:
+# - manager: Human readable name of package manager.
+# - cache: absolute path to directory to store the cache.
+# - path: absolute path to directory to install packages.
+# - filename: name of file with definitions of packages to install.
+# - dirname: name of directory which creates after packages installation in "path".
+# - install: boolean indicator of whether packages should be installed or gained from cache.
+# - command: shell command to install packages.
+---
+- include: cache-get.yml
+  args:
+    # Note, that "manager" variable migrates into "cache-get" include.
+    src: "{{ cache }}"
+    dest: "{{ path }}/{{ dirname }}"
+  # Try to fetch data from cache when no obvious installation requested.
+  when: not install
+
+- name: "Check for {{ filename }}"
+  stat:
+    path: "{{ path }}/{{ filename }}"
+  register: is_packages_definition
+  # User requested installation or "cache-get" computed that it's needs to be done.
+  when: install or needs_reinstall
+
+- name: "Install {{ manager }} packages"
+  shell: "{{ command }}"
+  args:
+    warn: no
+    chdir: "{{ path }}"
+    creates: "{{ dirname }}"
+  when: (install or needs_reinstall) and is_packages_definition.stat.exists
+
+- include: cache-set.yml
+  args:
+    # Note, that "manager" variable migrates into "cache-set" include.
+    src: "{{ path }}/{{ dirname }}"
+    dest: "{{ cache }}"
+  when: (install or needs_reinstall) and is_packages_definition.stat.exists

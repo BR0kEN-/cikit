@@ -1,0 +1,24 @@
+---
+- name: "Check for {{ manager }} packages in cache"
+  stat:
+    path: "{{ src }}.bz2"
+  register: is_cache
+
+- name: "Check for {{ manager }} packages at place"
+  stat:
+    path: "{{ dest }}"
+  register: at_place
+
+- name: "Check whether {{ manager }} packages should be reinstalled"
+  set_fact:
+    # Reinstallation (or very first installation) needed when data presented
+    # neither in cache nor at place.
+    needs_reinstall: "{{ not is_cache.stat.exists and not at_place.stat.exists }}"
+
+- name: "Copy {{ manager }} packages from cache"
+  unarchive:
+    src: "{{ src }}.bz2"
+    dest: "{{ dest | dirname }}"
+  # Copy from cache only if actual setup doesn't have the data and
+  # only when force reinstallation shouldn't be performed!
+  when: not needs_reinstall and (is_cache.stat.exists and not at_place.stat.exists)

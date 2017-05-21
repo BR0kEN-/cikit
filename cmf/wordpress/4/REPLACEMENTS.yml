@@ -1,3 +1,3 @@
 ---
 replacements:
-  THEME_DEFAULT_COMMAND: "echo $(wp theme path --allow-root)/$(wp theme list --field=name --status=active --network=4 --allow-root)"
+  THEME_PATH_COMMAND: "echo $(wp theme path --allow-root)/$(wp theme list --field=name --status=active --network=4 --allow-root)"

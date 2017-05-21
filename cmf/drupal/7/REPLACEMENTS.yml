@@ -1,4 +1,4 @@
 ---
 replacements:
   USERS_INFO_TABLE: "users"
-  THEME_DEFAULT_COMMAND: "drush dd $(drush vget theme_default --format=string)"
+  THEME_PATH_COMMAND: "drush dd $(drush vget theme_default --format=string)"
