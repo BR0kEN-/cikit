@@ -100,7 +100,7 @@
         title: "Compute password for basic HTTP authentication"
         name: http_auth_pass
         for: "{{ http_auth_pass }}"
-      when: not vagrant and not http_auth_pass
+      when: not vagrant
       tags: ["always"]
 
     - name: Obtain home directory of "{{ ansible_user }}" user
