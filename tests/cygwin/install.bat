@@ -1,8 +1,4 @@
 @ECHO OFF
-ECHO ---------------------------------------------------------------------------
-ECHO Automated Cygwin, VirtualBox and Vagrant setup
-ECHO ---------------------------------------------------------------------------
-
 SETLOCAL EnableDelayedExpansion
 
 >nul 2>&1 cacls %SYSTEMROOT%\system32\config\system
@@ -14,6 +10,10 @@ if %errorlevel% NEQ 0 (
 )
 
 :UAC_ACCEPTED
+ECHO ---------------------------------------------------------------------------
+ECHO Automated Cygwin, VirtualBox and Vagrant setup
+ECHO ---------------------------------------------------------------------------
+
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET OS=32 || SET OS=64
 REM -- Disable UAC.
 reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f

@@ -19,6 +19,10 @@ cd -P -- $(dirname -- "$0")
 # Go to root directory of CIKit.
 cd ../
 
+if [ -d "${PROJECT}" ]; then
+  rm -rf "${PROJECT}"
+fi
+
 ./cikit repository \
   --project="${PROJECT}" \
   --php-version="${VERSION_PHP}" \
@@ -27,4 +31,9 @@ cd ../
   --ruby-version"${VERSION_RUBY}"
 
 cd "${PROJECT}"
+
+if [ "running" == $(vagrant status "${PROJECT}.dev" | awk -v pattern="${PROJECT}" '$0~pattern {print $2}') ]; then
+  vagrant destroy -f
+fi
+
 vagrant up
