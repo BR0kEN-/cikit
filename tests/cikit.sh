@@ -15,9 +15,9 @@ VERSION_RUBY="$4"
 : ${VERSION_RUBY:="2.4.0"}
 
 # Change directory to "tests".
-\cd -P -- $(dirname -- "$0")
+cd -P -- $(dirname -- "$0")
 # Go to root directory of CIKit.
-\cd ../
+cd ../
 
 ./cikit repository \
   --project="${PROJECT}" \
@@ -26,5 +26,5 @@ VERSION_RUBY="$4"
   --solr-version="${VERSION_SOLR}" \
   --ruby-version"${VERSION_RUBY}"
 
-\cd "${PROJECT}"
-\vagrant up
+cd "${PROJECT}"
+vagrant up
