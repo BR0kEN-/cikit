@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export ANSIBLE_ARGS="-vvv"
+export ANSIBLE_ARGS="-vv"
 
 PROJECT="cikit-test"
 
