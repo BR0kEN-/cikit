@@ -82,8 +82,12 @@ extra_var()
   # Replace all "-" by "_" in argument name.
   var=${var//-/_}
 
+  # Prevent "-1: substring expression < 0" on MacOS 10.12 and some Linux.
+  local cf="${val:0:1}"
+  local cl="${val:0:${#val}-1}"
+
   # Allow to pass JSON and arrays as is.
-  if [[ ${val::1} != "{" && ${val::-1} != "}" ]] && [[ ${val::1} != "[" && ${val::-1} != "]" ]]; then
+  if [[ "${cf}" != "{" && "${cl}" != "}" ]] && [[ "${cf}" != "[" && "${cl}" != "]" ]]; then
     val="\"$val\""
   fi
 
