@@ -5,6 +5,15 @@ ECHO ---------------------------------------------------------------------------
 
 SETLOCAL EnableDelayedExpansion
 
+>nul 2>&1 cacls %SYSTEMROOT%\system32\config\system
+
+if %errorlevel% NEQ 0 (
+  goto UAC_REQUEST
+) else (
+  goto UAC_ACCEPTED
+)
+
+:UAC_ACCEPTED
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET OS=32 || SET OS=64
 REM -- Disable UAC.
 reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
@@ -69,6 +78,24 @@ if /I "test-vm" == "%1" (
   REM -- "php-version" -- "nodejs-version" -- "solr-version" -- "ruby-version".
   bash --login %TESTSDIR%/cikit.sh "%2" "%3" "%4" "%5"
 )
+
+ECHO All good.
+PAUSE
+EXIT /B 0
+
+REM ----------------------------------------------------------------------------
+:UAC_REQUEST
+SET SCRIPT=%TEMP%\cikit.vbs
+
+if exist %SCRIPT% (
+  DEL %SCRIPT%
+)
+
+ECHO Set UAC = CreateObject^("Shell.Application"^) > %SCRIPT%
+ECHO UAC.ShellExecute "cmd", "/c %~s0 %*", "", "runas", 1 >> %SCRIPT%
+
+START /B /wait %SCRIPT%
+EXIT /B 0
 
 REM ----------------------------------------------------------------------------
 :download
