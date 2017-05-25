@@ -118,10 +118,18 @@ By default, `cikit` - is a global utility (only inside of VM) which looks for a 
 
 ## Dependencies
 
-You should have the following software on your host machine:
+To have CIKit works you must have the following software installed on your host.
 
-| Name        | Version |
-| ----------- | ------- |
-| Vagrant     | 1.9+    |
-| Ansible     | 2.2+    |
-| VirtualBox  | 5.1+    |
+### All
+
+|Name|Version|
+|:---|:---|
+|Vagrant|1.9+|
+|Ansible|2.2+|
+|VirtualBox|5.1+|
+
+### Windows
+
+|Name|Version|Reason|
+|:---|:---|:---|
+|PowerShell|3.0+|https://github.com/mitchellh/vagrant/issues/8611|
