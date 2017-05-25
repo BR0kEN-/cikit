@@ -25,5 +25,6 @@
     dest: "{{ jenkins_lib }}/jobs/{{ item.name }}/config.xml"
     owner: "{{ jenkins_data.user }}"
     group: "{{ jenkins_data.group }}"
-    force: yes
   with_items: "{{ jenkins_data.jobs }}"
+
+- include: restart-service.yml

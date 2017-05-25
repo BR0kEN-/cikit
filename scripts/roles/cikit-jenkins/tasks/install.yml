@@ -55,6 +55,3 @@
   lineinfile:
     dest: /etc/sudoers
     line: "{{ jenkins_data.user }} ALL=(ALL) NOPASSWD:ALL"
-
-- include: jobs.yml
-- include: restart-service.yml
