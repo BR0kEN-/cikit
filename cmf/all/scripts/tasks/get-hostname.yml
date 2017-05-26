@@ -1,24 +1,15 @@
 # This list of tasks depends on variables:
 # - name: the name of group from inventory file.
 # Used built-in variables:
-# - groups: list of groups from inventory file.
+# - hostvars: list of groups from inventory file.
 ---
 - name: "Check for {{ name }} hostname"
   fail:
     msg: "{{ name }} hostname is undefined. Configure it inside of inventory file in [{{ name }}] group."
-  when: name not in groups
+  when: name not in hostvars
 
-- name: "Set the {{ name }} hostname"
-  set_fact:
-    hostname: "{{ groups[name] | join }}"
-
-- name: "Build SSH aguments for the {{ hostname }} host"
+- name: "Build SSH aguments for the {{ hostvars[name].ansible_host }} host"
   set_fact:
     hostname_ssh:
-      host: "{{ hostvars[hostname].ansible_user + '@' if 'ansible_user' in hostvars[hostname] else '' }}{{ hostname }}"
-      args: "{{ '-i ' + hostvars[hostname].ansible_ssh_private_key_file.replace('~', become_home) if 'ansible_ssh_private_key_file' in hostvars[hostname] else '' }} -S none -o StrictHostKeyChecking=no {{ '-p ' + hostvars[hostname].ansible_port | string if 'ansible_port' in hostvars[hostname] else '' }}"
-
-- name: "Register the {{ name }} hostname"
-  shell: "echo '{{ hostname }}'"
-  register: "{{ name }}"
-  delegate_to: localhost
+      host: "{{ hostvars[name].ansible_user }}@{{ hostvars[name].ansible_host }}"
+      args: "{{ '-i ' + hostvars[name].ansible_ssh_private_key_file.replace('~', become_home) if 'ansible_ssh_private_key_file' in hostvars[name] else '' }} -S none -o StrictHostKeyChecking=no {{ '-p ' + hostvars[name].ansible_port | string if 'ansible_port' in hostvars[name] else '' }}"

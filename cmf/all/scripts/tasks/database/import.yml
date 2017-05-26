@@ -29,12 +29,13 @@
   stat:
     path: "{{ dump_remote_path }}"
   register: remote_dump
-  delegate_to: "{{ hostvars[hostname].inventory_hostname }}"
+  delegate_to: "{{ item.value.source.from }}"
   when: not local_dump.stat.exists
 
 # The "mysql_db" module isn't used because the "mysqldb" module for Python might not be installed on remote.
 - name: Create snapshot
-  shell: "ssh {{ hostname_ssh.args }} {{ hostname_ssh.host }} \"mysqldump -P{{ item.value.source.port | default(3306) }} -h{{ item.value.source.host | default('localhost') }} -u{{ item.value.source.user | default(mysql.user) }} -p{{ item.value.source.pass | default(mysql.pass) }} {{ item.value.source.db }} | gzip -c > {{ dump_remote_path }}\""
+  shell: >
+    ssh {{ hostname_ssh.args }} {{ hostname_ssh.host }} "mysqldump -P{{ item.value.source.port | default(3306) }} -h{{ item.value.source.host | default('127.0.0.1') }} -u{{ item.value.source.user | default(mysql.user) }} -p{{ item.value.source.pass | default(mysql.pass) }} {{ item.value.source.db }} | gzip -c > {{ dump_remote_path }}"
   register: dump_created
   when: not local_dump.stat.exists and not remote_dump.stat.exists
 
