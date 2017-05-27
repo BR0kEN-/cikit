@@ -6,7 +6,7 @@ Here's the main view of Jenkins home screen:
 
 ![Home screen](images/home-screen.png)
 
-Each CI server can host as much as needed projects. By default, when you finish setting it up, Jenkins will contain two project-related jobs: `<PROJECT>_BUILDER` and `<PROJECT>_PR_BUILDER` (`TEST1_BUILDER` and `TEST1_PR_BUILDER` on the screenshot above). Refer to the next code snippet for creating new project on existing server:
+Each CI server can host as much as needed projects. Every project on Jenkins is presented by two jobs: `<PROJECT>_BUILDER` and `<PROJECT>_PR_BUILDER`. Refer to the next code snippet to create new project on existing server:
 
 ```shell
 ./cikit jenkins-job --project=test2 --limit=<SERVER_NAME_FROM_INVENTORY>
@@ -16,9 +16,7 @@ Each CI server can host as much as needed projects. By default, when you finish 
 
 Some additional jobs are supplied out of the box:
 
-- `BACKUP_PROD_DB` - for creating snapshots of your production database (disabled by default and have to be manually configured).
-- `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases).
-- `DISK_USAGE_TRIGGER` - periodically running job (every 5 minutes by default) for checking available free space on server's hard drive (will trigger `SERVER_CLEANER` if occupied more than 92%).
+- `SERVER_CLEANER` - periodically running job (every 24 hours by default) for removing all builds (files and databases). Also, after every build it triggers to check whether server is needed to be cleaned up.
 
 ## Configuring bot
 
