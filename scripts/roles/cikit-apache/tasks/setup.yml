@@ -1,34 +1,36 @@
 ---
-- name: Define packages for installation
-  set_fact:
-    apache_packages: "{{ cikit_apache.packages }}"
-  when: apache_packages is not defined
+# https://github.com/geerlingguy/drupal-vm/issues/247#issuecomment-153295035
+- name: 'Prevent an error of setting ownership for "/var/www/html.dpkg-new"'
+  file:
+    path: "/var/www/html"
+    state: "{{ item }}"
+  with_items: ["absent", "directory"]
 
-- name: Purge Apache configs
+- name: Purge configs
   apt:
     name: apache2
     purge: yes
 
-- name: Remove directory with Apache configs
+- name: Remove installation directory
   file:
     path: "{{ cikit_apache.dest }}"
     state: absent
 
-- name: Reinstall Apache
-  shell: "apt-get autoremove {{ item }} --purge -y && apt-get install {{ item }}={{ apache_version }} -y"
-  with_items:
-    - apache2-bin
-    - apache2-data
+- name: Purge components
+  shell: |-
+    apt autoremove {{ item }} --purge -y
+    apt install {{ item }} -y --force-yes
+  with_items: ["apache2-bin", "apache2-data"]
 
-- name: Install Apache packages
-  shell: "apt-get install {{ item }}={{ apache_version }} -y --force-yes"
-  with_items: "{{ apache_packages }}"
+- name: Reinstall
+  apt:
+    name: "{{ item }}"
+    state: installed
+  with_items: ["apache2", "apache2-utils"]
 
 - name: Ensure that necessary ports free and processes stopped
   shell: "kill $(sudo lsof -t -i:{{ item }}) > /dev/null 2>&1"
   args:
     executable: /bin/bash
   ignore_errors: yes
-  with_items:
-    - "{{ apache_port }}"
-    - "{{ apache_port_ssl }}"
+  with_items: ["{{ apache_port }}", "{{ apache_port_ssl }}"]
