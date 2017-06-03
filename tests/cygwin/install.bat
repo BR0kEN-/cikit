@@ -1,12 +1,12 @@
 @ECHO OFF
 SETLOCAL EnableDelayedExpansion
 
->nul 2>&1 cacls %SYSTEMROOT%\system32\config\system
+>nul 2>&1 cacls "%SYSTEMROOT%\system32\config\system"
 
-if %errorlevel% NEQ 0 (
-  goto UAC_REQUEST
+if "%ERRORLEVEL%" NEQ "0" (
+  GOTO :UAC_REQUEST
 ) else (
-  goto UAC_ACCEPTED
+  GOTO :UAC_ACCEPTED
 )
 
 :UAC_ACCEPTED
@@ -38,40 +38,71 @@ if not exist %CYGWIN_ROOTDIR% (
   MKDIR %CYGWIN_ROOTDIR%
 )
 
-CALL :download Cygwin https://www.cygwin.com/%CYGWIN_FILENAME% %CYGWIN_INSTALLER%
+CALL :download "Cygwin" https://www.cygwin.com/%CYGWIN_FILENAME% %CYGWIN_INSTALLER%
 
 REM -- https://cygwin.com/faq/faq.html#faq.setup.cli
 SET CYGWIN_INSTALLER=%CYGWIN_INSTALLER% --quiet-mode --no-shortcuts --download --local-install --no-verify --site %CYGWIN_SITE% --local-package-dir %TEMP% --root %CYGWIN_ROOTDIR%
 
 ECHO [INFO] Installing default Cygwin packages
-START /B /wait %CYGWIN_INSTALLER%
+REM START /B /wait %CYGWIN_INSTALLER%
 
 ECHO [INFO] Installing custom Cygwin packages
-START /B /wait %CYGWIN_INSTALLER% --packages %CYGWIN_PACKAGES:~0,-1%
+REM START /B /wait %CYGWIN_INSTALLER% --packages %CYGWIN_PACKAGES:~0,-1%
 
 REM -- Update PATH variable to have Cygwin available.
 SET PATH=%CYGWIN_ROOTDIR%\bin;%PATH%
 
 REM -- Compute path to CWD in Unix style.
-FOR /F %%D IN ('cygpath.exe -u %~dp0') DO SET CWD=%%D
+FOR /F %%D IN ('cygpath -u %~dp0') DO SET CWD=%%D
 
 REM -- Set path to sources for tests.
 SET TESTSDIR=%CWD%/..
 
 REM ----------------------------------------------------------------------------
+ECHO [INFO] Installing 7-Zip
+SET SEVENZIP_FILENAME=7z1604
+
+REM -- "7z1604.msi" or "7z1604-x64.msi".
+if 64 == %OS% (
+  SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%-x%OS%
+)
+
+SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%.msi
+
+CALL :download "7-Zip" http://7-zip.org/a/%SEVENZIP_FILENAME% %TEMP%\%SEVENZIP_FILENAME%
+CALL :install "7-Zip" %TEMP%\%SEVENZIP_FILENAME%
+
+REM -- Update PATH variable to have 7-Zip available.
+SET PATH=%PROGRAMFILES%\7-Zip;%PATH%
+
+REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Ansible
-bash --login %TESTSDIR%/ansible.sh
+REM bash --login %TESTSDIR%/ansible.sh
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing VirtualBox
 CALL :install_variables "virtualbox"
-START /B /wait %TEMP%\%FILENAME% --path %TEMP% --extract --silent
-CALL :install VirtualBox %TEMP%\%MSINAME% %SystemDrive%\virtualbox%OS%
+
+SET VBOXGUEST_FILENAME=VBoxGuestAdditions_%VERSION%.iso
+SET VBOXGUEST_MOUNTDIR=%TEMP%\vbox-guest-additions
+
+CALL :download "VirtualBoxGuestAdditions" http://download.virtualbox.org/virtualbox/%VERSION%/%VBOXGUEST_FILENAME% %TEMP%\%VBOXGUEST_FILENAME%
+
+if not exist %VBOXGUEST_MOUNTDIR% (
+  MKDIR %VBOXGUEST_MOUNTDIR%
+)
+
+7z e -o%VBOXGUEST_MOUNTDIR% %TEMP%\%VBOXGUEST_FILENAME% -y
+certutil -addstore -f "TrustedPublisher" %VBOXGUEST_MOUNTDIR%\vbox-sha1.cer
+
+START /B /wait %VBOXGUEST_MOUNTDIR%\VboxWindowsAdditions.exe /S
+START /B /wait %TEMP%\%EXE% --path %TEMP% --extract --silent
+CALL :install "VirtualBox" %TEMP%\%MSI%
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Vagrant
 CALL :install_variables "vagrant"
-CALL :install Vagrant %TEMP%\%MSINAME% %SystemDrive%\vagrant%OS%
+CALL :install "Vagrant" %TEMP%\%MSI%
 
 REM ----------------------------------------------------------------------------
 if /I "test-vm" == "%1" (
@@ -80,8 +111,7 @@ if /I "test-vm" == "%1" (
 )
 
 ECHO All good.
-PAUSE
-EXIT /B 0
+GOTO :end
 
 REM ----------------------------------------------------------------------------
 :UAC_REQUEST
@@ -95,37 +125,37 @@ ECHO Set UAC = CreateObject^("Shell.Application"^) > %SCRIPT%
 ECHO UAC.ShellExecute "cmd", "/c %~s0 %*", "", "runas", 1 >> %SCRIPT%
 
 START /B /wait %SCRIPT%
-EXIT /B 0
+EXIT /B
 
 REM ----------------------------------------------------------------------------
 :download
 
 if not exist %3 (
   ECHO [INFO] Downloading %1
-  bitsadmin /transfer "Downloading %1" %2 %3
+  bitsadmin /transfer "Downloading %1" "%2" "%3"
 )
 
 if not exist %3 (
   ECHO [ERROR] %1 downloading failed
-  GOTO end
+  GOTO :end
 )
 
-EXIT /B 0
+EXIT /B
 
 REM ----------------------------------------------------------------------------
 :install_variables
-FOR /F "tokens=1,2 delims=|" %%a IN ('bash --login %TESTSDIR%/%1/install.sh "%OS%" "%TEMP%"') DO SET "FILENAME=%%a" & SET "MSINAME=%%b"
-EXIT /B 0
+FOR /F "tokens=1-3 delims=|" %%a IN ('bash --login %TESTSDIR%/%1/install.sh "%OS%" "%TEMP%"') DO SET "EXE=%%a" & SET "MSI=%%b" & SET "VERSION=%%c"
+EXIT /B
 
 REM ----------------------------------------------------------------------------
 :install
 
-START /B /wait msiexec /i %2 /L*vx %2-install.log /norestart /QB TARGETDIR=%3
-EXIT /B 0
+START /B /wait msiexec /QB /i %2 /L*vx %2-install.log /norestart
+EXIT /B
 
 REM ----------------------------------------------------------------------------
 :end
 
 ENDLOCAL
 PAUSE
-EXIT /B 0
+EXIT /B
