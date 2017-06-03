@@ -38,7 +38,7 @@ if not exist %CYGWIN_ROOTDIR% (
   MKDIR %CYGWIN_ROOTDIR%
 )
 
-CALL :download "Cygwin" https://www.cygwin.com/%CYGWIN_FILENAME% %CYGWIN_INSTALLER%
+CALL :download Cygwin https://www.cygwin.com/%CYGWIN_FILENAME% %CYGWIN_INSTALLER%
 
 REM -- https://cygwin.com/faq/faq.html#faq.setup.cli
 SET CYGWIN_INSTALLER=%CYGWIN_INSTALLER% --quiet-mode --no-shortcuts --download --local-install --no-verify --site %CYGWIN_SITE% --local-package-dir %TEMP% --root %CYGWIN_ROOTDIR%
@@ -59,6 +59,7 @@ REM -- Set path to sources for tests.
 SET TESTSDIR=%CWD%/..
 
 REM ----------------------------------------------------------------------------
+REM -- 7-Zip will be used for unpacking ISO image, containing VirtualBox Guest Additions.
 ECHO [INFO] Installing 7-Zip
 SET SEVENZIP_FILENAME=7z1604
 
@@ -69,8 +70,8 @@ if 64 == %OS% (
 
 SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%.msi
 
-CALL :download "7-Zip" http://7-zip.org/a/%SEVENZIP_FILENAME% %TEMP%\%SEVENZIP_FILENAME%
-CALL :install "7-Zip" %TEMP%\%SEVENZIP_FILENAME%
+CALL :download 7-Zip http://7-zip.org/a/%SEVENZIP_FILENAME% %TEMP%\%SEVENZIP_FILENAME%
+CALL :install 7-Zip %TEMP%\%SEVENZIP_FILENAME%
 
 REM -- Update PATH variable to have 7-Zip available.
 SET PATH=%PROGRAMFILES%\7-Zip;%PATH%
@@ -81,36 +82,43 @@ bash --login %TESTSDIR%/ansible.sh
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing VirtualBox
-CALL :install_variables "virtualbox"
+CALL :install_variables virtualbox
 
 SET VBOXGUEST_FILENAME=VBoxGuestAdditions_%VERSION%.iso
 SET VBOXGUEST_MOUNTDIR=%TEMP%\vbox-guest-additions
 
-CALL :download "VirtualBoxGuestAdditions" http://download.virtualbox.org/virtualbox/%VERSION%/%VBOXGUEST_FILENAME% %TEMP%\%VBOXGUEST_FILENAME%
+CALL :download VirtualBoxGuestAdditions http://download.virtualbox.org/virtualbox/%VERSION%/%VBOXGUEST_FILENAME% %TEMP%\%VBOXGUEST_FILENAME%
 
 if not exist %VBOXGUEST_MOUNTDIR% (
   MKDIR %VBOXGUEST_MOUNTDIR%
 )
 
 7z e -o%VBOXGUEST_MOUNTDIR% %TEMP%\%VBOXGUEST_FILENAME% -y
+REM -- Ensure Oracle certificate added for unattended VirtualBox installation.
 certutil -addstore -f "TrustedPublisher" %VBOXGUEST_MOUNTDIR%\vbox-sha1.cer
 
 START /B /wait %VBOXGUEST_MOUNTDIR%\VboxWindowsAdditions.exe /S
 START /B /wait %TEMP%\%EXE% --path %TEMP% --extract --silent
-CALL :install "VirtualBox" %TEMP%\%MSI%
+CALL :install VirtualBox %TEMP%\%MSI%
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Vagrant
-CALL :install_variables "vagrant"
-CALL :install "Vagrant" %TEMP%\%MSI%
+CALL :install_variables vagrant
+CALL :install Vagrant %TEMP%\%MSI%
 
 REM ----------------------------------------------------------------------------
 if /I "test-vm" == "%1" (
   REM -- "php-version" -- "nodejs-version" -- "solr-version" -- "ruby-version".
   bash --login %TESTSDIR%/cikit.sh "%2" "%3" "%4" "%5"
+
+  if "%ERRORLEVEL%" NEQ "0" (
+    ECHO [ERROR] Unable to boot VM.
+    EXIT /B 1
+  ) else (
+    ECHO [SUCCESS] VM successfully provisioned.
+  )
 )
 
-ECHO All good.
 GOTO :end
 
 REM ----------------------------------------------------------------------------
@@ -129,7 +137,6 @@ EXIT /B
 
 REM ----------------------------------------------------------------------------
 :download
-
 if not exist %3 (
   ECHO [INFO] Downloading %1
   bitsadmin /transfer "Downloading %1" "%2" "%3"
@@ -149,13 +156,10 @@ EXIT /B
 
 REM ----------------------------------------------------------------------------
 :install
-
-START /B /wait msiexec /QB /i %2 /L*vx %2-install.log /norestart
+START /B /wait msiexec /i %2 TARGETDIR=%SystemDrive%\%1%OS% /L*vx %1-install.log /norestart /QB
 EXIT /B
 
 REM ----------------------------------------------------------------------------
 :end
-
-ENDLOCAL
 PAUSE
-EXIT /B
+EXIT /B 0
