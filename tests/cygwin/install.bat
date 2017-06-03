@@ -44,10 +44,10 @@ REM -- https://cygwin.com/faq/faq.html#faq.setup.cli
 SET CYGWIN_INSTALLER=%CYGWIN_INSTALLER% --quiet-mode --no-shortcuts --download --local-install --no-verify --site %CYGWIN_SITE% --local-package-dir %TEMP% --root %CYGWIN_ROOTDIR%
 
 ECHO [INFO] Installing default Cygwin packages
-REM START /B /wait %CYGWIN_INSTALLER%
+START /B /wait %CYGWIN_INSTALLER%
 
 ECHO [INFO] Installing custom Cygwin packages
-REM START /B /wait %CYGWIN_INSTALLER% --packages %CYGWIN_PACKAGES:~0,-1%
+START /B /wait %CYGWIN_INSTALLER% --packages %CYGWIN_PACKAGES:~0,-1%
 
 REM -- Update PATH variable to have Cygwin available.
 SET PATH=%CYGWIN_ROOTDIR%\bin;%PATH%
@@ -77,7 +77,7 @@ SET PATH=%PROGRAMFILES%\7-Zip;%PATH%
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Ansible
-REM bash --login %TESTSDIR%/ansible.sh
+bash --login %TESTSDIR%/ansible.sh
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing VirtualBox
