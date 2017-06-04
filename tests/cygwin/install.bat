@@ -124,8 +124,6 @@ if /I "test-vm" == "%1" (
   if "%ERRORLEVEL%" NEQ "0" (
     ECHO [ERROR] Unable to boot VM.
     EXIT /B 1
-  ) else (
-    ECHO [SUCCESS] VM successfully provisioned.
   )
 )
 
