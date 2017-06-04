@@ -14,18 +14,18 @@ ECHO ---------------------------------------------------------------------------
 ECHO Automated Cygwin, VirtualBox and Vagrant setup
 ECHO ---------------------------------------------------------------------------
 
-reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET OS=32 || SET OS=64
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET ARCH=32 || SET ARCH=64
 REM -- Disable UAC.
 reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
 
 REM ----------------------------------------------------------------------------
 SET CYGWIN_SITE=http://cygwin.mirrors.pair.com
-SET CYGWIN_ROOTDIR=%SystemDrive%\cygwin%OS%
+SET CYGWIN_ROOTDIR=%SystemDrive%\cygwin%ARCH%
 SET CYGWIN_FILENAME=setup-x86
 
 REM -- "setup-x86.exe" or "setup-x86_64.exe".
-if 64 == %OS% (
-  SET CYGWIN_FILENAME=%CYGWIN_FILENAME%_%OS%
+if 64 == %ARCH% (
+  SET CYGWIN_FILENAME=%CYGWIN_FILENAME%_%ARCH%
 )
 
 SET CYGWIN_FILENAME=%CYGWIN_FILENAME%.exe
@@ -64,8 +64,8 @@ ECHO [INFO] Installing 7-Zip
 SET SEVENZIP_FILENAME=7z1604
 
 REM -- "7z1604.msi" or "7z1604-x64.msi".
-if 64 == %OS% (
-  SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%-x%OS%
+if 64 == %ARCH% (
+  SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%-x%ARCH%
 )
 
 SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%.msi
@@ -87,11 +87,7 @@ CALL :install_variables virtualbox
 SET VBOXGUEST_FILENAME=VBoxGuestAdditions_%VERSION%.iso
 SET VBOXGUEST_MOUNTDIR=%TEMP%\vbox-guest-additions
 
-CALL :download VirtualBoxGuestAdditions http://download.virtualbox.org/virtualbox/%VERSION%/%VBOXGUEST_FILENAME% %TEMP%\%VBOXGUEST_FILENAME%
-
-if not exist %VBOXGUEST_MOUNTDIR% (
-  MKDIR %VBOXGUEST_MOUNTDIR%
-)
+CALL :download VirtualBoxGuestAdditions %URL%/%VBOXGUEST_FILENAME% %TEMP%\%VBOXGUEST_FILENAME%
 
 7z e -o%VBOXGUEST_MOUNTDIR% %TEMP%\%VBOXGUEST_FILENAME% -y
 REM -- Ensure Oracle certificate added for unattended VirtualBox installation.
@@ -119,7 +115,8 @@ if /I "test-vm" == "%1" (
   )
 )
 
-GOTO :end
+ENDLOCAL
+EXIT /B 0
 
 REM ----------------------------------------------------------------------------
 :UAC_REQUEST
@@ -133,7 +130,7 @@ ECHO Set UAC = CreateObject^("Shell.Application"^) > %SCRIPT%
 ECHO UAC.ShellExecute "cmd", "/c %~s0 %*", "", "runas", 1 >> %SCRIPT%
 
 START /B /wait %SCRIPT%
-EXIT /B
+EXIT /B 0
 
 REM ----------------------------------------------------------------------------
 :download
@@ -144,22 +141,17 @@ if not exist %3 (
 
 if not exist %3 (
   ECHO [ERROR] %1 downloading failed
-  GOTO :end
+  EXIT /B 1
 )
 
-EXIT /B
+EXIT /B 0
 
 REM ----------------------------------------------------------------------------
 :install_variables
-FOR /F "tokens=1-3 delims=|" %%a IN ('bash --login %TESTSDIR%/%1/install.sh "%OS%" "%TEMP%"') DO SET "EXE=%%a" & SET "MSI=%%b" & SET "VERSION=%%c"
+FOR /F "tokens=1-4 delims=|" %%a IN ('bash --login %TESTSDIR%/%1/install.sh "windows" "%ARCH%" "%TEMP%"') DO SET "EXE=%%a" & SET "MSI=%%b" & SET "VERSION=%%c" & SET "URL=%%d"
 EXIT /B
 
 REM ----------------------------------------------------------------------------
 :install
-START /B /wait msiexec /i %2 TARGETDIR=%SystemDrive%\%1%OS% /L*vx %1-install.log /norestart /QB
-EXIT /B
-
-REM ----------------------------------------------------------------------------
-:end
-ENDLOCAL
+START /B /wait msiexec /i %2 TARGETDIR=%SystemDrive%\%1%ARCH% /L*vx %1-install.log /norestart /QB
 EXIT /B 0
