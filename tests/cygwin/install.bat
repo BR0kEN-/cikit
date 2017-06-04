@@ -3,7 +3,7 @@ SETLOCAL EnableDelayedExpansion
 
 >nul 2>&1 cacls "%SYSTEMROOT%\system32\config\system"
 
-if "%ERRORLEVEL%" NEQ "0" (
+if %ERRORLEVEL% NEQ 0 (
   GOTO :UAC_REQUEST
 ) else (
   GOTO :UAC_ACCEPTED
@@ -16,7 +16,20 @@ ECHO ---------------------------------------------------------------------------
 
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET ARCH=32 || SET ARCH=64
 REM -- Disable UAC.
-reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
+REM -- @todo: Is it really have to be disabled? At the top we're requesting this script to be executed by UID 1. Also, restart is needed to apply.
+REM reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
+
+REM -- Save PowerShell version into variable with exit code.
+powershell -command "exit $PSVersionTable.PSVersion.Major"
+
+REM -- PowerShell 3 or better must be installed.
+REM -- https://github.com/BR0kEN-/cikit#windows
+if %ERRORLEVEL% LSS 3 (
+  ECHO [INFO] Installing PowerShell 3
+  CALL :download PowerShell https://download.microsoft.com/download/E/7/6/E76850B8-DA6E-4FF5-8CCE-A24FC513FD16/Windows6.1-KB2506143-x64.msu %TEMP%\KB2506143-x64.msu
+  START /B /wait %TEMP%\KB2506143-x64.msu /quiet /norestart
+  REM -- @todo: How to deal with fact that after this execution system restart is needed?
+)
 
 REM ----------------------------------------------------------------------------
 SET CYGWIN_SITE=http://cygwin.mirrors.pair.com
