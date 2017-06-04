@@ -13,9 +13,11 @@ Script for automate Cygwin installation and configuration for Windows 7, 8 and 1
 install.bat [test-vm] [7.0] [6] [6.5.1] [2.4.0]
 ```
 
+**IMPORTANT!** Be ready to automatic system reboot if your version of PowerShell is lower than 3: new version will be installed and, to complete this process, system must be reloaded (https://serverfault.com/a/539247).
+
 # Todo
 
 - [x] Add script to automate installation of Cygwin on Windows
 - [x] Add script to automate installation of VirtualBox
-  - [ ] Automatically accept Oracle certificates
+  - [x] Automatically accept Oracle certificates
 - [x] Add script to automate installation of Vagrant
