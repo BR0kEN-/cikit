@@ -30,7 +30,7 @@
       prompt: Which version of Ruby you'd want to install? (2.1.10/2.2.6/2.3.3/2.4.0)
       default: 2.4.0
       private: no
-      tags: ["sniffers", "sass", "ruby"]
+      tags: ["sniffers", "ruby"]
 
     - name: solr_version
       prompt: Which version of Solr you'd want to install? (5.5.4/6.5.1/no)
@@ -221,7 +221,7 @@
       tags: ["solr", "php-stack"]
 
     - role: cikit-ruby
-      tags: ["sniffers", "sass", "ruby"]
+      tags: ["sniffers", "ruby"]
 
     - role: cikit-sniffers
       tags: ["sniffers", "php-stack"]
