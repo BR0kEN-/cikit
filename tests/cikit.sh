@@ -37,4 +37,4 @@ fi
 
 cd "${PROJECT}"
 
-EXTRA_VARS="--php-version=${VERSION_PHP} --nodejs-version=${VERSION_NODEJS} --solr-version=${VERSION_SOLR} --ruby-version${VERSION_RUBY}" vagrant up
+EXTRA_VARS="--php-version=${VERSION_PHP} --nodejs-version=${VERSION_NODEJS} --solr-version=${VERSION_SOLR} --ruby-version=${VERSION_RUBY}" vagrant up
