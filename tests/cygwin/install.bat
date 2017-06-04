@@ -15,10 +15,6 @@ ECHO Automated Cygwin, VirtualBox and Vagrant setup
 ECHO ---------------------------------------------------------------------------
 
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET ARCH=32 || SET ARCH=64
-REM -- Disable UAC.
-REM -- @todo: Is it really have to be disabled? At the top we're requesting this script to be executed by UID 1. Also, restart is needed to apply.
-REM reg ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f
-
 REM -- Save PowerShell version into variable with exit code.
 powershell -command "exit $PSVersionTable.PSVersion.Major"
 
@@ -28,8 +24,13 @@ if %ERRORLEVEL% LSS 3 (
   ECHO [INFO] Installing PowerShell 3
   CALL :download PowerShell https://download.microsoft.com/download/E/7/6/E76850B8-DA6E-4FF5-8CCE-A24FC513FD16/Windows6.1-KB2506143-x64.msu %TEMP%\KB2506143-x64.msu
   START /B /wait %TEMP%\KB2506143-x64.msu /quiet /norestart
-  REM -- @todo: How to deal with fact that after this execution system restart is needed?
+  REM -- Schedule re-run of this script with current set of arguments after system reboot.
+  reg Add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" /v CIKit /t Reg_SZ /d "%~dpf0 %*" /f
+  REM -- Wait some time until reboot to let script return an exit code.
+  shutdown -r -t 2
+  REM -- Check for specific exit code and let CI server to assume that script will be continued after reboot.
   REM -- https://serverfault.com/a/539247
+  EXIT /B 6660
 )
 
 REM ----------------------------------------------------------------------------
