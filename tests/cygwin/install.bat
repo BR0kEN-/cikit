@@ -29,6 +29,7 @@ if %ERRORLEVEL% LSS 3 (
   CALL :download PowerShell https://download.microsoft.com/download/E/7/6/E76850B8-DA6E-4FF5-8CCE-A24FC513FD16/Windows6.1-KB2506143-x64.msu %TEMP%\KB2506143-x64.msu
   START /B /wait %TEMP%\KB2506143-x64.msu /quiet /norestart
   REM -- @todo: How to deal with fact that after this execution system restart is needed?
+  REM -- https://serverfault.com/a/539247
 )
 
 REM ----------------------------------------------------------------------------
