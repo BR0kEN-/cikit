@@ -8,10 +8,10 @@ VERSION_NODEJS="$2"
 VERSION_SOLR="$3"
 VERSION_RUBY="$4"
 
-: ${VERSION_PHP:="7.0"}
-: ${VERSION_NODEJS:="6"}
-: ${VERSION_SOLR:="6.5.1"}
-: ${VERSION_RUBY:="2.4.0"}
+: "${VERSION_PHP:="7.0"}"
+: "${VERSION_NODEJS:="6"}"
+: "${VERSION_SOLR:="6.5.1"}"
+: "${VERSION_RUBY:="2.4.0"}"
 
 # Change directory to "tests".
 cd -P -- "$(dirname -- "$0")"
