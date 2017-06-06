@@ -15,15 +15,44 @@ ECHO Automated Cygwin, VirtualBox and Vagrant setup
 ECHO ---------------------------------------------------------------------------
 
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && SET ARCH=32 || SET ARCH=64
+
+REM ----------------------------------------------------------------------------
+REM -- 7-Zip will be used for unpacking ISO image with VBox Guest Additions and Streams ZIP archive.
+ECHO [INFO] Installing 7-Zip
+SET SEVENZIP_FILENAME=7z1604
+
+REM -- "7z1604.msi" or "7z1604-x64.msi".
+if 64 == %ARCH% (
+  SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%-x%ARCH%
+)
+
+SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%.msi
+
+CALL :download 7-Zip http://7-zip.org/a/%SEVENZIP_FILENAME% %TEMP%\%SEVENZIP_FILENAME%
+CALL :install 7-Zip %TEMP%\%SEVENZIP_FILENAME%
+
+REM -- Update PATH variable to have 7-Zip available.
+SET PATH=%PROGRAMFILES%\7-Zip;%PATH%
+
+REM ----------------------------------------------------------------------------
 REM -- Save PowerShell version into variable with exit code.
 powershell -command "exit $PSVersionTable.PSVersion.Major"
 
-REM -- PowerShell 3 or better must be installed.
+REM -- PowerShell 3 or better must be installed (Windows 7 has PowerShell 2.x).
 REM -- https://github.com/BR0kEN-/cikit#windows
 if %ERRORLEVEL% LSS 3 (
-  ECHO [INFO] Installing PowerShell 3
   CALL :download PowerShell https://download.microsoft.com/download/E/7/6/E76850B8-DA6E-4FF5-8CCE-A24FC513FD16/Windows6.1-KB2506143-x64.msu %TEMP%\KB2506143-x64.msu
+  ECHO [INFO] Installing PowerShell 3
   START /B /wait %TEMP%\KB2506143-x64.msu /quiet /norestart
+  REM -- Download Streams utility to remove Alternate Data Stream from this file to unblock its unattended execution after system reboot.
+  REM -- Note, that we can't use "Unblock-File" or "Remove-Item" PowerShell cmdlets since they are available since version 3 and above.
+  REM -- https://technet.microsoft.com/en-us/sysinternals/bb897440.aspx
+  CALL :download Streams https://download.sysinternals.com/files/Streams.zip %TEMP%\Streams.zip
+  REM -- Unarchive Streams.
+  7z e -o%TEMP%\Streams %TEMP%\Streams.zip
+  REM -- Remove all ADS (needed to not have "Zone.Identifier" with "ZoneTransfer" and "ZoneId=3").
+  REM -- https://support.microsoft.com/en-us/kb/182569
+  %TEMP%\Streams\streams.exe -accepteula -d %~dpf0
   REM -- Schedule re-run of this script with current set of arguments after system reboot.
   reg Add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" /v CIKit /t Reg_SZ /d "%~dpf0 %*" /f
   REM -- Wait some time until reboot to let script return an exit code.
@@ -72,24 +101,6 @@ FOR /F %%D IN ('cygpath -u %~dp0') DO SET CWD=%%D
 
 REM -- Set path to sources for tests.
 SET TESTSDIR=%CWD%/..
-
-REM ----------------------------------------------------------------------------
-REM -- 7-Zip will be used for unpacking ISO image, containing VirtualBox Guest Additions.
-ECHO [INFO] Installing 7-Zip
-SET SEVENZIP_FILENAME=7z1604
-
-REM -- "7z1604.msi" or "7z1604-x64.msi".
-if 64 == %ARCH% (
-  SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%-x%ARCH%
-)
-
-SET SEVENZIP_FILENAME=%SEVENZIP_FILENAME%.msi
-
-CALL :download 7-Zip http://7-zip.org/a/%SEVENZIP_FILENAME% %TEMP%\%SEVENZIP_FILENAME%
-CALL :install 7-Zip %TEMP%\%SEVENZIP_FILENAME%
-
-REM -- Update PATH variable to have 7-Zip available.
-SET PATH=%PROGRAMFILES%\7-Zip;%PATH%
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Ansible
