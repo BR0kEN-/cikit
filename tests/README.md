@@ -15,9 +15,15 @@ install.bat [test-vm] [7.0] [6] [6.5.1] [2.4.0]
 
 **IMPORTANT!** Be ready to automatic system reboot if your version of PowerShell is lower than 3: new version will be installed and, to complete this process, system must be reloaded (https://serverfault.com/a/539247).
 
+## Ubuntu
+
+## macOS
+
 # Todo
 
 - [x] Add script to automate installation of Cygwin on Windows
 - [x] Add script to automate installation of VirtualBox
   - [x] Automatically accept Oracle certificates
 - [x] Add script to automate installation of Vagrant
+- [ ] Add script to automate environment provision on Ubuntu
+- [ ] Add script to automate environment provision on macOS
