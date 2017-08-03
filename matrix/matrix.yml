@@ -3,6 +3,9 @@
   become: yes
   gather_facts: no
 
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
   vars:
     credentials_storage: ../cikit-credentials
     application: cikit

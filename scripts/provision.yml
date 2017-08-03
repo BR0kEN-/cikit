@@ -3,6 +3,9 @@
   become: yes
   gather_facts: yes
 
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
   vars_files:
     - ../config.yml
     - vars/ruby.yml
@@ -152,7 +155,7 @@
 
     # https://github.com/propeoplemd/cibox/pull/349
     - name: Recover possible fail
-      shell: dpkg --configure -a
+      shell: yes | dpkg --configure -a
       ignore_errors: yes
 
     - name: Install APT packages
