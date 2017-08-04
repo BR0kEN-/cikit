@@ -1,4 +1,0 @@
----
-virtualbox:
-  extensions:
-    - "http://download.virtualbox.org/virtualbox/<VERSION>/Oracle_VM_VirtualBox_Extension_Pack-<VERSION>.vbox-extpack"

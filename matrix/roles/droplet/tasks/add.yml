@@ -1,0 +1,67 @@
+---
+- name: Check for the last registered droplet
+  shell: "docker ps -a | awk '/{{ application }}/ {print $NF}' | head -n1 | sed 's/{{ application }}//g'"
+  register: number
+
+- name: Determine the number for a new droplet
+  set_fact:
+    number: "{{ '%02d' | format(number.stdout | int + 1) }}"
+
+- name: Set the name for a new droplet
+  set_fact:
+    droplet: "{{ application }}{{ number }}"
+    ports: []
+
+- name: Compute the ports to forward
+  set_fact:
+    ports: "{{ ports + [ '-p ' + ('127.0.0.1:' if item.value.vhost else '') + item.key | string + number | string + ':' + item.key | string ] }}"
+  with_dict: "{{ nginx.port_forwarding }}"
+
+- name: Create the droplet
+  shell: "docker run -d --privileged --name '{{ droplet }}' {{ ports | join(' ') }} {{ ansible_lsb.id | lower }}:{{ ansible_lsb.release }} /sbin/init"
+
+- name: Compute directory for SSH key-pair
+  set_fact:
+    ssh_data:
+      source: "{{ credentials_storage }}/{{ inventory_hostname }}/ssh-keys"
+      destination: "/root/.ssh"
+      private_key: "{{ droplet }}.private.key"
+      authorized_keys: "/tmp/authorized_keys"
+
+- name: Ensure directory for SSH key-pair exists
+  file:
+    path: "{{ ssh_data.source }}"
+    state: directory
+  delegate_to: localhost
+  become: no
+
+- name: Generate SSH key-pair for droplet
+  shell: >
+    ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ ansible_host }}" -N '' -q -f {{ ssh_data.private_key }} && mv $_.pub ${_//private/public}
+  args:
+    chdir: "{{ ssh_data.source }}"
+    creates: "{{ ssh_data.private_key }}"
+    executable: /bin/bash
+  delegate_to: localhost
+  become: no
+
+- name: Copy SSH key-pair to host
+  copy:
+    src: "{{ ssh_data.source }}/{{ droplet }}.{{ item }}.key"
+    dest: "{{ ssh_data.destination }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_items: ["private", "public"]
+
+- name: Generate "authorized_keys" for new droplet
+  shell: "cat {{ droplet }}.public.key > {{ ssh_data.authorized_keys }} && chmod 600 $_"
+  args:
+    chdir: "{{ ssh_data.destination }}"
+    executable: /bin/bash
+
+- name: Configure SSH daemon
+  shell: |-
+    docker exec -i '{{ droplet }}' bash -c "mkdir -p '{{ ssh_data.destination }}' && apt update && apt install openssh-server -y && service ssh start && systemctl enable ssh"
+    docker cp '{{ ssh_data.authorized_keys }}' {{ droplet }}:{{ ssh_data.destination }}
+    docker stop '{{ droplet }}'
+    docker start '{{ droplet }}'

@@ -7,3 +7,13 @@ nginx:
     path: /etc/nginx/.htpasswd
     user: admin
     pass: admin
+  port_forwarding:
+    22:
+      vhost: no
+      ssl: no
+    80:
+      vhost: yes
+      ssl: no
+    443:
+      vhost: yes
+      ssl: yes

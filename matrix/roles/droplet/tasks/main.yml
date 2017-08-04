@@ -1,0 +1,15 @@
+---
+- include: list.yml
+  when: droplet_list is defined
+
+- include: add.yml
+  when: droplet_add is defined
+
+- include: start.yml
+  when: droplet_start is defined and droplet_start != ''
+
+- include: stop.yml
+  when: droplet_stop is defined and droplet_stop != ''
+
+- include: delete.yml
+  when: droplet_delete is defined and droplet_delete != ''

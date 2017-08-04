@@ -1,0 +1,10 @@
+---
+- include: stop.yml
+  args:
+    droplet_stop: "{{ droplet_delete }}"
+
+- include: command.yml
+  args:
+    droplet: "{{ droplet_delete }}"
+    command: rm
+    operation: Remove

@@ -1,0 +1,10 @@
+---
+- name: Get the list of all droplets
+  shell: "docker ps -a | grep {{ application }}"
+  register: droplets
+  # An empty list will return the "1" exit code.
+  failed_when: droplets.rc > 1
+
+- name: Print the list of all droplets
+  debug:
+    var: droplets.stdout_lines

@@ -20,7 +20,7 @@
       tags: ["always"]
 
     - name: Ensure Python is installed on remote host
-      raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
+      shell: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
       tags: ["always"]
 
       # "gather_facts" after performing required tasks.
@@ -41,7 +41,7 @@
     - name: Compute allowed hosts
       set_fact:
         # Ensure current IP is in the list. Otherwise we're risking to lose access to provisioning machine.
-        allowed_hosts: "{{ os_configuration.allowed_hosts + [ansible_env.SSH_CLIENT.split() | first] }}"
+        allowed_hosts: "{{ os_configuration.allowed_hosts + [ansible_env.SSH_CLIENT.split() | first] if 'SSH_CLIENT' in ansible_env else [] }}"
       tags: ["always"]
 
     - name: Configure hostname
@@ -55,9 +55,6 @@
     - role: apt
       tags: ["apt"]
 
-    - role: virtualbox
-      tags: ["vb"]
-
     - role: ssl
       tags: ["ssl"]
 
@@ -67,10 +64,7 @@
     - role: nginx
       tags: ["nginx"]
 
-    - role: phpvirtualbox
-      tags: ["phpvb"]
-
-    - role: virtualmachine
+    - role: droplet
       tags: ["vm"]
 
   tasks:

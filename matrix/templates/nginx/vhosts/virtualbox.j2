@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for port, data in virtualmachine.port_forwarding.iteritems() %}
+{% for port, data in nginx.port_forwarding.iteritems() %}
   {% if data.vhost %}
     server {
       server_name "~^.*{{ application }}(?P<port_id>\d{2})\.{{ domain | regex_replace }}$";

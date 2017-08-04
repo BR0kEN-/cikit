@@ -1,0 +1,6 @@
+---
+- include: command.yml
+  args:
+    droplet: "{{ droplet_stop }}"
+    command: stop
+    operation: Stop
