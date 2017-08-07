@@ -29,8 +29,6 @@
   with_items: ["apache2", "apache2-utils"]
 
 - name: Ensure that necessary ports free and processes stopped
-  shell: "kill $(sudo lsof -t -i:{{ item }}) > /dev/null 2>&1"
-  args:
-    executable: /bin/bash
+  shell: "lsof -ti:{{ item }} | xargs kill"
   ignore_errors: yes
   with_items: ["{{ apache_port }}", "{{ apache_port_ssl }}"]
