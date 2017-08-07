@@ -12,7 +12,7 @@ Some points you might be interested in.
 
 ### Whether host for matrix can be a virtual machine?
 
-Yes. But it's **definitely not recommended**, because you will create virtual machines inside of virtual machine. Also, nested virtualization must be allowed on hardware level. And be ready for slower usability doing this weird way.
+Yes. Droplet - is a Docker container, so you can base them in a virtual machine.
 
 ### Can I restrict SSH access to host by IP?
 
