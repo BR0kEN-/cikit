@@ -1,0 +1,40 @@
+user                                    www-data;
+worker_processes                        auto;
+pid                                     /run/nginx.pid;
+
+events {
+    worker_connections                  1024;
+}
+
+http {
+    sendfile                            on;
+    tcp_nopush                          on;
+    tcp_nodelay                         on;
+    keepalive_timeout                   65;
+    types_hash_max_size                 2048;
+    # Allow unlimited file size for uploading.
+    client_max_body_size                0;
+    server_names_hash_bucket_size       64;
+
+    gzip                                on;
+    gzip_disable                        "msie6";
+
+    include                             mime.types;
+    default_type                        application/octet-stream;
+
+    # Dropping SSLv3, ref: POODLE
+    ssl_protocols                       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers           on;
+
+    # HTTP proxy (https://httpoxy.org).
+    fastcgi_param HTTP_PROXY "";
+    proxy_set_header Proxy "";
+
+    {% for item in ["access", "error"] %}
+        {{ item }}_log                  /var/log/nginx/{{ item }}.log;
+    {% endfor %}
+
+    {% for item in ["conf.d/*.conf", "sites-enabled/*"] %}
+        include                         {{ item }};
+    {% endfor %}
+}

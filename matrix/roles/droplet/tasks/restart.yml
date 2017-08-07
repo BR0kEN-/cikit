@@ -1,0 +1,8 @@
+---
+- include: stop.yml
+  args:
+    droplet_stop: "{{ droplet_restart }}"
+
+- include: start.yml
+  args:
+    droplet_start: "{{ droplet_restart }}"

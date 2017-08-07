@@ -16,7 +16,4 @@ apt:
     # {{ ansible_kernel }} is the same as result of "uname -r".
     - "linux-headers-{{ ansible_kernel }}"
     - "nginx"
-    - "php"
-    - "php-fpm"
-    - "unzip"
     - "python-passlib"

@@ -1,3 +1,0 @@
----
-php_fpm:
-  socket: /var/run/php-fpm.sock

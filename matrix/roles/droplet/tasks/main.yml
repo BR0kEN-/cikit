@@ -11,5 +11,8 @@
 - include: stop.yml
   when: droplet_stop is defined and droplet_stop != ''
 
+- include: restart.yml
+  when: droplet_restart is defined and droplet_restart != ''
+
 - include: delete.yml
   when: droplet_delete is defined and droplet_delete != ''

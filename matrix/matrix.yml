@@ -60,9 +60,6 @@
     - role: ssl
       tags: ["ssl"]
 
-    - role: php-fpm
-      tags: ["php-fpm"]
-
     - role: nginx
       tags: ["nginx"]
 
