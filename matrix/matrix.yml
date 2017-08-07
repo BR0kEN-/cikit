@@ -77,3 +77,8 @@
       with_items: "{{ restart.split(',') }}"
       when: restart | length > 0
       tags: ["always"]
+
+    - debug:
+        var: output
+      when: output is defined
+      tags: ["always"]
