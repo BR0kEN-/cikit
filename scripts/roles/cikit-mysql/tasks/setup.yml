@@ -3,6 +3,14 @@
   apt:
     update_cache: yes
 
+- name: Set the password for root user
+  debconf:
+    name: mysql-server
+    vtype: password
+    value: "{{ cikit_mysql_user.pass }}"
+    question: "mysql-server/root_password{{ item }}"
+  with_items: ["", "_again"]
+
 - name: Ensure MySQL packages are installed
   apt:
     name: "{{ item }}"
