@@ -1,6 +1,6 @@
 ---
-apache_port: "{{ 80 if vagrant else 8080 }}"
-apache_port_ssl: "{{ 443 if vagrant else 44344 }}"
+apache_port: "{{ 80 if localhost else 8080 }}"
+apache_port_ssl: "{{ 443 if localhost else 44344 }}"
 jenkins_port: 8079
 solr_port: 8078
 

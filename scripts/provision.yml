@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: yes
-  gather_facts: yes
+  gather_facts: no
 
   environment:
     DEBIAN_FRONTEND: noninteractive
@@ -56,6 +56,10 @@
         - tree
         - rsync
         - unzip
+        # Needs to be installed explicitly in case of very basic Ubuntu.
+        - sudo
+        - lsof
+        - iputils-ping
         - python
         - python-dev
         - python-pycurl
@@ -93,9 +97,9 @@
       when: "ansible_version.major < 2 and ansible_version.minor < 2"
       tags: ["always"]
 
-    - name: Check whether virtual machine will be provisioned
+    - name: Check whether provision running for local environment
       set_fact:
-        vagrant: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
+        localhost: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
       tags: ["always"]
 
     - include: tasks/password.yml
@@ -103,7 +107,25 @@
         title: "Compute password for basic HTTP authentication"
         name: http_auth_pass
         for: "{{ http_auth_pass }}"
-      when: not vagrant
+      when: not localhost
+      tags: ["always"]
+
+    - name: Ensure Python is installed on remote host
+      # We must use "raw" instead of "shell" here due to the following:
+      # FAILED! => {"changed": false, "failed": true, "module_stderr": "Shared connection to <HOST>", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found", "msg": "MODULE FAILURE", "rc": 0}
+      raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
+      when: not localhost
+      tags: ["always"]
+
+      # "gather_facts" after performing required tasks.
+      # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
+    - name: Gather facts
+      setup: ~
+      tags: ["always"]
+
+    - name: Check whether provision running for Docker container
+      set_fact:
+        docker: "{{ 'docker' == ansible_virtualization_type }}"
       tags: ["always"]
 
     - name: Obtain home directory of "{{ ansible_user }}" user
@@ -112,19 +134,22 @@
       tags: ["always"]
 
     - include: tasks/project-variable.yml
-      when: not vagrant and not jenkins_reinstall_deb
+      when: not localhost and not jenkins_reinstall_deb
       tags: ["jenkins"]
 
     - name: Set name for Jenkins job
       set_fact:
         jenkins_job: "{{ project }}"
-      when: not vagrant and not jenkins_reinstall_deb
+      when: not localhost and not jenkins_reinstall_deb
       tags: ["jenkins"]
 
     - name: Configure hostname
       hostname:
         name: "{{ inventory_hostname }}"
-      when: not vagrant
+      # It's not possible to set the hostname for Docker container. The "-h"
+      # option ought to be used instead.
+      # https://github.com/moby/moby/issues/9295#issuecomment-140350434
+      when: not localhost and not docker
       tags: ["always"]
 
     - name: Create CIKit command line utility
@@ -132,13 +157,13 @@
         src: "{{ webroot }}/cikit"
         dest: /usr/bin/cikit
         state: link
-      when: vagrant
+      when: localhost
 
     - name: Generate Bash completion for CIKit utility
       template:
         src: templates/cikit.complete.sh.j2
         dest: /etc/bash_completion.d
-      when: vagrant
+      when: localhost
 
     - name: Process facts
       set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}
@@ -195,7 +220,7 @@
       tags: ["security"]
 
     - role: cikit-nginx
-      when: not vagrant
+      when: not localhost
       tags: ["nginx", "php-stack", "security"]
 
     - role: cikit-apache
@@ -236,13 +261,13 @@
       tags: ["selenium"]
 
     - role: cikit-jenkins
-      when: not vagrant
+      when: not localhost
       tags: ["jenkins"]
 
   tasks:
     - name: Starting random rnd-tools service
       shell: rngd -r /dev/urandom
-      when: not vagrant and ansible_virtualization_type != "openvz"
+      when: not localhost and 'openvz' != ansible_virtualization_type
       tags: ["always"]
 
     - name: Restart service

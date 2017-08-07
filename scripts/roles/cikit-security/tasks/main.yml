@@ -12,4 +12,4 @@
   with_items: "{{ protected_folders }}"
   loop_control:
     loop_var: protected_folder
-  when: not vagrant
+  when: not localhost

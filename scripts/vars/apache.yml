@@ -1,9 +1,9 @@
 ---
 apache_vhosts:
-  - servername: "{{ (site_url | regex_replace('^(.*)://', 'http://')) if site_url is defined and vagrant else 'JenkinsCI' }}"
-    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and vagrant else '' }}"
+  - servername: "{{ (site_url | regex_replace('^(.*)://', 'http://')) if site_url is defined and localhost else 'JenkinsCI' }}"
+    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and localhost else '' }}"
 apache_vhosts_ssl:
-  - servername: "{{ (site_url | regex_replace('^(.*)://', 'https://')) if site_url is defined and vagrant else 'JenkinsCI' }}"
-    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and vagrant else '' }}"
+  - servername: "{{ (site_url | regex_replace('^(.*)://', 'https://')) if site_url is defined and localhost else 'JenkinsCI' }}"
+    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and localhost else '' }}"
     certificate_file: "{{ ssl_folder }}/ssl.crt"
     certificate_key_file: "{{ ssl_folder }}/ssl.key"
