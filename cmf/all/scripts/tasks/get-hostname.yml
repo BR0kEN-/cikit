@@ -13,3 +13,9 @@
     hostname_ssh:
       host: "{{ hostvars[name].ansible_user }}@{{ hostvars[name].ansible_host }}"
       args: "{{ '-i ' + hostvars[name].ansible_ssh_private_key_file.replace('~', become_home) if 'ansible_ssh_private_key_file' in hostvars[name] else '' }} -S none -o StrictHostKeyChecking=no {{ '-p ' + hostvars[name].ansible_port | string if 'ansible_port' in hostvars[name] else '' }}"
+
+- name: Ensure permission for SSH key is appropriate
+  file:
+    path: "{{ hostvars[name].ansible_ssh_private_key_file }}"
+    mode: u=r,go-rw
+  when: "'ansible_ssh_private_key_file' in hostvars[name]"
