@@ -1,7 +1,9 @@
 ---
 - name: Kill all MySQL related processes
-  shell: kill $(pgrep mysql)
-  ignore_errors: yes
+  shell: pkill mysql
+  register: pkill
+  # If no processes exist the "1" code will be returned.
+  failed_when: pkill.rc > 1
 
 - name: Wait for MySQL daemon to stop
   wait_for:

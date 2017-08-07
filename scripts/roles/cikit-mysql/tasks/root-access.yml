@@ -1,26 +1,17 @@
 ---
 - include: stop-daemon.yml
 
-#- name: Ensure directory for MySQL daemon exists
-#  file:
-#    path: "{{ cikit_mysql.dirs.run }}"
-#    state: directory
-#    owner: "{{ cikit_mysql.user }}"
-#
-#- name: Start MySQL daemon with --skip-grant-tables option for reseting password for root user
-#  shell: mysqld_safe --skip-grant-tables &
-#
-#- name: Wait for MySQL daemon to start
-#  wait_for:
-#    port: "{{ cikit_mysql_network.port }}"
-#    delay: 5
+- name: Ensure directory for MySQL daemon exists
+  file:
+    path: "{{ cikit_mysql.dirs.run }}"
+    state: directory
+    owner: "{{ cikit_mysql.user }}"
+    group: "{{ cikit_mysql.user }}"
 
 # The "auth_socket" plugin can be loaded only for "sudo" user.
 # Covers the "Plugin 'auth_socket' is not loaded" error.
 - name: Reset password for root user
   shell: |-
-    mkdir {{ cikit_mysql.dirs.run }}
-    chown {{ cikit_mysql.user }} {{ cikit_mysql.dirs.run }}
     mysqld_safe --skip-grant-tables &
     sleep 5
     mysql -uroot -e "UPDATE mysql.user SET authentication_string = PASSWORD('{{ cikit_mysql_user.pass }}'), plugin = 'mysql_native_password' WHERE User = '{{ cikit_mysql_user.name }}'; FLUSH PRIVILEGES;"

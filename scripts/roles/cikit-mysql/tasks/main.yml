@@ -13,7 +13,20 @@
 - include: shm-tempdir.yml
   when: "'shm' in cikit_mysql.dirs.tmp"
 
-- name: Compute memory for InnoDB boofers
+- name: Disable AppArmor
+  shell: |-
+    update-rc.d -f apparmor remove
+    /etc/init.d/apparmor teardown
+    /etc/init.d/apparmor stop
+  ignore_errors: yes
+
+- name: Setting mysqld to complain mode
+  shell: aa-complain /usr/sbin/mysqld
+  ignore_errors: yes
+  # AppArmor just not working properly inside of Docker containers.
+  when: not docker
+
+- name: Compute memory for InnoDB buffers
   shell: "cat /proc/meminfo | awk '/MemTotal/ {print $2/1024*{{ cikit_mysqld_configuration.innodb_buffer_pool_size }}/100}'"
   register: cikit_mysql_innodb_buffer_pool_size
 

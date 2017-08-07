@@ -13,15 +13,3 @@
     line: "{{ cikit_mysql_shm_script.cmd }}"
     regexp: "{{ cikit_mysql_shm_script.cmd | regex_escape }}"
     insertbefore: "exit 0"
-
-- name: Disable apparmor
-  shell: update-rc.d -f apparmor remove
-  ignore_errors: yes
-
-- shell: "/etc/init.d/apparmor {{ item }}"
-  ignore_errors: yes
-  with_items: ["teardown", "stop"]
-
-- name: Setting mysqld to complain mode
-  shell: aa-complain /usr/sbin/mysqld
-  ignore_errors: yes
