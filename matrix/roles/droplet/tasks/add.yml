@@ -18,7 +18,22 @@
   with_dict: "{{ nginx.port_forwarding }}"
 
 - name: Create the droplet
-  shell: "docker run -d --privileged --name '{{ droplet }}' {{ ports | join(' ') }} {{ ansible_lsb.id | lower }}:{{ ansible_lsb.release }} /sbin/init"
+  # Run unprivileged container.
+  # - https://developers.redhat.com/blog/2016/09/13/running-systemd-in-a-non-privileged-container/
+  # - https://github.com/solita/docker-systemd
+  # Problems with privileged container:
+  # - https://github.com/moby/moby/issues/7512
+  shell: |-
+    docker run \
+      -d \
+      -h "{{ ansible_host }}" \
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      --name "{{ droplet }}" \
+      --tmpfs /run \
+      --tmpfs /run/lock \
+      --security-opt seccomp=unconfined \
+      {{ ports | join(' ') }} \
+      solita/ubuntu-systemd
 
 - name: Compute directory for SSH key-pair
   set_fact:
