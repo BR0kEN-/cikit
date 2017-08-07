@@ -3,7 +3,8 @@
   become_user: "{{ cikit_solr.user }}"
   shell: >
     solr delete -c "{{ solr_core }}"
-  ignore_errors: yes
+  args:
+    removes: "{{ cikit_solr.dirs.data }}/data/{{ solr_core }}"
 
 - name: Create core
   become_user: "{{ cikit_solr.user }}"

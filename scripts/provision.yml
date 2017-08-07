@@ -46,6 +46,11 @@
 
     basic_packages:
       apt:
+        # Needs to be installed explicitly in case of very basic Ubuntu.
+        - sudo
+        - lsof
+        - iputils-ping
+        # Base packages.
         - git
         - tar
         - vim
@@ -56,10 +61,6 @@
         - tree
         - rsync
         - unzip
-        # Needs to be installed explicitly in case of very basic Ubuntu.
-        - sudo
-        - lsof
-        - iputils-ping
         - python
         - python-dev
         - python-pycurl
