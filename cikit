@@ -182,8 +182,14 @@ if [ -n "$extra_vars" ]; then
   params+=" --extra-vars='{$extra_vars}'"
 fi
 
+# https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
+# https://github.com/ansible/ansible/blob/devel/lib/ansible/plugins/strategy/free.py
+export ANSIBLE_STRATEGY="free"
+# https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
 export ANSIBLE_FORCE_COLOR=1
+export DISPLAY_SKIPPED_HOSTS=0
+export ANSIBLE_RETRY_FILES_ENABLED=0
 
 # Go to the directory with playbook to set a relative path for tasks.
 # https://groups.google.com/forum/#!topic/ansible-project/QqaBvKVKDDQ
