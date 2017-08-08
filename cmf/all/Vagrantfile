@@ -140,10 +140,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
     config.vm.synced_folder folder["source"], folder["target"],
       :id => folder["target"],
-      # Windows (https://github.com/coreos/coreos-vagrant/issues/185#issuecomment-145260933):
-      # - VBoxSF cannot be used due to "Text file busy" error (https://github.com/ansible/ansible/issues/9526#issue-48225420).
-      # - NFS cannot be used due to "Device or resource busy - directory may be a mount point?" error.
-      :type => isCygwin ? "rsync" : "nfs",
+      # Use VBoxSF native system to mount folders on Windows.
+      :type => isCygwin ? false : "nfs",
       :nfs_udp => folder["nfs"]["udp"],
       :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3,
       :rsync__args => ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"],
