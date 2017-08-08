@@ -143,9 +143,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
       # Use VBoxSF native system to mount folders on Windows.
       :type => isCygwin ? false : "nfs",
       :nfs_udp => folder["nfs"]["udp"],
-      :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3,
-      :rsync__args => ["--verbose", "--archive", "--delete", "-z", "--chmod=ugo=rwX"],
-      :rsync__exclude => folder["excluded_paths"]
+      :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3
   end
 
   config.vm.provision :cikit,

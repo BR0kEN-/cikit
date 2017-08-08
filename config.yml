@@ -21,11 +21,6 @@ vm:
   synced_folder:
     - source: ./
       target: /var/www
-      # For "rsync" only (Cygwin).
-      exclude:
-        - .vagrant/
-        - .idea/
-        - .git/
       # Not supported on Cygwin.
       nfs:
         # If you're using guest machine more often than host for manipulating
