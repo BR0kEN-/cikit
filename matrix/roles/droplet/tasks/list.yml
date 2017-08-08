@@ -6,5 +6,5 @@
   failed_when: droplets.rc > 1
 
 - name: Store the list of all droplets
-  set_fact:
-    output: "{{ droplets.stdout_lines }}"
+  debug:
+    msg: "{{ droplets.stdout_lines }}"
