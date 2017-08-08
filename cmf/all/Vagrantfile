@@ -71,7 +71,7 @@ if ["up", "resume"].include?(ARGV[0])
   # worry about this at the following commands: "destroy", "suspend", "reload", "halt".
 end
 
-ENV["VAGRANT_DEFAULT_PROVIDER"] = ENV.has_key?("VAGRANT_CI") && ENV["VAGRANT_CI"].include?("lxc") ? "lxc" : "virtualbox"
+ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
 
 if not Vagrant.has_plugin?("vagrant-hostsupdater")
   system "vagrant plugin install vagrant-hostsupdater"
