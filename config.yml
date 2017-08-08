@@ -2,17 +2,10 @@
 ---
 tmproot: /tmp
 webroot: /var/www
-selenium: http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
 APPLICATION_CONFIG: ~
 vm:
   ip: 192.168.56.132
-  forwarded_port:
-    - host: 8081
-      guest: 80
-    - host: 8083
-      guest: 3306
-    - host: 4444
-      guest: 4444
+  forwarded_port: [80, 3306, 4444]
   virtualbox:
     modifyvm:
       cpus: 1

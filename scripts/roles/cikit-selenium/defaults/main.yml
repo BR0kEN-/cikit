@@ -1,14 +1,17 @@
 ---
 selenium_dependencies:
-  - src: http://chromedriver.storage.googleapis.com/2.14/chromedriver_linux64.zip
+  - src: http://chromedriver.storage.googleapis.com/2.31/chromedriver_linux64.zip
     dest: /var/lib/chrome-driver/chromedriver.zip
     unzip: yes
     service: no
-  # The "selenium" variable can be found in global "config.yml".
-  - src: "{{ selenium }}"
+  - src: http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
     dest: /var/lib/selenium/selenium.jar
     unzip: no
-    service: java -jar
+    service:
+      service: selenium.grid.hub
+      arguments: -role hub -port 4444
+      executable: /usr/bin/java -jar
+      description: Selenium Grid [Hub]
 selenium_packages:
   - firefox
   - google-chrome-stable

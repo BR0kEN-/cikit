@@ -26,9 +26,8 @@
 
     - name: Ensure Selenium started
       service:
-        name: selenium
+        name: selenium.grid.hub
         state: restarted
-        args: "-role hub -log selenium.log"
       when: run and not headless
 
     - name: Ensure PhantomJS started

@@ -66,9 +66,10 @@ if ["up", "resume"].include?(ARGV[0])
       configValues["vm"]["ip"] = vmIp
     end
   end
-
-  # Smart "hostsupdater" plugin use configured IP of VM to clean up the hosts file, so we don't need to
-  # worry about this at the following commands: "destroy", "suspend", "reload", "halt".
+# Smart "hostsupdater" plugin use configured IP of VM to clean up the hosts file, so we don't need to
+# worry about this at the following commands: "destroy", "suspend", "reload", "halt".
+elsif ["destroy", "suspend", "reload", "halt"].include?(ARGV[0])
+  system "./selenium.sh --stop"
 end
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
@@ -125,14 +126,12 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
     :lxc__bridge_name => "lxcbr0"
 
   configValues["vm"]["forwarded_port"].each do |port|
-    if port["guest"] != "" && port["host"] != ""
-      config.vm.network :forwarded_port,
-        :host => port["host"].to_i,
-        :guest => port["guest"].to_i,
-        # https://github.com/mitchellh/vagrant/issues/8395#issuecomment-288379271
-        :host_ip => "127.0.0.1",
-        :auto_correct => true
-    end
+    config.vm.network :forwarded_port,
+      :host => port.to_i,
+      :guest => port.to_i,
+      # https://github.com/mitchellh/vagrant/issues/8395#issuecomment-288379271
+      :host_ip => "127.0.0.1",
+      :auto_correct => true
   end
 
   configValues["vm"]["synced_folder"].each do |folder|
@@ -165,7 +164,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # Create Selenium node.
   config.vm.provision :cikit,
     :controller => "./selenium.sh",
-    :playbook => "#{configValues["selenium"]}",
+    :playbook => "",
     :run => "always"
 
   config.ssh.shell = "sh"
