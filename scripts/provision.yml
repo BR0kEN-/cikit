@@ -93,7 +93,7 @@
       tags: ["always"]
 
     - include_vars: "{{ item }}"
-      with_fileglob: "{{ __targetdir__ }}/cikit/vars/*.yml"
+      with_fileglob: "{{ __targetdir__ }}/.cikit/vars/*.yml"
       tags: ["always"]
 
     - name: Check whether provision running for local environment

@@ -39,20 +39,21 @@
 
     - name: Prepare directory for project
       file:
-        path: "{{ __targetdir__ }}/docroot"
+        path: "{{ __targetdir__ }}/{{ project }}"
         state: directory
+      register: project_directory
 
     - name: Download CMF
       shell: "curl -s https://{{ cmfs[cmf].download_url }}-{{ version }}.tar.gz | tar --strip-components=1 -xzC ./"
       args:
         warn: no
-        chdir: "{{ __targetdir__ }}/docroot"
+        chdir: "{{ project_directory.path }}/docroot"
       when: not without_sources
 
     - name: Prepare CIKit-structured repository
       synchronize:
         src: "{{ item }}"
-        dest: "{{ __targetdir__ }}"
+        dest: "{{ project_directory.path }}"
         archive: no
         recursive: yes
         rsync_opts:
@@ -64,24 +65,24 @@
         - "{{ cmf_configs.stat.path }}/"
 
     - name: Setting permissions for project tree
-      shell: "find {{ __targetdir__ }}/ -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
+      shell: "find {{ project_directory.path }}/ -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
       with_dict:
         d: 755
         f: 664
 
     - name: Update config.yml
       lineinfile:
-        dest: "{{ __targetdir__ }}/.cikit/config.yml"
+        dest: "{{ project_directory.path }}/.cikit/config.yml"
         line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | replace('_', '-') }}.dev"
         insertafter: "^---$"
 
     - name: Update config.yml
       replace:
-        dest: "{{ __targetdir__ }}/.cikit/config.yml"
+        dest: "{{ project_directory.path }}/.cikit/config.yml"
         regexp: "APPLICATION_CONFIG: ~"
-        replace: "{{ lookup('file', __targetdir__ + '/APPLICATION_CONFIG.yml') }}"
+        replace: "{{ lookup('file', project_directory.path + '/APPLICATION_CONFIG.yml') }}"
 
-    - include_vars: "{{ __targetdir__ }}/REPLACEMENTS.yml"
+    - include_vars: "{{ project_directory.path }}/REPLACEMENTS.yml"
 
     - name: Determine OS family
       shell: uname
@@ -89,17 +90,16 @@
 
     - name: Seeking for the placeholders
       shell: >
-        find {{ __targetdir__ }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \;
+        find {{ project_directory.path }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \;
       environment:
         LC_ALL: C
       with_dict: "{{ replacements }}"
 
     - name: Clear created repository
       file:
-        path: "{{ __targetdir__ }}/{{ item }}"
+        path: "{{ project_directory.path }}/{{ item }}"
         state: absent
       with_items:
-        - .cikit/repository.yml
         - docroot/.gitignore
         - docroot/.git
         - APPLICATION_CONFIG.yml
@@ -108,5 +108,5 @@
     - name: Initialize Vagrant box
       shell: "vagrant init -m {{ box | basename }} {{ box }}"
       args:
-        chdir: "{{ __targetdir__ }}"
+        chdir: "{{ project_directory.path }}"
         creates: Vagrantfile
