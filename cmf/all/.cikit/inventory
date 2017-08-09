@@ -1,0 +1,6 @@
+# This is Ansible inventory file. It includes hosts where playbooks will run.
+# Visit for more information: http://docs.ansible.com/ansible/intro_inventory.html
+matrix1     ansible_host=brbr.propeople.com.ua          ansible_user=root   ansible_port=22         ansible_ssh_private_key_file=~/.ssh/id_rsa
+cikit01     ansible_host=cikit01.brbr.propeople.com.ua  ansible_user=root   ansible_port=2201       ansible_ssh_private_key_file=../cikit-credentials/matrix1/ssh-keys/cikit01.private.key
+
+cibox08     ansible_host=cibox08.m2.propeople.com.ua    ansible_user=root   ansible_port=2208       ansible_ssh_private_key_file=~/.ssh/id_rsa

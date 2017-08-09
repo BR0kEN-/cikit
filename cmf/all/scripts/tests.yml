@@ -13,7 +13,7 @@
   become: yes
 
   vars_files:
-    - ../config.yml
+    - ../.cikit/config.yml
     - vars/main.yml
     - vars/tests.yml
 

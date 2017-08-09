@@ -5,13 +5,8 @@ webroot: /var/www
 APPLICATION_CONFIG: ~
 vm:
   ip: 192.168.56.132
-  forwarded_port: [80, 3306, 4444]
-  virtualbox:
-    modifyvm:
-      cpus: 1
-      memory: 2048
-      natdnshostresolver1: "on"
-  synced_folder:
+  ports: [80, 3306, 4444]
+  folders:
     - source: ./
       target: /var/www
       # Not supported on Cygwin.
@@ -24,3 +19,8 @@ vm:
         udp: true
         # Do not change this option if don't understand what you're doing!
         version: 3
+  virtualbox:
+    modifyvm:
+      cpus: 1
+      memory: 2048
+      natdnshostresolver1: "on"

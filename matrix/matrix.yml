@@ -1,3 +1,4 @@
+# ro:limit
 ---
 - hosts: all
   become: yes
@@ -7,7 +8,7 @@
     DEBIAN_FRONTEND: noninteractive
 
   vars:
-    credentials_storage: ../cikit-credentials
+    credentials_storage: "{{ __targetdir__ }}/.cikit/credentials"
     application: cikit
     # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
     restart: ""
@@ -37,7 +38,7 @@
       tags: ["always"]
 
     - include_vars: "{{ item }}"
-      with_fileglob: vars/*
+      with_fileglob: vars/*.yml
       tags: ["always"]
 
     - name: Compute allowed hosts

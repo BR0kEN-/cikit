@@ -19,23 +19,23 @@ params=""
 
 locate_path()
 {
-  local SELF_PATH="$1"
+  local SELF_DIR="$1"
 
-  if [ -L "$SELF_PATH" ]; then
-    while [ -L "$SELF_PATH" ]; do
-      SELF_PATH="$(cd "$(dirname -- "$(readlink -- "$SELF_PATH")")" && pwd)"
+  if [ -L "$SELF_DIR" ]; then
+    while [ -L "$SELF_DIR" ]; do
+      SELF_DIR="$(cd "$(dirname -- "$(readlink -- "$SELF_DIR")")" && pwd)"
     done
   else
-    SELF_PATH="$(cd -P -- "$(dirname -- "$SELF_PATH")" && pwd -P)"
+    SELF_DIR="$(cd -P -- "$(dirname -- "$SELF_DIR")" && pwd -P)"
   fi
 
-  echo "$SELF_PATH"
+  echo "$SELF_DIR"
 }
 
 exit_with_help()
 {
   if ! cd -- "$1" > /dev/null 2>&1; then
-    echo "Directory \"$1\" does not exists. Playbooks cannot be located."
+    echo "CIKit project not found in the current directory."
     exit 13
   fi
 
@@ -94,36 +94,81 @@ extra_var()
   extra_vars+="\"$var\":$val,"
 }
 
-SELF_PATH="$(locate_path "$0")"
-ENV_CONFIG="${SELF_PATH}/.env-config.yml"
+match_file()
+{
+  for file in $@; do
+    if [ -f "${file}" ]; then
+      \echo "${file}"
+      \exit 0
+    fi
+  done
+
+  \exit 1
+}
+
+# ------------------------------------------------------------------------------
+# RUNTIME
+# ------------------------------------------------------------------------------
+
+# The directory where the user at the moment.
+TARGET_DIR="$(\pwd)"
+# Compute a path to this script and get back from "bash" directory.
+\cd "$(locate_path "$0")/../"
+# Set the path to CIKit catalog.
+SELF_DIR="$(\pwd)"
+
+# Inside of VM we will not have any host-related commands available so
+# via this variable we change the directory for tasks seeking.
+if [ -z "${CIKIT_PROJECT_DIR}" ]; then
+  CIKIT_PROJECT_DIR="${SELF_DIR}"
+fi
 
 if [ -z "$1" ]; then
-  exit_with_help "$SELF_PATH/scripts"
+  exit_with_help "${CIKIT_PROJECT_DIR}/scripts"
 fi
 
 PLAYBOOK="${1/%.yml/}.yml"
+PLAYBOOK=$(match_file "${CIKIT_PROJECT_DIR}/scripts/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}")
 
-for playbook in "$SELF_PATH/scripts/$PLAYBOOK" "$SELF_PATH/$PLAYBOOK" "$PLAYBOOK"; do
-  if [ -f "$playbook" ]; then
-    break
+if [ $? -gt 0 ]; then
+  \echo "The \"$1\" command is not available."
+  \exit 12
+fi
+
+# Check whether playbook has declared mandatory options via "# ro:OPTION" annotation.
+# If one of the required options is missing, then continuation will be stopped.
+for mandatory_option in $(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}"); do
+  found=false
+
+  for option in $(IFS="--" \echo "$@"); do
+    if [[ "${option}" =~ --${mandatory_option}=.{2,} ]]; then
+      found=true
+      break
+    fi
+  done
+
+  if ${found}; then
+    # If "--limit" is required then it means that playbook must be executed
+    # for existing CIKit project due to its inventory.
+    if [[ "limit" == "${mandatory_option}" ]] && [[ ! -f "${TARGET_DIR}/.cikit/config.yml" || ! -f "${TARGET_DIR}/.cikit/inventory" ]]; then
+      \echo "Execution of the \"$1\" is available only within the CIKit-project directory."
+      \exit 34
+    fi
+  else
+    \echo "The \"--${mandatory_option}\" option is required for the \"${PLAYBOOK}\" playbook and currently missing or has a value less than 2 symbols."
+    \exit 44
   fi
 done
 
-if [ ! -f "$playbook" ]; then
-  if [ -d "$1" ]; then
-    exit_with_help "$1"
-  fi
-
-  echo "Playbook \"$playbook\" does not exists!"
-  exit 1
-fi
+# See "provisioner.rb" to get know when it creates.
+ENV_CONFIG="${TARGET_DIR}/.cikit/environment.yml"
 
 if [ -f "${ENV_CONFIG}" ]; then
   # It's interesting trick with detecting Python interpreter. Sometimes it may differ. Especially
   # on MacOS, when Ansible installed via Homebrew. For instance, "which python" returns
   # the "/usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/bin/python2.7",
   # but this particular setup may not have necessary packages for full Ansible operability. Since
-  # Ansible - is a Python scripts they must have a shadebag line with path to interpreter they
+  # Ansible - is a Python scripts, they must have a shadebag line with path to interpreter they
   # should run by. Grab it and try!
   # Given:
   #   $(realpath $(which python)) -c 'import yaml'
@@ -134,7 +179,7 @@ if [ -f "${ENV_CONFIG}" ]; then
   # But:
   #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
   # Just works.
-  PYTHON_INTERPRETER=$(head -n1 < "$(which "${COMMAND}")" | tr -d '#!')
+  PYTHON_INTERPRETER=$(\head -n1 < "$(\which "${COMMAND}")" | \tr -d '#!')
 
   if [ -x "${PYTHON_INTERPRETER}" ]; then
     extra_vars=$("${PYTHON_INTERPRETER}" -c "exec(\"import yaml,json\nprint json.dumps(yaml.load(open('${ENV_CONFIG}')))\")")
@@ -147,9 +192,9 @@ fi
 
 # The "EXTRA_VARS" passed as environment variable. Parse it first
 # to not allow overwrite explicitly passed options.
-if [ -n "$EXTRA_VARS" ]; then
-  for var in $(IFS="--" echo "$EXTRA_VARS"); do
-    extra_var "$var"
+if [ -n "${EXTRA_VARS}" ]; then
+  for var in $(IFS="--" \echo "${EXTRA_VARS}"); do
+    extra_var "${var}"
   done
 fi
 
@@ -161,26 +206,34 @@ done
 # Remove last comma.
 extra_vars=${extra_vars%%,}
 
-if [ -z "$ANSIBLE_INVENTORY" ]; then
-  # Move "inventory" into user's home directory because it is not mounted file
-  # system and can be affected via Linux commands (chmod, chown) under Windows.
-  cp "$SELF_PATH/inventory" ~/.inventory
-  chmod a-x ~/.inventory
-  params+=" -i ~/.inventory"
+if [ -z "${ANSIBLE_INVENTORY}" ]; then
+  INVENTORY=$(match_file "${TARGET_DIR}/.cikit/inventory" "${CIKIT_PROJECT_DIR}/.cikit/inventory")
+
+  if [ $? -eq 0 ]; then
+    # Move "inventory" into user's home directory because it is not mounted file
+    # system and can be affected via Linux commands (chmod, chown) under Windows.
+    \cp "${INVENTORY}" ~/.cikit-inventory
+    \chmod a-x ~/.cikit-inventory
+    params+=" -i ~/.cikit-inventory"
+  else
+    params+=" -i localhost,"
+  fi
 # The "uname -o" cannot be used due to "-o" option is not supported on OS X.
 elif [[ "$(uname -s)" =~ "CYGWIN" ]]; then
-  ANSIBLE_INVENTORY=$(cygpath "$ANSIBLE_INVENTORY")
+  ANSIBLE_INVENTORY=$(cygpath "${ANSIBLE_INVENTORY}")
 fi
 
 # Pass any extra arguments for "ansible-playbook". Most useful
 # case: "ANSIBLE_ARGS=-vvvv cikit reinstall"
-if [ -n "$ANSIBLE_ARGS" ]; then
-  params+=" $ANSIBLE_ARGS"
+if [ -n "${ANSIBLE_ARGS}" ]; then
+  params+=" ${ANSIBLE_ARGS}"
 fi
 
-if [ -n "$extra_vars" ]; then
-  params+=" --extra-vars='{$extra_vars}'"
+if [ -n "${extra_vars}" ]; then
+  params+=" --extra-vars='{${extra_vars}}'"
 fi
+
+params+=" -e __targetdir__=${TARGET_DIR}"
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
@@ -189,11 +242,7 @@ export ANSIBLE_FORCE_COLOR=1
 export DISPLAY_SKIPPED_HOSTS=0
 export ANSIBLE_RETRY_FILES_ENABLED=0
 
-# Go to the directory with playbook to set a relative path for tasks.
-# https://groups.google.com/forum/#!topic/ansible-project/QqaBvKVKDDQ
-cd "${playbook%/*}"
-
-COMMAND+=" $playbook $params"
+COMMAND+=" $PLAYBOOK $params"
 
 # Print entire command if verbosity requested.
 if [[ "$params" =~ -v{1,}[[:space:]] ]]; then

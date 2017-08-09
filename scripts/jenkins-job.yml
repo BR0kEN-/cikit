@@ -1,23 +1,20 @@
+# ro:limit
 ---
 - hosts: all
   become: yes
   gather_facts: yes
 
   vars_files:
-    - ../config.yml
-    - vars/ruby.yml
-    - vars/solr.yml
-    - vars/ports.yml
-    - vars/mysql.yml
-    - vars/nginx.yml
-    - vars/apache.yml
-    - vars/security.yml
+    - "{{ __targetdir__ }}/.cikit/config.yml"
 
   vars:
     install: no
 
   pre_tasks:
     - include: tasks/project-variable.yml
+
+    - include_vars: "{{ item }}"
+      with_fileglob: "{{ __targetdir__ }}/cikit/vars/*.yml"
 
     - name: Set name for Jenkins job
       set_fact:

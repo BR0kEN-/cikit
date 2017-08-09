@@ -1,3 +1,4 @@
+# ro:limit
 ---
 - hosts: all
   become: yes
@@ -7,14 +8,7 @@
     DEBIAN_FRONTEND: noninteractive
 
   vars_files:
-    - ../config.yml
-    - vars/ruby.yml
-    - vars/solr.yml
-    - vars/ports.yml
-    - vars/mysql.yml
-    - vars/nginx.yml
-    - vars/apache.yml
-    - vars/security.yml
+    - "{{ __targetdir__ }}/.cikit/config.yml"
 
   vars_prompt:
     - name: php_version
@@ -42,7 +36,7 @@
       tags: ["solr"]
 
   vars:
-    credentials_storage: ../cikit-credentials
+    credentials_storage: "{{ __targetdir__ }}/.cikit/credentials"
 
     basic_packages:
       apt:
@@ -98,6 +92,10 @@
       when: "ansible_version.major < 2 and ansible_version.minor < 2"
       tags: ["always"]
 
+    - include_vars: "{{ item }}"
+      with_fileglob: "{{ __targetdir__ }}/cikit/vars/*.yml"
+      tags: ["always"]
+
     - name: Check whether provision running for local environment
       set_fact:
         localhost: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
@@ -135,7 +133,7 @@
       tags: ["always"]
 
     - include: tasks/project-variable.yml
-      when: not localhost and not jenkins_reinstall_deb
+      when: not localhost
       tags: ["jenkins"]
 
     - name: Set name for Jenkins job
@@ -153,18 +151,26 @@
       when: not localhost and not docker
       tags: ["always"]
 
-    - name: Create CIKit command line utility
-      file:
-        src: "{{ webroot }}/cikit"
-        dest: /usr/bin/cikit
-        state: link
+    - name: Ensure default directory of CIKit project is set as environment variable
+      lineinfile:
+        dest: /etc/bash.bashrc
+        line: 'export CIKIT_PROJECT_DIR="{{ webroot }}"'
+        regexp: "{{ webroot | regex_escape }}"
+        insertbefore: BOF
       when: localhost
 
-    - name: Generate Bash completion for CIKit utility
-      template:
-        src: templates/cikit.complete.sh.j2
-        dest: /etc/bash_completion.d
+    - name: Create CIKit command line utility
+      file:
+        # This directory is explicitly mounted in the Vagrantfile.
+        src: "/var/lib/cikit/{{ item.src }}"
+        dest: "{{ item.dest }}/{{ item.src }}"
+        state: link
       when: localhost
+      with_items:
+        - src: cikit
+          dest: /usr/bin
+        - src: cikit.complete.sh
+          dest: /etc/bash_completion.d
 
     - name: Process facts
       set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}

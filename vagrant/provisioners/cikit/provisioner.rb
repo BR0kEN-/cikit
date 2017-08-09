@@ -47,12 +47,12 @@ module VagrantPlugins::CIKit
       # Append the host being provisioned.
       args << "--limit=#{@machine.name}"
 
-      playbook = config.playbook.chomp(File.extname(config.playbook)) + ".yml"
+      playbook = config.playbook ? config.playbook.chomp(File.extname(config.playbook)) + ".yml" : ""
 
       if File.exist?(playbook)
         taglist = []
         extra_vars = {}
-        prompts_file = "#{File.dirname(@machine.env.local_data_path)}/.env-config.yml"
+        prompts_file = "#{File.dirname(@machine.env.local_data_path)}/.cikit/environment.yml"
         playbook = YAML::load_file(playbook)
         prompts = File.exists?(prompts_file) ? YAML::load_file(prompts_file) : {}
 

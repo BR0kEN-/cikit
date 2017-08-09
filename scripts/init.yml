@@ -1,8 +1,11 @@
+# ro:project
 ---
 - hosts: localhost
   connection: local
+  gather_facts: no
 
   vars:
+    box: http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS.box
     # As name of folder inside of "cmf/".
     cmf: "drupal"
     without_sources: no
@@ -15,12 +18,7 @@
         download_url: "wordpress.org/wordpress"
         default_version: "4.8.1"
 
-  vars_files:
-    - ../config.yml
-
   tasks:
-    - include: tasks/project-variable.yml
-
     - name: Set default version of CMF
       set_fact:
         version: "{{ cmfs[cmf].default_version }}"
@@ -35,80 +33,70 @@
         path: "../cmf/{{ cmf }}/{{ major | int }}"
       register: cmf_configs
 
-    - name: CMF is not available
-      fail:
+    - fail:
         msg: "You are not allowed to install {{ cmf | capitalize }} {{ version }} because it isn't pre-configured."
       when: not cmf_configs.stat.exists
 
     - name: Prepare directory for project
       file:
-        path: "../{{ project }}/docroot"
+        path: "{{ __targetdir__ }}/docroot"
         state: directory
 
     - name: Download CMF
       shell: "curl -s https://{{ cmfs[cmf].download_url }}-{{ version }}.tar.gz | tar --strip-components=1 -xzC ./"
       args:
         warn: no
-        chdir: "../{{ project }}/docroot"
+        chdir: "{{ __targetdir__ }}/docroot"
       when: not without_sources
 
     - name: Prepare CIKit-structured repository
       synchronize:
-        src: "{{ item.src }}"
-        dest: "../{{ project }}/{{ item.dest | default('') }}"
+        src: "{{ item }}"
+        dest: "{{ __targetdir__ }}"
         archive: no
         recursive: yes
         rsync_opts:
           - "--exclude=*.retry"
           - "--exclude=.git"
       with_items:
-        - src: "../cmf/all/"
-        - src: "../cmf/{{ cmf }}/all/"
-        - src: "{{ cmf_configs.stat.path }}/"
-        - src: "../cikit"
-        - src: "../config.yml"
-        - src: "../inventory"
-
-        - src: "../scripts/"
-          dest: ".cikit/"
+        - "../cmf/all/"
+        - "../cmf/{{ cmf }}/all/"
+        - "{{ cmf_configs.stat.path }}/"
 
     - name: Setting permissions for project tree
-      shell: "find ../{{ project }} -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
+      shell: "find {{ __targetdir__ }}/ -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
       with_dict:
         d: 755
         f: 664
 
-    - name: Setting executable permissions for Bash scripts
-      file:
-        path: "../{{ project }}/{{ item }}"
-        mode: a+x
-      with_items:
-        - cikit
-        - selenium.sh
-
     - name: Update config.yml
       lineinfile:
-        dest: "../{{ project }}/config.yml"
+        dest: "{{ __targetdir__ }}/.cikit/config.yml"
         line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | replace('_', '-') }}.dev"
         insertafter: "^---$"
 
     - name: Update config.yml
       replace:
-        dest: "../{{ project }}/config.yml"
+        dest: "{{ __targetdir__ }}/.cikit/config.yml"
         regexp: "APPLICATION_CONFIG: ~"
-        replace: "{{ lookup('file', '../' + project + '/APPLICATION_CONFIG.yml') }}"
+        replace: "{{ lookup('file', __targetdir__ + '/APPLICATION_CONFIG.yml') }}"
 
-    - include_vars: "../{{ project }}/REPLACEMENTS.yml"
+    - include_vars: "{{ __targetdir__ }}/REPLACEMENTS.yml"
 
-    - name: Seeking the placeholders
-      shell: "find ../{{ project }}/scripts/ -type f -exec sed -i {{ \"''\" if ansible_os_family == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \\;"
+    - name: Determine OS family
+      shell: uname
+      register: uname
+
+    - name: Seeking for the placeholders
+      shell: >
+        find {{ __targetdir__ }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \;
       environment:
         LC_ALL: C
       with_dict: "{{ replacements }}"
 
     - name: Clear created repository
       file:
-        path: "../{{ project }}/{{ item }}"
+        path: "{{ __targetdir__ }}/{{ item }}"
         state: absent
       with_items:
         - .cikit/repository.yml
@@ -116,3 +104,9 @@
         - docroot/.git
         - APPLICATION_CONFIG.yml
         - REPLACEMENTS.yml
+
+    - name: Initialize Vagrant box
+      shell: "vagrant init -m {{ box | basename }} {{ box }}"
+      args:
+        chdir: "{{ __targetdir__ }}"
+        creates: Vagrantfile

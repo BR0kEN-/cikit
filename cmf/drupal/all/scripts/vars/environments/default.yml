@@ -1,0 +1,15 @@
+---
+commands:
+  pre: []
+  post:
+#    - vset: ["file_temporary_path", "{{ tmproot }}"]
+#    - vset: ["error_level", "2"]
+#    - cset: ["system.file", "path.temporary", "{{ tmproot }}"]
+#    - cset: ["system.logging", "error_level", "verbose"]
+    - en: ["dblog", "field_ui"]
+
+drupal:
+  # Data for super-admin (UID 1).
+  user:
+    name: admin
+    pass: propeople

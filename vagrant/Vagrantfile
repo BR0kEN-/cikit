@@ -9,7 +9,8 @@ Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 # Basic variables.
 arguments = ARGV.join(" ")
 isCygwin = Vagrant::Util::Platform.cygwin?
-configValues = YAML::load_file("config.yml")
+configValues = YAML::load_file(".cikit/config.yml")
+vagrantfileDir = File.dirname(__FILE__)
 
 if isCygwin
   # Prevent "hostsupdater" to fail with impossibility to write hosts.
@@ -79,19 +80,13 @@ if not Vagrant.has_plugin?("vagrant-hostsupdater")
 end
 
 # Automatically load custom provisioners.
-Dir[".cikit/.vagrant/provisioners/*"].each do |file|
+Dir["#{vagrantfileDir}/provisioners/*"].each do |file|
   file += "/#{File.basename(file)}.rb"
 
-  if File.exist?(file)
-    require_relative file
-  end
+  require file if File.exist?(file)
 end
 
 Vagrant.configure(VAGRANT_API_VERSION) do |config|
-  # Use the box, depending on Vagrant provider.
-  config.vm.box_url = "http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS.box"
-  # Automatically name the box.
-  config.vm.box = File.basename(config.vm.box_url)
   # The "hostsupdater" plugin insert this value to "hosts".
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
@@ -122,10 +117,10 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   end
 
   config.vm.network :private_network,
-    :ip => "#{configValues["vm"]["ip"]}",
+    :ip => configValues["vm"]["ip"],
     :lxc__bridge_name => "lxcbr0"
 
-  configValues["vm"]["forwarded_port"].each do |port|
+  configValues["vm"]["ports"].each do |port|
     config.vm.network :forwarded_port,
       :host => port.to_i,
       :guest => port.to_i,
@@ -134,7 +129,17 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
       :auto_correct => true
   end
 
-  configValues["vm"]["synced_folder"].each do |folder|
+  # Mout the directory with Bash scripts additionally.
+  (configValues["vm"]["folders"] ||= []).push({
+    "source" => "#{vagrantfileDir}/../bash",
+    "target" => "/var/lib/cikit",
+    "nfs" => {
+      "udp" => true,
+      "version" => 3,
+    },
+  })
+
+  configValues["vm"]["folders"].each do |folder|
     nfsVersion = folder["nfs"]["version"].to_i
 
     config.vm.synced_folder folder["source"], folder["target"],
@@ -146,14 +151,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   end
 
   config.vm.provision :cikit,
-    :controller => "./cikit",
-    :playbook => ".cikit/provision"
-
-  if ENV["REINSTALL"]
-    config.vm.provision :shell,
-      :keep_color => true,
-      :inline => "cikit reinstall"
-  end
+    :controller => "#{vagrantfileDir}/../bash/cikit",
+    :playbook => "provision"
 
   # Create Selenium hub.
   config.vm.provision :shell,
@@ -163,8 +162,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   # Create Selenium node.
   config.vm.provision :cikit,
-    :controller => "./selenium.sh",
-    :playbook => "",
+    :controller => "#{vagrantfileDir}/../bash/selenium",
     :run => "always"
 
   config.ssh.shell = "sh"

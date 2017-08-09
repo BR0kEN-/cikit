@@ -1,0 +1,5 @@
+---
+- name: "Make a copy of {{ settings | basename }}"
+  copy:
+    src: "{{ project_webroot }}/{{ settings }}"
+    dest: "{{ project_workspace }}/{{ settings }}"

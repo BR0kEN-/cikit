@@ -1,0 +1,4 @@
+---
+nginx_sites: {}
+nginx_remove_sites:
+  - default

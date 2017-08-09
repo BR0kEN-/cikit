@@ -1,0 +1,29 @@
+name: PP
+description: Start with only a few modules enabled.
+type: profile
+core: 8.x
+
+dependencies:
+  - node
+  - block
+  - ckeditor
+  - config
+  - contextual
+  - menu_link_content
+  - block_content
+  - editor
+  - image
+  - menu_ui
+  - options
+  - path
+  - page_cache
+  - dynamic_page_cache
+  - taxonomy
+  - toolbar
+  - file
+  - views
+  - automated_cron
+
+themes:
+  - seven
+  - stark
