@@ -12,10 +12,10 @@
 # - ansible-playbook
 
 COMMAND="ansible-playbook"
-# JSON formatted "--extra-vars" options.
-extra_vars=""
 # List of parameters for "ansible-playbook" command.
-params=""
+PARAMS=""
+# JSON formatted "--extra-vars" options.
+VARS=""
 
 locate_path()
 {
@@ -67,10 +67,10 @@ extra_var()
   # List of allowed variables for passing as parameters for "ansible-playbook".
   for var_ansible in limit tags list-tags; do
     if [ "${var}" == "${var_ansible}" ]; then
-      params+=" --${var}"
+      PARAMS+=" --${var}"
 
       if [ "${var}" != "${val}" ]; then
-        params+="=${val}"
+        PARAMS+="=${val}"
       fi
     fi
   done
@@ -91,7 +91,7 @@ extra_var()
     val="\"${val}\""
   fi
 
-  extra_vars+="\"${var}\":${val},"
+  VARS+="\"${var}\":${val},"
 }
 
 match_file()
@@ -128,7 +128,7 @@ if [ -z "$1" ]; then
 fi
 
 PLAYBOOK="${1/%.yml/}.yml"
-PLAYBOOK=$(match_file "${CIKIT_PROJECT_DIR}/scripts/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}")
+PLAYBOOK=$(match_file "${CIKIT_PROJECT_DIR}/scripts/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}" "${PLAYBOOK}")
 
 if [ $? -gt 0 ]; then
   \echo "The \"$1\" command is not available."
@@ -182,9 +182,9 @@ if [ -f "${ENV_CONFIG}" ]; then
   PYTHON_INTERPRETER=$(\head -n1 < "$(\which "${COMMAND}")" | \tr -d '#!')
 
   if [ -x "${PYTHON_INTERPRETER}" ]; then
-    extra_vars=$("${PYTHON_INTERPRETER}" -c "exec(\"import yaml,json\nprint json.dumps(yaml.load(open('${ENV_CONFIG}')))\")")
-    extra_vars="${extra_vars##\{}"
-    extra_vars="${extra_vars%%\}},"
+    VARS=$("${PYTHON_INTERPRETER}" -c "exec(\"import yaml,json\nprint json.dumps(yaml.load(open('${ENV_CONFIG}')))\")")
+    VARS="${VARS##\{}"
+    VARS="${VARS%%\}},"
   else
     echo -e "\e[0;33mWARNING: Cannot read environment configuration from \"${ENV_CONFIG}\". Looks like Python setup cannot provide Ansible operability.\e[0m"
   fi
@@ -204,7 +204,7 @@ for ((i = 2; i <= $#; i++)); do
 done
 
 # Remove last comma.
-extra_vars=${extra_vars%%,}
+VARS=${VARS%%,}
 
 if [ -z "${ANSIBLE_INVENTORY}" ]; then
   INVENTORY=$(match_file "${TARGET_DIR}/.cikit/inventory" "${CIKIT_PROJECT_DIR}/.cikit/inventory")
@@ -214,26 +214,26 @@ if [ -z "${ANSIBLE_INVENTORY}" ]; then
     # system and can be affected via Linux commands (chmod, chown) under Windows.
     \cp "${INVENTORY}" ~/.cikit-inventory
     \chmod a-x ~/.cikit-inventory
-    params+=" -i ~/.cikit-inventory"
+    PARAMS+=" -i ~/.cikit-inventory"
   else
-    params+=" -i localhost,"
+    PARAMS+=" -i localhost,"
   fi
 # The "uname -o" cannot be used due to "-o" option is not supported on OS X.
-elif [[ "$(uname -s)" =~ "CYGWIN" ]]; then
-  ANSIBLE_INVENTORY=$(cygpath "${ANSIBLE_INVENTORY}")
+elif [[ "$(\uname -s)" =~ "CYGWIN" ]]; then
+  ANSIBLE_INVENTORY=$(\cygpath "${ANSIBLE_INVENTORY}")
 fi
 
 # Pass any extra arguments for "ansible-playbook". Most useful
 # case: "ANSIBLE_ARGS=-vvvv cikit reinstall"
 if [ -n "${ANSIBLE_ARGS}" ]; then
-  params+=" ${ANSIBLE_ARGS}"
+  PARAMS+=" ${ANSIBLE_ARGS}"
 fi
 
-if [ -n "${extra_vars}" ]; then
-  params+=" --extra-vars='{${extra_vars}}'"
+if [ -n "${VARS}" ]; then
+  PARAMS+=" -e '{${VARS}}'"
 fi
 
-params+=" -e __targetdir__=${TARGET_DIR}"
+PARAMS+=" -e __targetdir__=${TARGET_DIR}"
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
@@ -242,11 +242,11 @@ export ANSIBLE_FORCE_COLOR=1
 export DISPLAY_SKIPPED_HOSTS=0
 export ANSIBLE_RETRY_FILES_ENABLED=0
 
-COMMAND+=" ${PLAYBOOK} ${params}"
+COMMAND+=" ${PLAYBOOK} ${PARAMS}"
 
 # Print entire command if verbosity requested.
-if [[ "${params}" =~ -v{1,}[[:space:]] ]]; then
-  echo "${COMMAND}"
+if [[ "${PARAMS}" =~ -v{1,}[[:space:]] ]]; then
+  \echo "${COMMAND}"
 fi
 
 time eval "${COMMAND}"

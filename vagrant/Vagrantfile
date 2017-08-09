@@ -152,7 +152,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   config.vm.provision :cikit,
     :controller => "#{vagrantfileDir}/../bash/cikit",
-    :playbook => "provision"
+    :playbook => "#{vagrantfileDir}/../scripts/provision"
 
   # Create Selenium hub.
   config.vm.provision :shell,

@@ -30,19 +30,11 @@ commentinfo.md
 !.rsync-filter
 !.git*
 !.eslint*
-!.env-config.yml
 !.codespellignore
 
-# Provisioning CI server.
+# CIKit stuff.
 !.cikit/
-# Provisioner for VM.
-!.cikit/.vagrant/
 
-!composer.json
-!selenium.sh
-!config.yml
-
-!Vagrantfile
-!inventory
 !LICENSE
-!cikit
+!composer.*
+!Vagrantfile
