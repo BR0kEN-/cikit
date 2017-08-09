@@ -9,8 +9,9 @@
 # Stop:
 # ./selenium.sh --stop
 
-ROOT="$(pwd)/.vagrant"
+ROOT="$(\pwd)/.vagrant"
 FILENAME="selenium.jar"
+# DO NOT FORGET to update the very same value in "cikit-selenium" role!
 DOWNLOAD_URL="http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar"
 DESTINATION="$ROOT/$FILENAME"
 LOGFILE="$ROOT/${FILENAME%%.*}"
@@ -69,6 +70,6 @@ get_ip()
 }
 
 if [ "--stop" != "$DOWNLOAD_URL" ]; then
-  \nohup \java -jar "$DESTINATION" -role node -hub http://$(get_ip):$(get_forwarded_port "4444")/grid/register > "$LOGFILE.out.log" 2> "$LOGFILE.error.log" < /dev/null &
+  \nohup \java -jar "$DESTINATION" -role node -port $(get_forwarded_port "4444") -hub "http://$(get_ip):4444/grid/register" > "$LOGFILE.out.log" 2> "$LOGFILE.error.log" < /dev/null &
   \echo $! > "$PIDFILE"
 fi

@@ -21,37 +21,37 @@ locate_path()
 {
   local SELF_DIR="$1"
 
-  if [ -L "$SELF_DIR" ]; then
-    while [ -L "$SELF_DIR" ]; do
-      SELF_DIR="$(cd "$(dirname -- "$(readlink -- "$SELF_DIR")")" && pwd)"
+  if [ -L "${SELF_DIR}" ]; then
+    while [ -L "${SELF_DIR}" ]; do
+      SELF_DIR="$(\cd "$(\dirname -- "$(\readlink -- "${SELF_DIR}")")" && \pwd)"
     done
   else
-    SELF_DIR="$(cd -P -- "$(dirname -- "$SELF_DIR")" && pwd -P)"
+    SELF_DIR="$(\cd -P -- "$(\dirname -- "${SELF_DIR}")" && \pwd -P)"
   fi
 
-  echo "$SELF_DIR"
+  echo "${SELF_DIR}"
 }
 
 exit_with_help()
 {
   if ! cd -- "$1" > /dev/null 2>&1; then
-    echo "CIKit project not found in the current directory."
-    exit 13
+    \echo "CIKit project not found in the current directory."
+    \exit 13
   fi
 
-  if ls ./*.yml > /dev/null 2>&1; then
+  if \ls ./*.yml > /dev/null 2>&1; then
     local OPERATIONS
 
     for operation in *.yml; do
       OPERATIONS+="${operation%.*} "
     done
 
-    echo "$OPERATIONS"
+    \echo "${OPERATIONS}"
   else
-    echo "No available operations in $(pwd)."
+    \echo "No available operations in $(\pwd)."
   fi
 
-  exit
+  \exit
 }
 
 extra_var()
@@ -66,16 +66,16 @@ extra_var()
 
   # List of allowed variables for passing as parameters for "ansible-playbook".
   for var_ansible in limit tags list-tags; do
-    if [ "$var" == "$var_ansible" ]; then
-      params+=" --$var"
+    if [ "${var}" == "${var_ansible}" ]; then
+      params+=" --${var}"
 
-      if [ "$var" != "$val" ]; then
-        params+="=$val"
+      if [ "${var}" != "${val}" ]; then
+        params+="=${val}"
       fi
     fi
   done
 
-  if [[ "$var" == "$val" || "" == "$val" ]]; then
+  if [[ "${var}" == "${val}" || "" == "${val}" ]]; then
     val="true"
   fi
 
@@ -88,15 +88,15 @@ extra_var()
 
   # Allow to pass JSON and arrays as is.
   if [[ "${cf}" != "{" && "${cl}" != "}" ]] && [[ "${cf}" != "[" && "${cl}" != "]" ]]; then
-    val="\"$val\""
+    val="\"${val}\""
   fi
 
-  extra_vars+="\"$var\":$val,"
+  extra_vars+="\"${var}\":${val},"
 }
 
 match_file()
 {
-  for file in $@; do
+  for file in "$@"; do
     if [ -f "${file}" ]; then
       \echo "${file}"
       \exit 0
@@ -137,7 +137,7 @@ fi
 
 # Check whether playbook has declared mandatory options via "# ro:OPTION" annotation.
 # If one of the required options is missing, then continuation will be stopped.
-for mandatory_option in $(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}"); do
+while IFS= read -r mandatory_option; do
   found=false
 
   for option in $(IFS="--" \echo "$@"); do
@@ -158,7 +158,7 @@ for mandatory_option in $(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}"); 
     \echo "The \"--${mandatory_option}\" option is required for the \"${PLAYBOOK}\" playbook and currently missing or has a value less than 2 symbols."
     \exit 44
   fi
-done
+done < <(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}")
 
 # See "provisioner.rb" to get know when it creates.
 ENV_CONFIG="${TARGET_DIR}/.cikit/environment.yml"
@@ -242,11 +242,11 @@ export ANSIBLE_FORCE_COLOR=1
 export DISPLAY_SKIPPED_HOSTS=0
 export ANSIBLE_RETRY_FILES_ENABLED=0
 
-COMMAND+=" $PLAYBOOK $params"
+COMMAND+=" ${PLAYBOOK} ${params}"
 
 # Print entire command if verbosity requested.
-if [[ "$params" =~ -v{1,}[[:space:]] ]]; then
-  echo "$COMMAND"
+if [[ "${params}" =~ -v{1,}[[:space:]] ]]; then
+  echo "${COMMAND}"
 fi
 
 time eval "${COMMAND}"

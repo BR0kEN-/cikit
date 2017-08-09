@@ -1,7 +1,7 @@
 ---
 - name: Set path to directory, where project accessible from web
   set_fact:
-    project_webroot: "{{ webroot + '/' + build_id if build_id is defined else ('../docroot' | realpath) }}"
+    project_webroot: "{{ webroot + '/' + (build_id if build_id is defined else 'docroot') }}"
 
 - name: Set path to directory, where project codebase located
   set_fact:
