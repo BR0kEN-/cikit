@@ -4,8 +4,9 @@ INSTALL_PATH="/var/lib/cikit"
 INSTALL_DIR=$(\dirname "${INSTALL_PATH}")
 
 if [ -d "${INSTALL_DIR}" ]; then
-  \mkdir -p "${INSTALL_DIR}"
+  \sudo \mkdir -p "${INSTALL_DIR}"
 fi
 
-\git clone https://github.com/BR0kEN-/cikit.git --branch=master "${INSTALL_PATH}"
-\ln -s "${INSTALL_PATH}/bash/cikit" /usr/local/bin/cikit
+# @todo Replace "issues/45" by "master".
+\sudo \git clone https://github.com/BR0kEN-/cikit.git --branch=issues/45 "${INSTALL_PATH}"
+\sudo \ln -s "${INSTALL_PATH}/bash/cikit" /usr/local/bin/cikit
