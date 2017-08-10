@@ -1,0 +1,72 @@
+# requires-project-root
+# Available options:
+# --redownload
+# --stop
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    node_port: 4444
+    # DO NOT FORGET to update the very same value in "cikit-selenium" role!
+    url: http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar
+    root: "{{ __targetdir__ }}/.vagrant"
+    file: "{{ root }}/selenium"
+
+  tasks:
+    - name: Check that virtual machine for project has been created
+      stat:
+        path: "{{ root }}"
+      register: is_root
+
+    - fail:
+        msg: "The virtual machine was not yet created for the project. You have to run 'vagrant up' first."
+      when: not is_root.stat.exists
+
+    - name: Download Selenium standalone server
+      get_url:
+        url: "{{ url }}"
+        dest: "{{ file }}.jar"
+        force: "{{ redownload is defined }}"
+
+    - name: Check for active Selenium node
+      stat:
+        path: "{{ file }}.pid"
+      register: is_pid
+
+    - name: Kill active Selenium node
+      shell: |-
+        kill {{ lookup('file', is_pid.stat.path) }}
+        rm {{ is_pid.stat.path }}
+      when: is_pid.stat.exists
+
+    - name: Seek for ID of virtual machine
+      find:
+        path: "{{ root }}/machines/"
+        pattern: "id"
+        recurse: yes
+        file_type: file
+      register: vmid
+
+    - name: Determine the ID of virtual machine
+      set_fact:
+        vmid: "{{ lookup('file', vmid.files[0].path) if vmid.matched > 0 else '' }}"
+
+    - name: Get forwarded port for Selenium grid
+      shell: |-
+        VBoxManage showvminfo '{{ vmid }}' --details --machinereadable | awk -F ',' '/{{ node_port }}/ {print $4}'
+      register: hub_port
+      when: vmid | length > 0
+
+    - name: Get IP of virtual machine
+      shell: |-
+        VBoxManage guestproperty enumerate '{{ vmid }}' --patterns /VirtualBox/GuestInfo/Net/1/V4/IP | awk '{print $4}' | tr -d ','
+      register: vmip
+      when: vmid | length > 0
+
+    - name: Start Selenium node
+      shell: |-
+        nohup java -jar '{{ file }}.jar' -role node -port {{ hub_port.stdout }} -hub 'http://{{ vmip.stdout }}:{{ node_port }}/grid/register' > '{{ file }}.out.log' 2> '{{ file }}.error.log' < /dev/null &
+        echo $! > '{{ file }}.pid'
+      when: stop is not defined

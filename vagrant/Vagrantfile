@@ -162,7 +162,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   # Create Selenium node.
   config.vm.provision :cikit,
-    :controller => "#{vagrantfileDir}/../bash/selenium",
+    :controller => "ANSIBLE_ARGS=--limit=localhost ANSIBLE_INVENTORY=localhost, #{vagrantfileDir}/../bash/cikit",
+    :playbook => "#{vagrantfileDir}/../scripts/selenium",
     :run => "always"
 
   config.ssh.shell = "sh"

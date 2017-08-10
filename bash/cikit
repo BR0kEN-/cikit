@@ -106,33 +106,53 @@ match_file()
   \exit 1
 }
 
+is_project_root() {
+  [[ -f "$1/.cikit/config.yml" && -f "$1/.cikit/inventory" ]]
+}
+
 # ------------------------------------------------------------------------------
 # RUNTIME
 # ------------------------------------------------------------------------------
 
-# The directory where the user at the moment.
-TARGET_DIR="$(\pwd)"
+# Inside of VM we will not have any host-related commands available so
+# via this variable we change the directory for tasks seeking.
+if [ -n "${CIKIT_PROJECT_DIR}" ]; then
+  TARGET_DIR="${CIKIT_PROJECT_DIR}"
+  INSIDE_VM=true
+else
+  # The directory where the user at the moment.
+  TARGET_DIR="$(\pwd)"
+  INSIDE_VM=false
+fi
+
 # Compute a path to this script and get back from "bash" directory.
 \cd "$(locate_path "$0")/../"
 # Set the path to CIKit catalog.
 SELF_DIR="$(\pwd)"
 
-# Inside of VM we will not have any host-related commands available so
-# via this variable we change the directory for tasks seeking.
-if [ -z "${CIKIT_PROJECT_DIR}" ]; then
-  CIKIT_PROJECT_DIR="${SELF_DIR}"
+if ${INSIDE_VM}; then
+  SCRIPTS_DIR="${TARGET_DIR}"
+else
+  SCRIPTS_DIR="${SELF_DIR}"
 fi
 
+SCRIPTS_DIR+="/scripts"
+
 if [ -z "$1" ]; then
-  exit_with_help "${CIKIT_PROJECT_DIR}/scripts"
+  exit_with_help "${SCRIPTS_DIR}"
 fi
 
 PLAYBOOK="${1/%.yml/}.yml"
-PLAYBOOK=$(match_file "${CIKIT_PROJECT_DIR}/scripts/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}" "${PLAYBOOK}")
+PLAYBOOK=$(match_file "${SCRIPTS_DIR}/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}" "${PLAYBOOK}")
 
 if [ $? -gt 0 ]; then
   \echo "The \"$1\" command is not available."
   \exit 12
+fi
+
+if \grep -qo "^# requires-project-root$" "${PLAYBOOK}" && ! is_project_root "${TARGET_DIR}"; then
+  \echo "Execution of the \"$1\" is available only within the CIKit-project directory."
+  \exit 34
 fi
 
 # Check whether playbook has declared mandatory options via "# ro:OPTION" annotation.
@@ -147,15 +167,8 @@ while IFS= read -r mandatory_option; do
     fi
   done
 
-  if ${found}; then
-    # If "--limit" is required then it means that playbook must be executed
-    # for existing CIKit project due to its inventory.
-    if [[ "limit" == "${mandatory_option}" ]] && [[ ! -f "${TARGET_DIR}/.cikit/config.yml" || ! -f "${TARGET_DIR}/.cikit/inventory" ]]; then
-      \echo "Execution of the \"$1\" is available only within the CIKit-project directory."
-      \exit 34
-    fi
-  else
-    \echo "The \"--${mandatory_option}\" option is required for the \"${PLAYBOOK}\" playbook and currently missing or has a value less than 2 symbols."
+  if ! ${found}; then
+    \echo "The \"--${mandatory_option}\" option is required for the \"${1}\" command and currently missing or has a value less than 2 symbols."
     \exit 44
   fi
 done < <(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}")
@@ -207,7 +220,7 @@ done
 VARS=${VARS%%,}
 
 if [ -z "${ANSIBLE_INVENTORY}" ]; then
-  INVENTORY=$(match_file "${TARGET_DIR}/.cikit/inventory" "${CIKIT_PROJECT_DIR}/.cikit/inventory")
+  INVENTORY=$(match_file "${TARGET_DIR}/.cikit/inventory")
 
   if [ $? -eq 0 ]; then
     # Move "inventory" into user's home directory because it is not mounted file
