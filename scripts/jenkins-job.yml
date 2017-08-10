@@ -15,7 +15,7 @@
     - include: tasks/project-variable.yml
 
     - include_vars: "{{ item }}"
-      with_fileglob: "{{ __targetdir__ }}/cikit/vars/*.yml"
+      with_fileglob: "{{ __targetdir__ }}/.cikit/vars/*.yml"
 
     - name: Set name for Jenkins job
       set_fact:
