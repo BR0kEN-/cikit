@@ -1,6 +1,7 @@
 /*
 
 # Directories.
+!.slack/
 !bash/
 !cmf/
 !docs/
@@ -18,9 +19,8 @@ matrix/*
 !matrix/matrix.yml
 
 # Files.
-!inventory
-!config.yml
 !LICENSE
+!install.sh
 
 # Starting from dot.
 .*
@@ -31,6 +31,3 @@ matrix/*
 # File extensions.
 *.retry
 !*.md
-
-# Slack configurations.
-!.slack/

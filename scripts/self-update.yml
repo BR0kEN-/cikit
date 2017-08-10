@@ -8,4 +8,7 @@
       git:
         repo: https://github.com/BR0kEN-/cikit.git
         dest: ../
+        force: yes
         update: yes
+        recursive: yes
+        track_submodules: no
