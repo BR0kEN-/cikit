@@ -1,0 +1,6 @@
+# - Place all custom roles near this one.
+# - All variables from global provisioning are available here.
+# - Define the roles you want to include in provisioning here in the same way
+#   as would do this for the usual playbook (using "tags", "when", etc.).
+---
+dependencies: []

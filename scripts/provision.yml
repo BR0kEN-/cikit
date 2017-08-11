@@ -284,6 +284,9 @@
       when: not localhost
       tags: ["jenkins"]
 
+    - role: cikit-project
+      tags: ["always"]
+
   tasks:
     - name: Starting random rnd-tools service
       shell: rngd -r /dev/urandom

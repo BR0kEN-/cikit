@@ -261,6 +261,7 @@ PARAMS+=" -e __targetdir__=${TARGET_DIR}"
 # https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
 # https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
+export ANSIBLE_ROLES_PATH="${TARGET_DIR}/.cikit/roles"
 export ANSIBLE_FORCE_COLOR=1
 export DISPLAY_SKIPPED_HOSTS=0
 export ANSIBLE_RETRY_FILES_ENABLED=0
