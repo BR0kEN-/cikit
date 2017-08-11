@@ -38,7 +38,7 @@
 - name: Compute directory for SSH key-pair
   set_fact:
     ssh_data:
-      source: "{{ credentials_storage }}/{{ inventory_hostname }}/ssh-keys"
+      source: "{{ credentials_storage }}/{{ inventory_hostname }}/ssh"
       destination: "/root/.ssh"
       private_key: "{{ droplet }}.private.key"
       authorized_keys: "/tmp/authorized_keys"

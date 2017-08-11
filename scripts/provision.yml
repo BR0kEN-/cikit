@@ -102,6 +102,12 @@
         localhost: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
       tags: ["always"]
 
+    - name: Fix path to SSH private key
+      set_fact:
+        ansible_ssh_private_key_file: '{{ ansible_ssh_private_key_file | regex_replace("^\.\/", __targetdir__ + "/.cikit/") }}'
+      when: not localhost
+      tags: ["always"]
+
     - include: tasks/password.yml
       args:
         title: "Compute password for basic HTTP authentication"
@@ -166,12 +172,18 @@
         src: "/var/lib/cikit/{{ item.src }}"
         dest: "{{ item.dest }}/{{ item.src }}"
         state: link
-      when: localhost
       with_items:
         - src: cikit
           dest: /usr/bin
         - src: cikit.complete.sh
           dest: /etc/bash_completion.d
+      when: localhost
+
+    - name: Install CIKit package
+      shell: curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/45/install.sh | sh
+      args:
+        warn: no
+      when: not localhost
 
     - name: Process facts
       set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}

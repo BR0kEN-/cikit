@@ -7,13 +7,10 @@ echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key
 cikit matrix/matrix --limit=matrix1
 # Create first droplet - "cikit01".
 cikit matrix/matrix --limit=matrix1 --tags=vm --droplet-add
-echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=.cikit/credentials/example.com/ssh-keys/cikit01/cikit01.private.key" >> .cikit/inventory
+echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=./credentials/matrix1/ssh/cikit01.private.key" >> .cikit/inventory
 
 cikit init --project=PROJECT
 cd PROJECT
-
-# Copy SSH key-pair, generated for the droplet.
-cp ../.cikit/credentials/example.com/ssh-keys/cikit01/*.key scripts/files/ssh-keys/
 
 # Provision remote CI server.
 #cikit provision --limit=cikit01.matrix1
