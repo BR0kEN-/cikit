@@ -51,27 +51,6 @@ locate_path()
   \echo "${DIR}"
 }
 
-exit_with_help()
-{
-  if ! cd -- "$1" > /dev/null 2>&1; then
-    error 13 "CIKit project not found in the current directory."
-  fi
-
-  if \ls ./*.yml > /dev/null 2>&1; then
-    local OPERATIONS
-
-    for operation in *.yml; do
-      OPERATIONS+="${operation%.*} "
-    done
-
-    \echo "${OPERATIONS}"
-  else
-    warn "No available operations in $(\pwd)."
-  fi
-
-  \exit 0
-}
-
 extra_var()
 {
   # Remove all data after "=" symbol.
@@ -136,11 +115,11 @@ is_project_root() {
 # via this variable we change the directory for tasks seeking.
 if [ -n "${CIKIT_PROJECT_DIR}" ]; then
   TARGET_DIR="${CIKIT_PROJECT_DIR}"
-  INSIDE_VM=true
+  INSIDE_PROJECT=true
 else
   # The directory where the user at the moment.
   TARGET_DIR="$(\pwd)"
-  INSIDE_VM=false
+  INSIDE_PROJECT=false
 fi
 
 # Compute a path to this script and get back from "bash" directory.
@@ -148,7 +127,7 @@ fi
 # Set the path to CIKit catalog.
 SELF_DIR="$(\pwd)"
 
-if ${INSIDE_VM}; then
+if ${INSIDE_PROJECT}; then
   SCRIPTS_DIR="${TARGET_DIR}"
 else
   SCRIPTS_DIR="${SELF_DIR}"
@@ -157,7 +136,23 @@ fi
 SCRIPTS_DIR+="/scripts"
 
 if [ -z "$1" ]; then
-  exit_with_help "${SCRIPTS_DIR}"
+  if [ -d "${SCRIPTS_DIR}" ]; then
+    TASKS=""
+
+    for TASK in "${SCRIPTS_DIR}"/*.yml; do
+      TASKS+="$(\basename "${TASK%.*}") "
+    done
+
+    # Add the specific task for non-virtualized environment.
+    if ! ${INSIDE_PROJECT}; then
+      TASKS+="matrix/matrix"
+    fi
+
+    \echo "${TASKS}"
+    \exit 0
+  else
+    error 13 "The \"${SCRIPTS_DIR}\" directory with CIKit tasks does not exist."
+  fi
 fi
 
 PLAYBOOK="${1/%.yml/}.yml"
