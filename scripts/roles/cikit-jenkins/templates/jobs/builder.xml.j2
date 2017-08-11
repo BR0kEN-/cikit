@@ -75,31 +75,30 @@ export PROJECT=$(echo ${JOB_NAME//_BUILDER/} | tr '[:upper:]' '[:lower:]')
 export BUILD_NAME=${PROJECT}_${BUILD_ENV}
 export SITE_URL=https://$(php -r "echo parse_url('${JOB_URL}')['host'];")/${BUILD_NAME}
 export DESTINATION="/var/www/${BUILD_NAME}"
+export CIKIT_PROJECT_DIR="${WORKSPACE}"
 export ANSIBLE_ARGS="-vv"
 
-chmod a+x ./cikit
-
-./cikit reinstall \
-  --env=${BUILD_ENV} \
-  --site-url=${SITE_URL} \
-  --build-id=${BUILD_NAME} \
-  --workspace=${WORKSPACE} \
-  --reinstall-mode=${BUILD_MODE}
+cikit reinstall \
+  --env="${BUILD_ENV}" \
+  --site-url="${SITE_URL}" \
+  --build-id="${BUILD_NAME}" \
+  --workspace="${WORKSPACE}" \
+  --reinstall-mode="${BUILD_MODE}"
 
 # Copy codebase to directory, accessible from web.
-sudo rsync --delete -ra ./docroot/ ${DESTINATION}/
+sudo rsync --delete -ra ./docroot/ "${DESTINATION}/"
 sudo chown -R www-data:jenkins $_
 
 if ${RUN_SNIFFERS}; then
-  ./cikit sniffers \
-    --env=${BUILD_ENV} \
-    --site-url=${SITE_URL} \
-    --build-id=${BUILD_NAME} \
-    --workspace=${WORKSPACE}
+  cikit sniffers \
+    --env="${BUILD_ENV}" \
+    --site-url="${SITE_URL}" \
+    --build-id="${BUILD_NAME}" \
+    --workspace="${WORKSPACE}"
 fi
 
 if ${RUN_TESTS}; then
-  ./cikit tests \
+  cikit tests \
     --run \
     --headless \
     --env=${BUILD_ENV} \
@@ -109,7 +108,7 @@ if ${RUN_TESTS}; then
 fi
 
 # Move reports to the website directory.
-sudo cp -r ./docroot/{reports/,commentinfo.md} ${DESTINATION}/
+sudo cp -r ./docroot/{reports/,commentinfo.md} "${DESTINATION}/"
 sudo chown -R jenkins:jenkins ./
 </command>
     </hudson.tasks.Shell>
