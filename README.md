@@ -15,14 +15,11 @@
 
 ## Main possibilities
 
-- [Create matrix of virtual servers (droplets)](docs/matrix).
-- Automated builds for each commit in a pull request on GitHub (private repositories are supported).
-- Multi CMS/CMF support (`Drupal` and `WordPress` at the moment). To introduce a new one, you just have to add pre-configurations to `cmf/<NAME>/<MAJOR_VERSION>` and make sure that system is downloadable as an archive.
-- Opportunity to keep multiple projects on the same CI server.
-- Triggering builds via comments in pull requests.
-- Applying [sniffers](docs/project/sniffers) to control code quality.
-- Possibility to choose software versions.
-- Midnight server cleaning :)
+- Isolated, by virtual machine, LAMP stack for web development.
+- Continuous integration scripts for Drupal 7, 8 and WordPress (you can your own by the need).
+- [Matrix of virtual servers (in Docker containers)](docs/matrix).
+- Jenkins on each CI server with an ability to manage several projects.
+- CI strategy via GitHub (builds of PRs).
 
 ## Documentation
 
@@ -34,31 +31,27 @@ All communications are available in our Slack account at https://cikit.slack.com
 
 ## Quick Start
 
-- Get the **CIKit**.
+- Install the **CIKit** (only once).
 
   ```shell
-  git clone --recursive https://github.com/BR0kEN-/cikit.git
-  cd cikit
+  curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/45/install.sh | sh
   ```
 
 - Create CIKit-based project.
 
   ```shell
-  ./cikit repository --project=<NAME> [--cmf=drupal|wordpress] [--version=7.56|8.3.x-dev|4.8.1] [--without-sources]
-  git init
-  git add .
-  git commit -m 'Init of CIKit project'
+  cikit init --project=<NAME> [--cmf=drupal|wordpress] [--version=7.56|8.3.x-dev|4.8.1] [--without-sources]
   ```
 
-  The `--without-sources` option for project creation task affects CMF sources downloading. Use it if you want to create an empty project (CIKit-structured package with empty `docroot` directory, where you have to store the source code of Drupal/WordPress/whatever).
+  The `--without-sources` option affects CMF sources downloading. Use it if you want to create an empty project (CIKit-structured package with empty `docroot` directory, where you have to store the source code of Drupal/WordPress/whatever).
 
-- Build virtual machine for local development.
+- Build a virtual machine for local development.
 
   ```shell
   vagrant up --provision
   ```
 
-  Build website inside of ready VM (will be accessible at `https://<NAME>.dev`).
+  Build website inside of a ready VM (will be accessible at `https://<PROJECT-NAME>.dev`).
 
   ```shell
   vagrant ssh
@@ -70,8 +63,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 - Provision remote CI server.
 
   ```
-  cd <NAME>
-  ./cikit .cikit/provision --limit=<HOST>
+  cikit provision --limit=<HOST>
   ```
 
 Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.
@@ -85,13 +77,13 @@ Initially (at the very first time) you are required to run full provisioning to 
 Get the list of components to provision:
 
 ```shell
-./cikit .cikit/provision --list-tags
+cikit provision --list-tags
 ```
 
 Run provisioning of specific component (CI server):
 
 ```shell
-ANSIBLE_ARGS="--tags=COMPONENT" ./cikit .cikit/provision
+ANSIBLE_ARGS="--tags=COMPONENT" cikit provision
 ```
 
 Run provisioning of specific component (virtual machine):
@@ -105,16 +97,14 @@ ANSIBLE_ARGS="--tags=COMPONENT" vagrant provision
 Run with custom inventory file:
 
 ```shell
-ANSIBLE_INVENTORY="/path/to/inventory" ./cikit
+ANSIBLE_INVENTORY="/path/to/inventory" cikit
 ```
 
 Run with custom set of arguments:
 
 ```shell
-ANSIBLE_ARGS="-vvvv" ./cikit
+ANSIBLE_ARGS="-vvvv" cikit
 ```
-
-By default, `cikit` - is a global utility (only inside of VM) which looks for a project in `/var/www/`. But if you specify a playbook outside of this directory, then working folder will be the path of this playbook.
 
 ## Dependencies
 

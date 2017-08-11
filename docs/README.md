@@ -3,25 +3,22 @@
 Information below is good reminder of commands to run.
 
 ```shell
-git clone --recursive https://github.com/BR0kEN-/cikit.git
-cd cikit
-
-echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" >> inventory
-./cikit matrix/matrix --limit=matrix1
+echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" >> .cikit/inventory
+cikit matrix/matrix --limit=matrix1
 # Create first droplet - "cikit01".
-./cikit matrix/matrix --limit=matrix1 --tags=vm --droplet-add
-echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=cikit-credentials/example.com/ssh-keys/cikit01/cikit01.private.key" >> inventory
+cikit matrix/matrix --limit=matrix1 --tags=vm --droplet-add
+echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=.cikit/credentials/example.com/ssh-keys/cikit01/cikit01.private.key" >> .cikit/inventory
 
-./cikit repository --project=PROJECT --cmf=drupal --version=7.54
+cikit init --project=PROJECT
 cd PROJECT
 
 # Copy SSH key-pair, generated for the droplet.
-cp ../cikit-credentials/example.com/ssh-keys/cikit01/*.key scripts/files/ssh-keys/
+cp ../.cikit/credentials/example.com/ssh-keys/cikit01/*.key scripts/files/ssh-keys/
 
 # Provision remote CI server.
-#./cikit .cikit/provision --limit=cikit01.matrix1
+#cikit provision --limit=cikit01.matrix1
 # Add project to existing, already provisioned, server.
-#./cikit .cikit/jenkins-job --limit=cikit01.matrix1
+#cikit jenkins-job --limit=cikit01.matrix1
 
 # Provision local virtual machine.
 vagrant up --provision
