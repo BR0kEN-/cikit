@@ -17,26 +17,44 @@ PARAMS=""
 # JSON formatted "--extra-vars" options.
 VARS=""
 
+RED="\e[0;31m"
+GREEN="\e[0;32m"
+YELLOW="\e[0;33m"
+BLUE="\e[0;34m"
+PINK="\e[0;35m"
+CYAN="\e[0;36m"
+GREY="\e[0;37m"
+RESET="\e[0m"
+
+error()
+{
+  \echo -e "${RED}$2${RESET}"
+  \exit $1
+}
+
+warn() {
+  \echo -e "${YELLOW}$1${RESET}"
+}
+
 locate_path()
 {
-  local SELF_DIR="$1"
+  local DIR="$1"
 
-  if [ -L "${SELF_DIR}" ]; then
-    while [ -L "${SELF_DIR}" ]; do
-      SELF_DIR="$(\cd "$(\dirname -- "$(\readlink -- "${SELF_DIR}")")" && \pwd)"
+  if [ -L "${DIR}" ]; then
+    while [ -L "${DIR}" ]; do
+      DIR="$(\cd "$(\dirname -- "$(\readlink -- "${DIR}")")" && \pwd)"
     done
   else
-    SELF_DIR="$(\cd -P -- "$(\dirname -- "${SELF_DIR}")" && \pwd -P)"
+    DIR="$(\cd -P -- "$(\dirname -- "${DIR}")" && \pwd -P)"
   fi
 
-  echo "${SELF_DIR}"
+  \echo "${DIR}"
 }
 
 exit_with_help()
 {
   if ! cd -- "$1" > /dev/null 2>&1; then
-    \echo "CIKit project not found in the current directory."
-    \exit 13
+    error 13 "CIKit project not found in the current directory."
   fi
 
   if \ls ./*.yml > /dev/null 2>&1; then
@@ -48,10 +66,10 @@ exit_with_help()
 
     \echo "${OPERATIONS}"
   else
-    \echo "No available operations in $(\pwd)."
+    warn "No available operations in $(\pwd)."
   fi
 
-  \exit
+  \exit 0
 }
 
 extra_var()
@@ -146,13 +164,11 @@ PLAYBOOK="${1/%.yml/}.yml"
 PLAYBOOK=$(match_file "${SCRIPTS_DIR}/${PLAYBOOK}" "${SELF_DIR}/${PLAYBOOK}" "${PLAYBOOK}")
 
 if [ $? -gt 0 ]; then
-  \echo "The \"$1\" command is not available."
-  \exit 12
+  error 12 "The \"$1\" command is not available."
 fi
 
 if \grep -qo "^# requires-project-root$" "${PLAYBOOK}" && ! is_project_root "${TARGET_DIR}"; then
-  \echo "Execution of the \"$1\" is available only within the CIKit-project directory."
-  \exit 34
+  error 34 "Execution of the \"$1\" is available only within the CIKit-project directory."
 fi
 
 # Check whether playbook has declared mandatory options via "# ro:OPTION" annotation.
@@ -168,8 +184,7 @@ while IFS= read -r mandatory_option; do
   done
 
   if ! ${found}; then
-    \echo "The \"--${mandatory_option}\" option is required for the \"${1}\" command and currently missing or has a value less than 2 symbols."
-    \exit 44
+    error 44 "The \"--${mandatory_option}\" option is required for the \"${1}\" command and currently missing or has a value less than 2 symbols."
   fi
 done < <(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}")
 
@@ -199,7 +214,7 @@ if [ -f "${ENV_CONFIG}" ]; then
     VARS="${VARS##\{}"
     VARS="${VARS%%\}},"
   else
-    echo -e "\e[0;33mWARNING: Cannot read environment configuration from \"${ENV_CONFIG}\". Looks like Python setup cannot provide Ansible operability.\e[0m"
+    warn "WARNING: Cannot read environment configuration from \"${ENV_CONFIG}\". Looks like Python setup cannot provide Ansible operability."
   fi
 fi
 
