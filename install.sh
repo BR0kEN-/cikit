@@ -19,7 +19,7 @@ if [ ! -d "${INSTALL_PATH}" ]; then
 fi
 
 # @todo Replace "issues/45" by "master".
-if \sudo \git clone https://github.com/BR0kEN-/cikit.git --branch=issues/45 "${INSTALL_PATH}"; then
+if \sudo \git clone https://github.com/BR0kEN-/cikit.git --recursive --branch=issues/45 "${INSTALL_PATH}"; then
   \sudo \ln -s "${INSTALL_PATH}/bash/cikit" /usr/local/bin/cikit
   \sudo \chown -R "$(\whoami)" "${INSTALL_PATH}"
 fi
