@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
 
 INSTALL_PATH="/usr/local/share/cikit"
-INSTALL_DIR=$(\dirname "${INSTALL_PATH}")
+MISSING=""
 
-if [ -d "${INSTALL_DIR}" ]; then
-  \sudo \mkdir -p "${INSTALL_DIR}"
+for COMMAND in vagrant VBoxManage ansible-playbook; do
+  if ! \command -v "${COMMAND}" >/dev/null; then
+    MISSING+="\n- ${COMMAND}"
+  fi
+done
+
+if [ -n "${MISSING}" ]; then
+  \echo -e "The following software were not found on your machine, so continuation is not possible:${MISSING}"
+  \exit 1
+fi
+
+if [ ! -d "${INSTALL_PATH}" ]; then
+  \sudo \mkdir -p "${INSTALL_PATH}"
 fi
 
 # @todo Replace "issues/45" by "master".
-\sudo \git clone https://github.com/BR0kEN-/cikit.git --branch=issues/45 "${INSTALL_PATH}"
-\sudo \ln -s "${INSTALL_PATH}/bash/cikit" /usr/local/bin/cikit
+if \sudo \git clone https://github.com/BR0kEN-/cikit.git --branch=issues/45 "${INSTALL_PATH}"; then
+  \sudo \ln -s "${INSTALL_PATH}/bash/cikit" /usr/local/bin/cikit
+  \sudo \chown -R "$(\whoami)" "${INSTALL_PATH}"
+fi
