@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-INSTALL_PATH="/var/lib/cikit"
+INSTALL_PATH="/usr/local/share/cikit"
 INSTALL_DIR=$(\dirname "${INSTALL_PATH}")
 
 if [ -d "${INSTALL_DIR}" ]; then

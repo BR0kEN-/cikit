@@ -33,7 +33,7 @@ if [ -d "${PROJECT}" ]; then
   rm -rf "${PROJECT}"
 fi
 
-./cikit repository --project="${PROJECT}" --without-sources
+cikit init --project="${PROJECT}" --without-sources
 
 cd "${PROJECT}"
 
