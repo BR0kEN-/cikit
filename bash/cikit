@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 
-# Dependencies:
-# - bash
-# - cd
-# - dirname
-# - pwd
-# - readlink
-# - ls
-# - time
-# - eval
-# - ansible-playbook
-
 COMMAND="ansible-playbook"
 # List of parameters for "ansible-playbook" command.
 PARAMS=""
@@ -32,7 +21,8 @@ error()
   \exit $1
 }
 
-warn() {
+warn()
+{
   \echo -e "${YELLOW}$1${RESET}"
 }
 
@@ -112,7 +102,8 @@ match_file()
   \exit 1
 }
 
-is_project_root() {
+is_project_root()
+{
   [[ -f "$1/.cikit/config.yml" && -f "$1/.cikit/inventory" ]]
 }
 
@@ -135,6 +126,7 @@ fi
 \cd "$(locate_path "$0")/../"
 # Set the path to CIKit catalog.
 SELF_DIR="$(\pwd)"
+CIKIT_DIR="${TARGET_DIR}/.cikit"
 
 if ${INSIDE_PROJECT}; then
   SCRIPTS_DIR="${TARGET_DIR}"
@@ -153,6 +145,7 @@ if [ -z "$1" ]; then
     done
 
     # Add the specific task for non-virtualized environment.
+    # @todo Add a scanner for tasks from "matrix/" directory.
     if ! ${INSIDE_PROJECT}; then
       TASKS+="matrix/matrix"
     fi
@@ -178,22 +171,22 @@ fi
 # Check whether playbook has declared mandatory options via "# ro:OPTION" annotation.
 # If one of the required options is missing, then continuation will be stopped.
 while IFS= read -r mandatory_option; do
-  found=false
+  required_option_passed=false
 
   for option in $(IFS="--" \echo "$@"); do
     if [[ "${option}" =~ --${mandatory_option}=.{2,} ]]; then
-      found=true
+      required_option_passed=true
       break
     fi
   done
 
-  if ! ${found}; then
+  if ! ${required_option_passed}; then
     error 44 "The \"--${mandatory_option}\" option is required for the \"${1}\" command and currently missing or has a value less than 2 symbols."
   fi
 done < <(\awk -F ':' '/^# ro:.+?$/ {print $2}' "${PLAYBOOK}")
 
 # See "provisioner.rb" to get know when it creates.
-ENV_CONFIG="${TARGET_DIR}/.cikit/environment.yml"
+ENV_CONFIG="${CIKIT_DIR}/environment.yml"
 
 if [ -f "${ENV_CONFIG}" ]; then
   # It's interesting trick with detecting Python interpreter. Sometimes it may differ. Especially
@@ -239,7 +232,7 @@ done
 VARS=${VARS%%,}
 
 if [ -z "${ANSIBLE_INVENTORY}" ]; then
-  INVENTORY=$(match_file "${TARGET_DIR}/.cikit/inventory")
+  INVENTORY=$(match_file "${CIKIT_DIR}/inventory")
 
   if [ $? -eq 0 ]; then
     # Move "inventory" into user's home directory because it is not mounted file
@@ -270,7 +263,7 @@ PARAMS+=" -e __targetdir__='${TARGET_DIR}'"
 # https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
 # https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
-export ANSIBLE_ROLES_PATH="${TARGET_DIR}/.cikit/roles"
+export ANSIBLE_ROLES_PATH="${CIKIT_DIR}/roles"
 export ANSIBLE_FORCE_COLOR=1
 export DISPLAY_SKIPPED_HOSTS=0
 export ANSIBLE_RETRY_FILES_ENABLED=0
