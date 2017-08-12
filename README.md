@@ -16,7 +16,7 @@
 ## Main possibilities
 
 - Isolated, by virtual machine, LAMP stack for web development.
-- Continuous integration scripts for Drupal 7, 8 and WordPress (you can your own by the need).
+- Continuous integration scripts for Drupal 7, 8 and WordPress (you add can your own by the need).
 - [Matrix of virtual servers (in Docker containers)](docs/matrix).
 - Jenkins on each CI server with an ability to manage several projects.
 - CI strategy via GitHub (builds of PRs).
