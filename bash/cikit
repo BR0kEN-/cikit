@@ -54,41 +54,50 @@ locate_path()
 extra_var()
 {
   # Remove all data after "=" symbol.
-  local var=${1%=*}
-  local val=${1#*=}
+  local name=${1%=*}
+  local value=${1#*=}
+  local SKIP=false
 
   # Remove leading "--".
-  var=${var#--}
-  val=${val#--}
+  name=${name#--}
+  value=${value#--}
 
   # List of allowed variables for passing as parameters for "ansible-playbook".
-  for var_ansible in limit tags list-tags; do
-    if [ "${var}" == "${var_ansible}" ]; then
-      PARAMS+=" --${var}"
+  for ansible_reserved_name in limit tags list-tags; do
+    if [ "${name}" == "${ansible_reserved_name}" ]; then
+      PARAMS+=" --${name}"
+      # Don't allow passing the reserved by Ansible parameter as a variable.
+      SKIP=true
 
-      if [ "${var}" != "${val}" ]; then
-        PARAMS+="=${val}"
+      # Since we're not formatting parameters as JSON then we aren't interested
+      # in a value for the parameter. It simply can be valueless.
+      if [ "${name}" != "${value}" ]; then
+        PARAMS+="=${value}"
       fi
+
+      break
     fi
   done
 
-  if [[ "${var}" == "${val}" || "" == "${val}" ]]; then
-    val="true"
+  if ! ${SKIP}; then
+    if [[ "${name}" == "${value}" || "" == "${value}" ]]; then
+      value="true"
+    fi
+
+    # Replace all "-" by "_" in argument name.
+    name=${name//-/_}
+
+    # Prevent "-1: substring expression < 0" on MacOS 10.12 and some Linux.
+    local cf="${value:0:1}"
+    local cl="${value:0:${#value}-1}"
+
+    # Allow to pass JSON and arrays as is.
+    if [[ "${cf}" != "{" && "${cl}" != "}" ]] && [[ "${cf}" != "[" && "${cl}" != "]" ]]; then
+      value="\"${value}\""
+    fi
+
+    VARS+="\"${name}\":${value},"
   fi
-
-  # Replace all "-" by "_" in argument name.
-  var=${var//-/_}
-
-  # Prevent "-1: substring expression < 0" on MacOS 10.12 and some Linux.
-  local cf="${val:0:1}"
-  local cl="${val:0:${#val}-1}"
-
-  # Allow to pass JSON and arrays as is.
-  if [[ "${cf}" != "{" && "${cl}" != "}" ]] && [[ "${cf}" != "[" && "${cl}" != "]" ]]; then
-    val="\"${val}\""
-  fi
-
-  VARS+="\"${var}\":${val},"
 }
 
 match_file()
@@ -213,15 +222,15 @@ if [ -f "${ENV_CONFIG}" ]; then
   fi
 fi
 
-# The "EXTRA_VARS" passed as environment variable. Parse it first
-# to not allow overwrite explicitly passed options.
+# If the "EXTRA_VARS" passed as environment variable then parse it first to
+# not allow overwrite explicitly passed options.
 if [ -n "${EXTRA_VARS}" ]; then
   for var in $(IFS="--" \echo "${EXTRA_VARS}"); do
     extra_var "${var}"
   done
 fi
 
-# Parse command options.
+# The first argument always treated as a CIKit command. All others are parameters.
 for ((i = 2; i <= $#; i++)); do
   extra_var "${!i}"
 done
@@ -239,7 +248,7 @@ if [ -z "${ANSIBLE_INVENTORY}" ]; then
     \chmod a-x ~/.cikit-inventory
     PARAMS+=" -i ~/.cikit-inventory"
   else
-    PARAMS+=" -i localhost,"
+    PARAMS+=" -i 'localhost,'"
   fi
 # The "uname -o" cannot be used due to "-o" option is not supported on OS X.
 elif [[ "$(\uname -s)" =~ "CYGWIN" ]]; then
@@ -256,7 +265,7 @@ if [ -n "${VARS}" ]; then
   PARAMS+=" -e '{${VARS}}'"
 fi
 
-PARAMS+=" -e __targetdir__=${TARGET_DIR}"
+PARAMS+=" -e __targetdir__='${TARGET_DIR}'"
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 export PYTHONUNBUFFERED=1
