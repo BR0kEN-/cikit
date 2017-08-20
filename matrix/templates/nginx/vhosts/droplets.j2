@@ -1,5 +1,15 @@
 # {{ ansible_managed }}
 
+server {
+    listen                          80;
+    server_name                     {{ domain }};
+    root                            /var/www/html;
+
+    location / {
+        try_files                   $uri $uri/ / =404;
+    }
+}
+
 {% for port, data in nginx.port_forwarding.iteritems() %}
   {% if data.vhost %}
     server {
