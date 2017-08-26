@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# The internal version of CIKit.
+VERSION="0.0.1"
 COMMAND="ansible-playbook"
 # List of parameters for "ansible-playbook" command.
 PARAMS=""
@@ -155,6 +157,9 @@ if [ -z "$1" ]; then
   else
     error 13 "The \"${SCRIPTS_DIR}\" directory with CIKit tasks does not exist."
   fi
+elif [ "-v" == "$1" ]; then
+  \echo "${VERSION}"
+  \exit 0
 fi
 
 PLAYBOOK="${1/%.yml/}.yml"
