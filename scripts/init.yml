@@ -5,7 +5,7 @@
   gather_facts: no
 
   vars:
-    box: http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS.box
+    box: http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS_package.box
     # As name of folder inside of "cmf/".
     cmf: "drupal"
     without_sources: no
