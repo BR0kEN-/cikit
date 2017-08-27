@@ -129,7 +129,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
       :auto_correct => true
   end
 
-  # Mout the directory with Bash scripts additionally.
+  # Mount the directory containing Bash scripts additionally.
   (configValues["vm"]["folders"] ||= []).push({
     "source" => "#{vagrantfileDir}/../bash",
     "target" => "/var/lib/cikit",
