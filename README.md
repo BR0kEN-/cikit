@@ -34,7 +34,7 @@ All communications are available in our Slack account at https://cikit.slack.com
 - Install the **CIKit** (only once, package will be located at `/usr/local/share/cikit`).
 
   ```shell
-  curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/45/install.sh | sh
+  curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | sh
   ```
 
 - Create CIKit-based project.
