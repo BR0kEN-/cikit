@@ -6,7 +6,7 @@
 	url = git://git.drupal.org/project/destination_alter.git
 [submodule "scripts/roles/ansible-role-nginx"]
 	path = scripts/roles/ansible-role-nginx
-	url = git@github.com:jdauphant/ansible-role-nginx.git
+	url = https://github.com/jdauphant/ansible-role-nginx.git
 [submodule "scripts/roles/ansible-role-memcached"]
 	path = scripts/roles/ansible-role-memcached
-	url = git@github.com:geerlingguy/ansible-role-memcached.git
+	url = https://github.com/geerlingguy/ansible-role-memcached.git

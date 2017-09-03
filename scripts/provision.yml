@@ -180,7 +180,7 @@
       when: localhost
 
     - name: Install CIKit package
-      shell: curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | sh
+      shell: curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash -s -- --no-requirements-check
       args:
         warn: no
       when: not localhost
