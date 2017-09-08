@@ -7,12 +7,16 @@ diffutils
 git
 git-completion
 tar
+libtool
+make
 gawk
 bzip2
+gcc-g++
 openssh
 openssl
 openssl-devel
 python-2.7
+python-devel
 python-jinja
 python-crypto
 python-openssl
