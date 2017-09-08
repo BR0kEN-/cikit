@@ -63,6 +63,7 @@ if %ERRORLEVEL% LSS 3 (
 )
 
 REM ----------------------------------------------------------------------------
+REM -- https://cygwin.com/mirrors.html
 SET CYGWIN_SITE=http://cygwin.mirrors.pair.com
 SET CYGWIN_ROOTDIR=%SystemDrive%\cygwin%ARCH%
 SET CYGWIN_FILENAME=setup-x86
