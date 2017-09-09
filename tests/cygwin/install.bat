@@ -123,11 +123,13 @@ certutil -addstore -f "TrustedPublisher" %VBOXGUEST_MOUNTDIR%\vbox-sha1.cer
 START /B /wait %VBOXGUEST_MOUNTDIR%\VboxWindowsAdditions.exe /S
 START /B /wait %TEMP%\%EXE% --path %TEMP% --extract --silent
 CALL :install VirtualBox %TEMP%\%MSI%
+SETX /M PATH "%PATH%;C:\Program Files\Oracle\VirtualBox"
 
 REM ----------------------------------------------------------------------------
 ECHO [INFO] Installing Vagrant
 CALL :install_variables vagrant
 CALL :install Vagrant %TEMP%\%MSI%
+SETX /M PATH "%PATH%;C:\HashiCorp\Vagrant\bin"
 
 REM ----------------------------------------------------------------------------
 if /I "test-vm" == "%1" (
