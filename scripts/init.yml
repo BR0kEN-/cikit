@@ -42,7 +42,7 @@
 
     - name: Prepare directory for project
       file:
-        path: "{{ __targetdir__ }}/{{ project }}/docroot"
+        path: "{{ project_directory }}/docroot"
         state: directory
 
     - name: Download CMF
