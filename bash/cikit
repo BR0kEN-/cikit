@@ -236,27 +236,28 @@ done
 # Remove last comma.
 VARS=${VARS%%,}
 
-if [ -z "${ANSIBLE_INVENTORY}" ]; then
-  INVENTORY=$(match_file "${CIKIT_DIR}/inventory")
-
-  if [ $? -eq 0 ]; then
-    # Move "inventory" into user's home directory because it is not mounted file
-    # system and can be affected via Linux commands (chmod, chown) under Windows.
-    \cp "${INVENTORY}" ~/.cikit-inventory
-    \chmod a-x ~/.cikit-inventory
-    PARAMS+=" -i ~/.cikit-inventory"
-  else
-    PARAMS+=" -i 'localhost,'"
-  fi
-# The "uname -o" cannot be used due to "-o" option is not supported on OS X.
-elif [[ "$(\uname -s)" =~ "CYGWIN" ]]; then
-  ANSIBLE_INVENTORY=$(\cygpath "${ANSIBLE_INVENTORY}")
-fi
-
 # Pass any extra arguments for "ansible-playbook". Most useful
 # case: "ANSIBLE_ARGS=-vvvv cikit reinstall"
 if [ -n "${ANSIBLE_ARGS}" ]; then
   PARAMS+=" ${ANSIBLE_ARGS}"
+fi
+
+if [ -z "${ANSIBLE_INVENTORY}" ]; then
+  # Attach the inventory only when "-i localhost," is not specified.
+  if [[ ! "${PARAMS}" =~ localhost, ]]; then
+    INVENTORY=$(match_file "${CIKIT_DIR}/inventory")
+
+    if [ $? -eq 0 ]; then
+      # Move "inventory" into user's home directory because it is not mounted file
+      # system and can be affected via Linux commands (chmod, chown) under Windows.
+      \cp "${INVENTORY}" ~/.cikit-inventory
+      \chmod a-x ~/.cikit-inventory
+      PARAMS+=" -i ~/.cikit-inventory"
+    fi
+  fi
+# The "uname -o" cannot be used due to "-o" option is not supported on OS X.
+elif [[ "$(\uname -s)" =~ "CYGWIN" ]]; then
+  ANSIBLE_INVENTORY=$(\cygpath "${ANSIBLE_INVENTORY}")
 fi
 
 if [ -n "${VARS}" ]; then
