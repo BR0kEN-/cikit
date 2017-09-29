@@ -1,18 +1,18 @@
 ---
-- import_tasks: list.yml
+- include_tasks: list.yml
   when: droplet_list is defined
 
-- import_tasks: add.yml
+- include_tasks: add.yml
   when: droplet_add is defined
 
-- import_tasks: start.yml
+- include_tasks: start.yml
   when: droplet_start is defined and droplet_start != ''
 
-- import_tasks: stop.yml
+- include_tasks: stop.yml
   when: droplet_stop is defined and droplet_stop != ''
 
-- import_tasks: restart.yml
+- include_tasks: restart.yml
   when: droplet_restart is defined and droplet_restart != ''
 
-- import_tasks: delete.yml
+- include_tasks: delete.yml
   when: droplet_delete is defined and droplet_delete != ''

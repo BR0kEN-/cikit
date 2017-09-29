@@ -20,7 +20,7 @@
     state: directory
 
 - name: Install system packages
-  import_tasks: packages.yml
+  include_tasks: packages.yml
   args:
     composer_packages: "{{ cikit_composer.system_packages }}"
 
@@ -36,7 +36,10 @@
     dest: "{{ user_home.stdout }}/.config/composer/config.json"
 
 - name: Install packages
-  import_tasks: packages.yml
+  shell: "composer require {{ item.key }}:{{ item.value }} --prefer-dist --no-interaction --no-ansi"
+  args:
+    chdir: "{{ cikit_composer.dir }}"
+  with_dict: "{{ composer_packages }}"
 
 - name: Determine Composer packages
   shell: ls -A {{ cikit_composer.dir }}/vendor/bin/ | grep -v '\..*'

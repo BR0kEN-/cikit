@@ -5,7 +5,7 @@
     chdir: "{{ project_workspace }}"
   register: theme_path
 
-- import_tasks: actions/packages-install.yml
+- include_tasks: actions/packages-install.yml
   args:
     manager: "NPM"
     command: "sudo npm install"

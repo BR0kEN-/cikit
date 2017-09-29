@@ -7,7 +7,7 @@
 # - install: boolean indicator of whether packages should be installed or gained from cache.
 # - command: shell command to install packages.
 ---
-- import_tasks: cache-get.yml
+- include_tasks: cache-get.yml
   args:
     # Note, that "manager" variable migrates into "cache-get" include.
     src: "{{ cache }}"
@@ -30,7 +30,7 @@
     creates: "{{ dirname }}"
   when: (install or needs_reinstall) and is_packages_definition.stat.exists
 
-- import_tasks: cache-set.yml
+- include_tasks: cache-set.yml
   args:
     # Note, that "manager" variable migrates into "cache-set" include.
     src: "{{ path }}/{{ dirname }}"

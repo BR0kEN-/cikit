@@ -108,7 +108,7 @@
       when: not localhost
       tags: ["always"]
 
-    - import_tasks: tasks/password.yml
+    - include_tasks: tasks/password.yml
       args:
         title: "Compute password for basic HTTP authentication"
         name: http_auth_pass
@@ -139,7 +139,7 @@
       register: user_home
       tags: ["always"]
 
-    - import_tasks: tasks/project-variable.yml
+    - include_tasks: tasks/project-variable.yml
       when: not localhost
       tags: ["jenkins"]
 

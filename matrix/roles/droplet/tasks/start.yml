@@ -1,5 +1,5 @@
 ---
-- import_tasks: command.yml
+- include_tasks: command.yml
   args:
     droplet: "{{ droplet_start }}"
     command: start

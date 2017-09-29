@@ -15,6 +15,6 @@
   args:
     chdir: "{{ ssl.dest }}"
 
-- import_tasks: tasks/copy.yml
+- include_tasks: tasks/copy.yml
   with_items: ["crt", "key"]
   when: ssl_src

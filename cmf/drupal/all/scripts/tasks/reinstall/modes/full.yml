@@ -13,31 +13,31 @@
     dest: "{{ project_workspace }}/{{ settings }}"
     line: "{{ lookup('template', 'templates/settings.php.j2') }}"
 
-- import_tasks: tasks/drush.yml name="Installing Drupal"
+- include_tasks: tasks/drush.yml name="Installing Drupal"
   with_dict:
     si: "{{ profile }} --db-url=mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ mysql.host | default('127.0.0.1') }}:{{ mysql.port | default('3306') }}/{{ databases.default.name }} --uri={{ site_url }}"
   when: not sql_workflow
 
-- import_tasks: tasks/environment/prepare.yml
+- include_tasks: tasks/environment/prepare.yml
   when: not sql_workflow
 
 # Download and import databases.
-- import_tasks: tasks/database/import.yml
+- include_tasks: tasks/database/import.yml
   with_dict: "{{ databases }}"
   when: "sql_workflow and 'source' in item.value"
 
-- import_tasks: tasks/drush.yml
+- include_tasks: tasks/drush.yml
   with_items: "{{ commands.pre }}"
 
-- import_tasks: tasks/drush.yml name="Run database updates" command="updb"
+- include_tasks: tasks/drush.yml name="Run database updates" command="updb"
   when: sql_workflow
 
 # Unique way for both workflows.
 - name: "Set credentials for super user: ({{ drupal.user.name }}/{{ drupal.user.pass }})"
-  import_tasks: tasks/drush.yml
+  include_tasks: tasks/drush.yml
   with_dict:
     sqlq: "'UPDATE <USERS_INFO_TABLE> SET name=\"{{ drupal.user.name }}\" WHERE uid=1'"
     upwd: "{{ drupal.user.name }} --password={{ drupal.user.pass }}"
 
-- import_tasks: tasks/drush.yml
+- include_tasks: tasks/drush.yml
   with_items: "{{ commands.post }}"

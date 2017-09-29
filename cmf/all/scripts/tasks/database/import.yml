@@ -17,7 +17,7 @@
     path: "{{ dump_local_path }}"
   register: local_dump
 
-- import_tasks: ../get-hostname.yml name="{{ item.value.source.from }}"
+- include_tasks: ../get-hostname.yml name="{{ item.value.source.from }}"
   when: not local_dump.stat.exists
 
 - name: Set remote host

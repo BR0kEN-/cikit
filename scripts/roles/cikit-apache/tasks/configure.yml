@@ -1,5 +1,5 @@
 ---
-- import_tasks: template.yml
+- include_tasks: template.yml
   with_items:
     - conf
     - sites
@@ -11,7 +11,7 @@
     src: "ports.conf.j2"
     dest: "{{ cikit_apache.dest }}/ports.conf"
 
-- import_tasks: a2.yml
+- include_tasks: a2.yml
   with_dict: "{{ apache_data }}"
   loop_control:
     loop_var: list

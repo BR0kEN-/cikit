@@ -1,9 +1,9 @@
 ---
-- import_tasks: stop.yml
+- include_tasks: stop.yml
   args:
     droplet_stop: "{{ droplet_delete }}"
 
-- import_tasks: command.yml
+- include_tasks: command.yml
   args:
     droplet: "{{ droplet_delete }}"
     command: rm

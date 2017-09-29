@@ -8,7 +8,7 @@
 - name: Create self-signed SSL cert
   command: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=US" -keyout {{ ssl_folder }}/ssl.key -out {{ ssl_folder }}/ssl.crt
 
-- import_tasks: http-auth.yml
+- include_tasks: http-auth.yml
   with_items: "{{ protected_folders }}"
   loop_control:
     loop_var: protected_folder

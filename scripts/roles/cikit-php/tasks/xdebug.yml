@@ -14,4 +14,4 @@
     # Unarchive module does not work properly in Ansible 2.1.1.0.
     warn: no
 
-- import_tasks: fixtures/compile.yml name="XDebug" dir="/tmp/{{ cikit_php_xdebug }}"
+- include_tasks: fixtures/compile.yml name="XDebug" dir="/tmp/{{ cikit_php_xdebug }}"

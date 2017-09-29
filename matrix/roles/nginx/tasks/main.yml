@@ -13,7 +13,7 @@
     crypt_scheme: apr_md5_crypt
 
 # rm -rf /etc/nginx/sites-[enabled|available]/
-- import_tasks: vhost/disable.yml
+- include_tasks: vhost/disable.yml
   args:
     arg: "{{ item }}"
   with_items:
@@ -22,7 +22,7 @@
     - state: directory
       recurse: yes
 
-- import_tasks: vhost/enable.yml
+- include_tasks: vhost/enable.yml
   args:
     host: "{{ item }}"
   with_fileglob: "{{ playbook_dir }}/templates/nginx/vhosts/*.j2"
