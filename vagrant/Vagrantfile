@@ -1,8 +1,8 @@
 require "yaml"
 
 VAGRANT_API_VERSION ||= "2"
-VAGRANT_MIN_VERSION ||= "1.8.0"
-ANSIBLE_MIN_VERSION ||= "2.2.0"
+VAGRANT_MIN_VERSION ||= "1.9.0"
+ANSIBLE_MIN_VERSION ||= "2.4.0"
 
 Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 

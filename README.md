@@ -115,7 +115,7 @@ To have CIKit works you must have the following software installed on your host.
 |Name|Version|
 |:---|:---|
 |Vagrant|1.9+|
-|Ansible|2.2+|
+|Ansible|2.4+|
 |VirtualBox|5.1+|
 
 ### Windows
