@@ -44,12 +44,15 @@
       file:
         path: "{{ project_directory }}/docroot"
         state: directory
+      register: project_docroot
 
+    # Still not possible to use the "unarchive" module with "extra_opts".
+    # It will fail with "Command could not handle archive."
     - name: Download CMF
       shell: "curl -s https://{{ cmfs[cmf].download_url }}-{{ version }}.tar.gz | tar --strip-components=1 -xzC ./"
       args:
         warn: no
-        chdir: "{{ project_directory }}/docroot"
+        chdir: "{{ project_docroot.path }}"
       when: not without_sources
 
     - name: Prepare CIKit-structured repository

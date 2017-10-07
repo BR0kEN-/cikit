@@ -164,10 +164,6 @@ else
   LOCALHOST=true
 fi
 
-if [ -n "${CIKIT_VERBOSE}" ]; then
-  PARAMS+=" -vv"
-fi
-
 if [ -n "${CIKIT_LIST_TAGS}" ]; then
   PARAMS+=" --list-tags"
   LOCALHOST=true

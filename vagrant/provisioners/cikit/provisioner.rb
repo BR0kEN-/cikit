@@ -26,9 +26,9 @@ module VagrantPlugins::CIKit
       environment_variables = {}
       environment_variables["ANSIBLE_INVENTORY"] = ansible_inventory
       environment_variables["ANSIBLE_SSH_ARGS"] = ansible_ssh_args
+      environment_variables["ANSIBLE_VERBOSITY"] = ENV["ANSIBLE_VERBOSITY"]
       environment_variables["DEBIAN_FRONTEND"] = "noninteractive"
       environment_variables["CIKIT_LIST_TAGS"] = ENV["CIKIT_LIST_TAGS"]
-      environment_variables["CIKIT_VERBOSE"] = ENV["CIKIT_VERBOSE"]
       environment_variables["CIKIT_TAGS"] = ENV["CIKIT_TAGS"]
       environment_variables["PATH"] = ENV["VAGRANT_OLD_ENV_PATH"]
 
