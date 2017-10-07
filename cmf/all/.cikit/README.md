@@ -27,7 +27,7 @@ vagrant ssh
 vagrant provision
 ```
 
-Add the `ANSIBLE_ARGS="--tags=php-stack,solr"` environment variable with desired tags before the command to do a partial provisioning.
+Add the `CIKIT_TAGS="php-stack,solr"` environment variable with desired tags before the command to do a partial provisioning.
 
 ### Application actions
 

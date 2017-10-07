@@ -27,7 +27,9 @@ module VagrantPlugins::CIKit
       environment_variables["ANSIBLE_INVENTORY"] = ansible_inventory
       environment_variables["ANSIBLE_SSH_ARGS"] = ansible_ssh_args
       environment_variables["DEBIAN_FRONTEND"] = "noninteractive"
-      environment_variables["ANSIBLE_ARGS"] = ENV["ANSIBLE_ARGS"]
+      environment_variables["CIKIT_LIST_TAGS"] = ENV["CIKIT_LIST_TAGS"]
+      environment_variables["CIKIT_VERBOSE"] = ENV["CIKIT_VERBOSE"]
+      environment_variables["CIKIT_TAGS"] = ENV["CIKIT_TAGS"]
       environment_variables["PATH"] = ENV["VAGRANT_OLD_ENV_PATH"]
 
       return environment_variables
@@ -55,13 +57,7 @@ module VagrantPlugins::CIKit
         prompts_file = "#{File.dirname(@machine.env.local_data_path)}/.cikit/environment.yml"
         playbook = YAML::load_file(playbook)
         prompts = File.exists?(prompts_file) ? YAML::load_file(prompts_file) : {}
-
-        parse_env_vars("ANSIBLE_ARGS").each do |var, value|
-          if "tags" == var
-            taglist = value.split(",")
-            break
-          end
-        end
+        taglist = ENV.has_key?("CIKIT_TAGS") ? ENV["CIKIT_TAGS"].split(",") : {}
 
         parse_env_vars("EXTRA_VARS").each do |var, value|
           if !value.nil?

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT="cikit-test"
-ANSIBLE_ARGS="-vv"
+CIKIT_VERBOSE=true
 
 VERSION_PHP="$1"
 VERSION_NODEJS="$2"

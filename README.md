@@ -77,33 +77,19 @@ Initially (at the very first time) you are required to run full provisioning to 
 Get the list of components to provision:
 
 ```shell
-cikit provision --list-tags
+CIKIT_LIST_TAGS=true cikit provision
 ```
 
 Run provisioning of specific component (CI server):
 
 ```shell
-ANSIBLE_ARGS="--tags=COMPONENT" cikit provision
+CIKIT_TAGS="COMPONENT1,COMPONENT2" cikit provision
 ```
 
 Run provisioning of specific component (virtual machine):
 
 ```shell
-ANSIBLE_ARGS="--tags=COMPONENT" vagrant provision
-```
-
-## The power of `cikit` utility
-
-Run with custom inventory file:
-
-```shell
-ANSIBLE_INVENTORY="/path/to/inventory" cikit
-```
-
-Run with custom set of arguments:
-
-```shell
-ANSIBLE_ARGS="-vvvv" cikit
+CIKIT_TAGS="COMPONENT1,COMPONENT2" vagrant provision
 ```
 
 ## Dependencies
