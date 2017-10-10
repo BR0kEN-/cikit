@@ -24,3 +24,4 @@ vm:
       cpus: 1
       memory: 2048
       natdnshostresolver1: "on"
+      cableconnected1: "on"
