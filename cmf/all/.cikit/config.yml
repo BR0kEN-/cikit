@@ -29,20 +29,20 @@ vm:
       # the local network (LAN) and not capable to use the private network.
       # This option allows you to force the indication that you're permitted
       # one.
-      # On the most OSes VirtualBox will enable this option by itself but
-      # sometimes it happens (we're faced this on Mac OS El Capitan) that
-      # it's not.
+      # Majority of OSes VirtualBox will enable this option by itself, but
+      # sometimes it happens (we've faced this on OS X El Capitan) that
+      # it's not the case.
       # Vagrant operates by the boxes (basic configuration for the VirtualBox,
       # packed into an archive) and CIKit has its predefined one, downloaded
       # to the "boxes/CIKit_Ubuntu_16.04_LTS_package.box/0/virtualbox",
       # within the "~/.vagrant.d" directory (could be different if the value
-      # of "VAGRANT_HOME" environment variable changed). The "box.ovf" file
+      # of "VAGRANT_HOME" environment variable was changed). The "box.ovf" file
       # inside that directory contain all meta information for booting the VM
       # and you may find the "Network" specification there. The first ("0"
       # index) slot is always reserved for the MAC address of the machine and
       # in case of CIKit (and the overwhelming majority of other VMs), the LAN
       # LPT (parallel port) is set to the second slot ("1" index, "0x378").
-      # That's why you see the "1" at the end the parameter.
+      # That's why you see the "1" at the end of parameter.
       # - https://www.vagrantup.com/docs/other/environmental-variables.html#vagrant_home
       # - https://en.wikipedia.org/wiki/Parallel_port#Interfaces
       # - https://github.com/hashicorp/vagrant/issues/8056#issuecomment-267600935
