@@ -6,7 +6,7 @@ Information below is good reminder of commands to run.
 echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa" >> .cikit/inventory
 cikit matrix/matrix --limit=matrix1
 # Create first droplet - "cikit01".
-cikit matrix/matrix --limit=matrix1 --tags=vm --droplet-add
+CIKIT_TAGS="vm" cikit matrix/matrix --limit=matrix1 --droplet-add
 echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=./credentials/matrix1/ssh/cikit01.private.key" >> .cikit/inventory
 
 cikit init --project=PROJECT

@@ -1,9 +1,9 @@
 # Shippable environment configuration
 
-After execution `vagrant up` or `vagrant provision` in the root directory of project will be created/updated the `.env-config.yml` file, which will contain all configuration you made. Launching the `./cikit provision --limit=<HOST>` will not ask you anything, because configuration will be taken from that file. But if you want to override, just pass the options as command line arguments.
+After execution `vagrant up` or `vagrant provision` in the root directory of project will be created/updated the `.env-config.yml` file, which will contain all configuration you made. Launching the `cikit provision --limit=<HOST>` will not ask you anything, because configuration will be taken from that file. But if you want to override, just pass the options as command line arguments.
 
 ```shell
-./cikit provision --limit=<HOST> \
+cikit provision --limit=<HOST> \
   --php-version=7.0 \
   --nodejs-version=7 \
   --ruby-version=2.4.0 \

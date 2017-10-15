@@ -29,7 +29,7 @@ You may simplify the entire command to execute to `sudo solr` and suppress warni
 ### Drupal configuration
 
 ```shell
-./cikit repository --cmf=drupal --version=7.54 --project=remo
+cikit repository --cmf=drupal --version=7.54 --project=remo
 cd remo
 vagrant up
 vagrant ssh

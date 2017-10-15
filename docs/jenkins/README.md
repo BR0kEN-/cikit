@@ -9,7 +9,7 @@ Here's the main view of Jenkins home screen:
 Each CI server can host as much as needed projects. Every project on Jenkins is presented by two jobs: `<PROJECT>_BUILDER` and `<PROJECT>_PR_BUILDER`. Refer to the next code snippet to create new project on existing server:
 
 ```shell
-./cikit jenkins-job --project=test2 --limit=<SERVER_NAME_FROM_INVENTORY>
+cikit jenkins-job --project=test2 --limit=<SERVER_NAME_FROM_INVENTORY>
 ```
 
 - What is [SERVER_NAME_FROM_INVENTORY](../ansible/inventory)?

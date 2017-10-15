@@ -5,7 +5,7 @@ May happen that you will need to reinstall, downgrade or upgrade version of Jenk
 If you have accidentally broke the service, removed the package or some dependency (*not configuration*) then just reinstall the package executing the next command on your local machine:
 
 ```shell
-./cikit provision --limit=<SERVER_NAME_FROM_INVENTORY> --tags="jenkins" --jenkins-reinstall-deb
+CIKIT_TAGS="jenkins" cikit provision --limit=<SERVER_NAME_FROM_INVENTORY> --jenkins-reinstall-deb
 ```
 
 - What is [SERVER_NAME_FROM_INVENTORY](../../ansible/inventory)?

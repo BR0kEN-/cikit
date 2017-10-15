@@ -17,7 +17,7 @@
 #   when: "'composer install' in actions"
 #
 # Want to run it locally? Not a big deal!
-# ./cikit reinstall --actions='["composer install", "my next action"]'
+# cikit reinstall --actions='["composer install", "my next action"]'
 ---
 - name: Compute actions to run
   set_fact: {

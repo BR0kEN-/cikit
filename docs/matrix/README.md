@@ -39,7 +39,7 @@ Not recommended (general credentials - not good for each virtual machine):
 Add your own host inside the `inventory` file and run the following command:
 
 ```shell
-./cikit matrix/matrix.yml --limit=<HOSTNAME>
+cikit matrix/matrix --limit=<HOSTNAME>
 ```
 
 ### Add trusted SSL certificate
@@ -47,7 +47,7 @@ Add your own host inside the `inventory` file and run the following command:
 The `*.crt` and `*.key` files must be inside of the `/path/to/directory/`. They will be copied and Nginx will start using them immediately.
 
 ```shell
-./cikit matrix/matrix.yml --limit=<HOSTNAME> --tags=ssl --ssl-src=/path/to/directory/ --restart=nginx
+CIKIT_TAGS="ssl" cikit matrix/matrix --limit=<HOSTNAME> --ssl-src=/path/to/directory/ --restart=nginx
 ```
 
 ## Management
@@ -57,7 +57,7 @@ Below is described a manual how to work with a matrix of virtual servers.
 ### Get the list of droplets
 
 ```shell
-./cikit matrix/matrix.yml --limit=<HOSTNAME> --tags=vm --droplet-list
+CIKIT_TAGS="vm" cikit matrix/matrix --limit=<HOSTNAME> --droplet-list
 ```
 
 The result of execution will be similar to:
@@ -73,7 +73,7 @@ ok: [matrix1] => {
 ### Create a new droplet
 
 ```shell
-./cikit matrix/matrix.yml --limit=<HOSTNAME> --tags=vm --droplet-add
+CIKIT_TAGS="vm" cikit matrix/matrix --limit=<HOSTNAME> --droplet-add
 ```
 
 Initially, you will get created a `cikit01`, the next will be `cikit02`, the third one - `cikit03` and so on.
@@ -81,5 +81,5 @@ Initially, you will get created a `cikit01`, the next will be `cikit02`, the thi
 ### Manage a droplet
 
 ```shell
-./cikit matrix/matrix.yml --limit=<HOSTNAME> --tags=vm --droplet-[delete|stop|start|restart]=<NAME>
+CIKIT_TAGS="vm" cikit matrix/matrix --limit=<HOSTNAME> --droplet-[delete|stop|start|restart]=<NAME>
 ```
