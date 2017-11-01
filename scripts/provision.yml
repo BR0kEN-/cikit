@@ -61,6 +61,8 @@
         - python-pycurl
         - python-passlib
         - python-simplejson
+        # To get the "easy_install".
+        - python-setuptools
         - python-software-properties
         - libmagickcore-dev
         - libmagickwand-dev
@@ -223,9 +225,6 @@
         executable: /bin/bash
       # "with_dict" cannot be used since ordering of operations is important!
       with_items:
-        - tool: easy_install
-          script: "curl -s https://raw.githubusercontent.com/ActiveState/ez_setup/v0.9/ez_setup.py | python"
-
         - tool: pip
           script: "easy_install pip"
 
