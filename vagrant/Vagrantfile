@@ -163,7 +163,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # Create Selenium node.
   config.vm.provision :cikit,
     :controller => "#{vagrantfileDir}/../bash/cikit",
-    :playbook => "#{vagrantfileDir}/../scripts/selenium",
+    :playbook => "#{vagrantfileDir}/../scripts/selenium && true",
     :run => "always"
 
   config.ssh.shell = "sh"
