@@ -1,7 +1,7 @@
 ---
-- import_tasks: tasks/database/database.yml name="Remove databases" state="absent"
-- import_tasks: tasks/database/database.yml name="Create databases" state="present"
-- import_tasks: tasks/environment/prepare.yml
+- include_tasks: tasks/database/database.yml name="Remove databases" state="absent"
+- include_tasks: tasks/database/database.yml name="Create databases" state="present"
+- include_tasks: tasks/environment/prepare.yml
 
 - name: Create settings.php
   shell: "cp default.settings.php {{ settings | basename }}"
