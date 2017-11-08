@@ -1,0 +1,13 @@
+---
+cikit_mssql:
+  apt:
+    keys:
+      - microsoft.asc
+    repos:
+      - mssql-server-2017.list
+      - prod.list
+    packages:
+      - mssql-server
+      - mssql-tools
+      - msodbcsql
+      - unixodbc-dev

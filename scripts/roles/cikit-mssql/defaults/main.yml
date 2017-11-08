@@ -1,0 +1,17 @@
+---
+# https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup
+# https://docs.microsoft.com/en-us/sql/linux/sample-unattended-install-redhat
+# https://www.microsoft.com/en-us/sql-server/developer-get-started/php/ubuntu
+#
+# Product ID of the version of SQL server you're installing.
+# Must be one of:
+# - evaluation
+# - developer
+# - express
+# - web
+# - standard
+# - enterprise
+# - [25 digit product key]
+mssql_product: "developer"
+# Username is always "sa".
+mssql_password: secur1tY

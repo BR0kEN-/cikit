@@ -1,0 +1,44 @@
+---
+- name: Add APT key
+  apt_key:
+    url: "https://packages.microsoft.com/keys/{{ item }}"
+    state: present
+  # "keys" - is a name of method.
+  with_items: "{{ cikit_mssql.apt['keys'] }}"
+
+- name: Add APT repository
+  get_url:
+    url: "https://packages.microsoft.com/config/{{ ansible_lsb.id | lower }}/{{ ansible_lsb.release }}/{{ item }}"
+    dest: "/etc/apt/sources.list.d/{{ item }}"
+  with_items: "{{ cikit_mssql.apt.repos }}"
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Install APT package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ cikit_mssql.apt.packages }}"
+
+- name: Stop existing server
+  service:
+    name: mssql-server
+    state: stopped
+  # Ignore cases when no server is installed.
+  ignore_errors: yes
+
+- name: Configure SQL Server
+  shell: /opt/mssql/bin/mssql-conf -n setup accept-eula
+  environment:
+    MSSQL_PID: "{{ mssql_product }}"
+    MSSQL_SA_PASSWORD: "{{ mssql_password }}"
+
+- name: Ensure environment
+  lineinfile:
+    line: "{{ item }}"
+    regexp: "^{{ item | regex_escape }}$"
+    dest: "{{ user_home.stdout }}/.profile"
+  with_items:
+    - 'export PATH="$PATH:/opt/mssql-tools/bin"'
