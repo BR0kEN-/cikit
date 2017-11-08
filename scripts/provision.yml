@@ -36,6 +36,12 @@
       private: no
       tags: ["solr"]
 
+    - name: mssql_install
+      prompt: Do you want to install Microsoft SQL Server? (yes/no)
+      default: "no"
+      private: no
+      tags: ["mssql"]
+
   vars:
     credentials_storage: "{{ __targetdir__ }}/.cikit/credentials"
 
@@ -191,6 +197,7 @@
       set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}
       with_dict:
         solr: "{{ solr_version }}"
+        mssql: "{{ mssql_install }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -244,6 +251,12 @@
 
     - role: cikit-apache
       tags: ["apache", "php-stack"]
+
+    # Should be before installing/configuring PHP since it may
+    # install the "sqlsrv" extension which is based on "mssql".
+    - role: cikit-mssql
+      when: install_mssql
+      tags: ["mssql"]
 
     - role: cikit-php
       tags: ["php", "php-stack"]
