@@ -10,6 +10,7 @@ Alongside with the server the system will get an [official SQLSRV ODBC PHP drive
 
 - Default superuser: `sa`.
 - Default password: `secur1tY`.
+- Default port: `1433` (https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-mssql-conf#tcpport).
 
 Refer to the [default configuration](../../../scripts/roles/cikit-mssql/defaults/main.yml) for more.
 
