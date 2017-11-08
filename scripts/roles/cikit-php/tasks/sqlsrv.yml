@@ -1,0 +1,17 @@
+---
+- name: Define extensions
+  set_fact:
+    php_sqlsrv_extensions:
+      sqlsrv:
+        type: extension
+      pdo_sqlsrv:
+        type: extension
+
+- name: Install SQLSRV extension for integrating with MSSQL
+  # Use "-f" to recompile the extensions for specific PHP version during
+  # repeating provisioning.
+  shell: "pecl install -f {{ php_sqlsrv_extensions.keys() | join(' ') }}"
+
+- name: Append configuration for the SQLSRV extension
+  set_fact:
+    php_extensions: "{{ php_extensions | combine(php_sqlsrv_extensions) }}"

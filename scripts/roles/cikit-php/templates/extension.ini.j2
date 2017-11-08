@@ -3,6 +3,8 @@
 {{ item.value.type }}={{ item.key }}.so
 {% endif %}
 
+{% if 'config' in item.value %}
 {% for option, value in item.value.config.iteritems() %}
 {{ item.key }}.{{ option }}={{ value }}
 {% endfor %}
+{% endif %}
