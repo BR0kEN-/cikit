@@ -42,6 +42,7 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
 - Project
   - [Shippable environment configuration](project/env-config) - share environment configuration with team members.
   - [Sniffers](project/sniffers) - code quality tests.
+  - [MSSQL](project/mssql) - a configuration of the MSSQL and how to use it on different PHP versions.
   - [Solr](project/solr) - all about the way it's configured.
 - [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.
