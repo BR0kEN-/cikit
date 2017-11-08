@@ -20,6 +20,8 @@
   apt:
     name: "{{ item }}"
     state: present
+  environment:
+    ACCEPT_EULA: Y
   with_items: "{{ cikit_mssql.apt.packages }}"
 
 - name: Stop existing server
