@@ -21,6 +21,12 @@ Refer to the [default configuration](../../../scripts/roles/cikit-mssql/defaults
 sqlcmd -S localhost -U sa -P secur1tY
 ```
 
+Upload a database snapshot.
+
+```bash
+sqlcmd -S localhost -U sa -P secur1tY -d DATABASE_NAME -i /path/to/script.sql -x
+```
+
 #### PHP 5.6
 
 ```php
