@@ -18,8 +18,6 @@ php:
     cli:
       memory_limit: -1
   extensions:
-    pcntl:
-      config: {}
     apc:
       config:
         stat: 1
@@ -62,5 +60,7 @@ php:
     - xsl
     - zip
     - apc
+    # For providing "mssql_*" functions on PHP 5.6.
+    - sybase
     - xmlrpc
     - memcached
