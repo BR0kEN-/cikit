@@ -51,12 +51,12 @@
   become: no
 
 - name: Generate SSH key-pair for droplet
-  shell: >
-    ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ ansible_host }}" -N '' -q -f {{ ssh_data.private_key }} && mv $_.pub ${_//private/public}
+  shell: |-
+    ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ ansible_host }}" -N '' -q -f {{ ssh_data.private_key }}
+    mv {{ ssh_data.private_key }}.pub {{ ssh_data.private_key | replace('private', 'public') }}
   args:
     chdir: "{{ ssh_data.source }}"
     creates: "{{ ssh_data.private_key }}"
-    executable: /bin/bash
   delegate_to: localhost
   become: no
 
@@ -69,14 +69,13 @@
   with_items: ["private", "public"]
 
 - name: Generate "authorized_keys" for new droplet
-  shell: "cat {{ droplet }}.public.key > {{ ssh_data.authorized_keys }} && chmod 600 $_"
+  shell: "cat {{ droplet }}.public.key > {{ ssh_data.authorized_keys }} && chmod 600 {{ ssh_data.authorized_keys }}"
   args:
     chdir: "{{ ssh_data.destination }}"
-    executable: /bin/bash
 
 - name: Configure SSH daemon
   shell: |-
     docker exec -i '{{ droplet }}' bash -c "mkdir -p '{{ ssh_data.destination }}' && apt update && apt install openssh-server -y && service ssh start && systemctl enable ssh"
-    docker cp '{{ ssh_data.authorized_keys }}' {{ droplet }}:{{ ssh_data.destination }}
+    docker cp '{{ ssh_data.authorized_keys }}' '{{ droplet }}':'{{ ssh_data.destination }}'
     docker stop '{{ droplet }}'
     docker start '{{ droplet }}'
