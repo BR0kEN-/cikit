@@ -237,20 +237,20 @@ else
 
   # Non-documented feature needed for Vagrant purposes only.
   if [ -z "${ANSIBLE_INVENTORY}" ]; then
-    if ! ${LOCALHOST}; then
-      INVENTORY=$(match_file "${CIKIT_DIR}/inventory")
+    INVENTORY=$(match_file "${CIKIT_DIR}/inventory")
 
-      if [ $? -eq 0 ]; then
-        # Move "inventory" into user's home directory because it is not mounted file
-        # system and can be affected via Linux commands (chmod, chown) under Windows.
-        \cp "${INVENTORY}" ~/.cikit-inventory
-        \chmod a-x ~/.cikit-inventory
-        PARAMS+=" -i ~/.cikit-inventory"
-      fi
+    if [ $? -eq 0 ]; then
+      # Move "inventory" into user's home directory because it is not mounted file
+      # system and can be affected via Linux commands (chmod, chown) under Windows.
+      \cp "${INVENTORY}" ~/.cikit-inventory
+      \chmod a-x ~/.cikit-inventory
+      PARAMS+=" -i ~/.cikit-inventory"
+      LOCALHOST=false
     fi
   # The "uname -o" cannot be used due to "-o" option is not supported on OS X.
   elif [[ "$(\uname -s)" =~ "CYGWIN" ]]; then
     ANSIBLE_INVENTORY=$(\cygpath "${ANSIBLE_INVENTORY}")
+    LOCALHOST=false
   fi
 
   if [ -n "${VARS}" ]; then
@@ -275,7 +275,7 @@ export ANSIBLE_RETRY_FILES_ENABLED=0
 COMMAND+=" ${PLAYBOOK} ${PARAMS}"
 
 # Print entire command if verbosity requested.
-if [[ "${PARAMS}" =~ -v{1,}[[:space:]] ]]; then
+if [ -n "${ANSIBLE_VERBOSITY}" ]; then
   \echo "${COMMAND}"
 fi
 
