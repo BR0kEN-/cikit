@@ -84,6 +84,8 @@
         - zlib1g-dev
         # Needed for "rbenv".
         - libreadline-dev
+        # Allow installing the repositories via HTTPS.
+        - apt-transport-https
 
       pip:
         - setuptools
