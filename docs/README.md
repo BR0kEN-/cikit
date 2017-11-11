@@ -11,7 +11,7 @@ echo "matrix1 ansible_host=example.com ansible_user=root ansible_ssh_private_key
 # Create the matrix itself.
 cikit matrix/provision --limit=matrix1
 # Create first droplet - "cikit01".
-matrix/droplet --limit=matrix1 --droplet-add
+cikit matrix/droplet --limit=matrix1 --droplet-add
 # Add the shortcut of droplet's credentials.
 echo "cikit01.matrix1 ansible_host=cikit01.example.com ansible_port=2201 ansible_user=root ansible_ssh_private_key_file=./credentials/matrix1/ssh/cikit01.private.key" >> .cikit/inventory
 
