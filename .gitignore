@@ -16,7 +16,8 @@ matrix/*
 !matrix/tasks/
 !matrix/templates/
 !matrix/vars/
-!matrix/matrix.yml
+!matrix/droplet.yml
+!matrix/provision.yml
 
 # Files.
 !LICENSE

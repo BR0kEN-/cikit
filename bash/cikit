@@ -114,6 +114,8 @@ fi
 # Set the path to CIKit catalog.
 SELF_DIR="$(\pwd)"
 CIKIT_DIR="${TARGET_DIR}/.cikit"
+# A directory with playbooks to provision the host of droplets.
+MATRIX_SUBDIR="matrix"
 
 if ${INSIDE_PROJECT}; then
   SCRIPTS_DIR="${TARGET_DIR}"
@@ -132,9 +134,10 @@ if [ -z "$1" ]; then
     done
 
     # Add the specific task for non-virtualized environment.
-    # @todo Add a scanner for tasks from "matrix/" directory.
     if ! ${INSIDE_PROJECT}; then
-      TASKS+="matrix/matrix"
+      for TASK in "${SELF_DIR}/${MATRIX_SUBDIR}"/*.yml; do
+        TASKS+="${MATRIX_SUBDIR}/$(\basename "${TASK%.*}") "
+      done
     fi
 
     \echo "${TASKS}"
@@ -215,6 +218,7 @@ else
     fi
   fi
 
+  # @todo Improve for Ansible 2.5 - https://github.com/ansible/ansible/pull/30722
   if [ -n "${CIKIT_TAGS}" ]; then
     PARAMS+=" --tags='${CIKIT_TAGS}'"
   fi

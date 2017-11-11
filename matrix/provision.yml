@@ -12,60 +12,61 @@
     application: cikit
     # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
     restart: ""
+    droplet: no
 
   pre_tasks:
     - name: Check Ansible compatibility
       fail:
         msg: "Continuation is possible only with Ansible 2.2.x on host machine."
       when: "ansible_version.major < 2 and ansible_version.minor < 2"
-      tags: ["always"]
 
     - name: Ensure Python is installed on remote host
       # We must use "raw" instead of "shell" here due to the following:
       # FAILED! => {"changed": false, "failed": true, "module_stderr": "Shared connection to <HOST>", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found", "msg": "MODULE FAILURE", "rc": 0}
       raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
-      tags: ["always"]
 
       # "gather_facts" after performing required tasks.
       # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
     - name: Gather facts
       setup: ~
-      tags: ["always"]
 
     - name: Determine domain
       set_fact:
         domain: "{{ domain | default(ansible_host) }}"
-      tags: ["always"]
 
     - include_vars: "{{ item }}"
       with_fileglob: vars/*.yml
-      tags: ["always"]
 
     - name: Compute allowed hosts
       set_fact:
         # Ensure current IP is in the list. Otherwise we're risking to lose access to provisioning machine.
         allowed_hosts: "{{ os_configuration.allowed_hosts + [ansible_env.SSH_CLIENT.split() | first] if 'SSH_CLIENT' in ansible_env else [] }}"
-      tags: ["always"]
 
     - name: Configure hostname
       hostname:
         name: "{{ domain }}"
+      when: not droplet
 
   roles:
     - role: os-configuration
+      when: not droplet
       tags: ["config"]
 
     - role: apt
+      when: not droplet
       tags: ["apt"]
 
     - role: ssl
+      when: not droplet
       tags: ["ssl"]
 
     - role: nginx
+      when: not droplet
       tags: ["nginx"]
 
     - role: droplet
-      tags: ["vm"]
+      when: droplet
+      tags: ["droplet"]
 
   tasks:
     - name: Restart service
@@ -74,4 +75,3 @@
         state: restarted
       with_items: "{{ restart.split(',') }}"
       when: restart | length > 0
-      tags: ["always"]
