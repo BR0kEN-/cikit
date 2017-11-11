@@ -1,3 +1,3 @@
 # ro:limit
 ---
-- import_playbook: provision.yml droplet=True
+- import_playbook: provision.yml only_droplet=True
