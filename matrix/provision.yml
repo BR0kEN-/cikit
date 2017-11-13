@@ -24,6 +24,7 @@
       # We must use "raw" instead of "shell" here due to the following:
       # FAILED! => {"changed": false, "failed": true, "module_stderr": "Shared connection to <HOST>", "module_stdout": "/bin/sh: 1: /usr/bin/python: not found", "msg": "MODULE FAILURE", "rc": 0}
       raw: "[ $(which python) ] || (apt update -y && apt install python-minimal -y)"
+      when: not only_droplet
 
       # "gather_facts" after performing required tasks.
       # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
