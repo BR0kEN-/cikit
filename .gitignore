@@ -3,6 +3,7 @@
 # Directories.
 !.slack/
 !lib/
+!bin/
 !cmf/
 !docs/
 !tests/
@@ -20,7 +21,6 @@ matrix/*
 !matrix/provision.yml
 
 # Files.
-!cikit
 !LICENSE
 !install.sh
 
