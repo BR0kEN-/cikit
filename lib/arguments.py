@@ -26,19 +26,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--list-tags',
-    action='store_true',
-    help='Print available tags for a given playbook.',
-)
-
-parser.add_argument(
-    '--tags',
-    default=[],
-    action='append',
+    '--dir',
     nargs='?',
     help=(
-        'A list of tags to run a playbook with. You can specify them either in '
-        'comma-separated format or pass as much as needed options with a single value.'
+        'The path to directory with CIKit project. Not needed if you are '
+        'currently in a directory with it.'
     ),
 )
 
@@ -47,18 +39,8 @@ parser.add_argument(
     metavar='HOST',
     nargs='?',
     help=(
-        'The host to run a playbook at. The value of this option must be an '
-        'alias of a host from the "CIKIT_PROJECT_DIR/.cikit/inventory" file.'
-    ),
-)
-
-parser.add_argument(
-    '--project-dir',
-    metavar='DIR',
-    nargs='?',
-    help=(
-        'The path to directory with CIKit project. Not needed if you are '
-        'currently in a directory with it.'
+        'The host to run a playbook at. The value of this option must '
+        'be an alias of a host from the "%%s/.cikit/inventory" file.'
     ),
 )
 
@@ -67,10 +49,9 @@ args.extra = {}
 
 parse_extra_vars(argv, args.extra)
 
-# Pass tags to a playbook.
-args.extra['tags'] = args.tags
 # Duplicate the "limit" option as "extra" because some playbooks may
 # require it and required options are checked within the "extra" only.
-args.extra['limit'] = args.limit
+if args.limit:
+    args.extra['limit'] = args.limit
 
 del argv

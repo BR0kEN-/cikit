@@ -29,6 +29,6 @@ if [ ! -d "${INSTALL_PATH}" ]; then
 fi
 
 if sudo \git clone https://github.com/BR0kEN-/cikit.git --recursive "${INSTALL_PATH}"; then
-  sudo \ln -s "${INSTALL_PATH}/cikit" /usr/local/bin/cikit
+  sudo \ln -s "${INSTALL_PATH}/bin/cikit" /usr/local/bin/cikit
   sudo \chown -R "$(\whoami)" "${INSTALL_PATH}"
 fi

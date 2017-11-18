@@ -1,4 +1,0 @@
-#!/usr/bin/env python
-
-if '__main__' == __name__:
-    import lib
