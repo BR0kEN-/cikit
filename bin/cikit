@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+if '__main__' == __name__:
+    import sys
+    from atexit import register as atexit
+    from datetime import datetime
+
+    start = datetime.now()
+
+    sys.path.insert(0, '..')
+    atexit(lambda: sys.stdout.write('Execution time: ' + str(datetime.now() - start) + '\n'))
+
+    import lib
