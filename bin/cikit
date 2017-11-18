@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
 if '__main__' == __name__:
+    import os
     import sys
-    from atexit import register as atexit
+    import atexit
     from datetime import datetime
 
-    start = datetime.now()
+    # Add the path to CIKit package to observe the "lib" in.
+    sys.path.insert(0, os.path.realpath(__file__ + '/../..'))
 
-    sys.path.insert(0, '..')
-    atexit(lambda: sys.stdout.write('Execution time: ' + str(datetime.now() - start) + '\n'))
+    if 'CIKIT_SUPPRESS_EXECUTION_TIME' not in os.environ:
+        start = datetime.now()
+        atexit.register(lambda: sys.stdout.write('Execution time: ' + str(datetime.now() - start) + '\n'))
 
     import lib

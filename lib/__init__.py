@@ -1,5 +1,4 @@
 import os
-import re
 import json
 import errno
 import functions
@@ -7,11 +6,12 @@ from subprocess import call
 from arguments import args
 from shutil import copy
 from sys import platform
+from re import search
 
 COMMAND = 'ansible-playbook'
 PARAMS = []
 DIRS = {
-    'self': os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
+    'self': os.path.realpath(__file__ + '/../..'),
     'project': args.dir if args.dir else os.environ.get('CIKIT_PROJECT_DIR'),
 }
 
@@ -49,14 +49,14 @@ if 'CIKIT_LIST_TAGS' in os.environ:
     PARAMS.append('--list-tags')
 else:
     for line in open(PLAYBOOK):
-        if re.search('^# requires-project-root$', line) and not functions.is_project_root(DIRS['project']):
+        if search('^# requires-project-root$', line) and not functions.is_project_root(DIRS['project']):
             functions.error(
                 'Execution of the "%s" is available only within the CIKit-project directory.' % args.playbook,
                 errno.ENOTDIR,
             )
 
         # "ro" - is an acronym of the "required option".
-        matches = re.search('^# ro:(.+?)$', line)
+        matches = search('^# ro:(.+?)$', line)
 
         if matches:
             option = matches.group(1)
