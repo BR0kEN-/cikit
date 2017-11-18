@@ -12,7 +12,7 @@ COMMAND = 'ansible-playbook'
 PARAMS = []
 DIRS = {
     'self': os.path.realpath(__file__ + '/../..'),
-    'project': args.dir if args.dir else os.environ.get('CIKIT_PROJECT_DIR'),
+    'project': os.environ.get('CIKIT_PROJECT_DIR'),
 }
 
 LOCALHOST = True

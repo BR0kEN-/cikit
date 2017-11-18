@@ -26,15 +26,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--dir',
-    nargs='?',
-    help=(
-        'The path to directory with CIKit project. Not needed if you are '
-        'currently in a directory with it.'
-    ),
-)
-
-parser.add_argument(
     '--limit',
     metavar='HOST',
     nargs='?',
