@@ -2,7 +2,7 @@
 
 # Directories.
 !.slack/
-!bash/
+!lib/
 !cmf/
 !docs/
 !tests/
@@ -20,6 +20,7 @@ matrix/*
 !matrix/provision.yml
 
 # Files.
+!cikit
 !LICENSE
 !install.sh
 
@@ -31,4 +32,5 @@ matrix/*
 
 # File extensions.
 *.retry
+*.py[co]
 !*.md

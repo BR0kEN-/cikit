@@ -151,7 +151,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   end
 
   config.vm.provision :cikit,
-    :controller => "#{vagrantfileDir}/../bash/cikit",
+    :controller => "#{vagrantfileDir}/../cikit",
     :playbook => "#{vagrantfileDir}/../scripts/provision"
 
   # Create Selenium hub.
@@ -162,7 +162,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
   # Create Selenium node.
   config.vm.provision :cikit,
-    :controller => "#{vagrantfileDir}/../bash/cikit",
+    :controller => "#{vagrantfileDir}/../cikit",
     :playbook => "#{vagrantfileDir}/../scripts/selenium && true",
     :run => "always"
 
