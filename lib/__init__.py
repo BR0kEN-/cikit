@@ -110,13 +110,17 @@ else:
             #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
             # Just works.
             with open(ansible_executable) as ansible_executable:
-                args.extra.update(json.loads(
+                for key, value in json.loads(
                     functions.call(
                         ansible_executable.readline().lstrip('#!').rstrip(),
                         '-c',
                         'import yaml, json\nprint json.dumps(yaml.load(open(\'%s\')))' % ENV_CONFIG,
                     )
-                ))
+                ).iteritems():
+                    # Add the value from environment config only if it's not specified as
+                    # an option to the command.
+                    if key not in args.extra:
+                        args.extra[key] = value
 
     if 'EXTRA_VARS' in os.environ:
         functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
