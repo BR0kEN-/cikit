@@ -1,6 +1,7 @@
 import os
 import json
 import errno
+import shlex
 import functions
 from subprocess import call
 from arguments import args
@@ -117,9 +118,8 @@ else:
                     )
                 ))
 
-    # @todo Handle "EXTRA_VARS" environment variable.
-    # if 'EXTRA_VARS' in os.environ:
-    #     functions.parse_extra_vars(os.environ.get('EXTRA_VARS').split('--'), args.extra)
+    if 'EXTRA_VARS' in os.environ:
+        functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
     if 'ANSIBLE_INVENTORY' not in os.environ:
         INVENTORY_SRC = DIRS['cikit'] + '/inventory'

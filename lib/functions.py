@@ -32,12 +32,12 @@ def call(*nargs, **kwargs):
 def parse_extra_vars(args, bag):
     for arg in args:
         if arg.startswith('--', 0):
-            arg = arg[2:].split('=')
+            arg = arg[2:].split('=', 1)
 
-            if 1 == len(arg):
+            if 1 is len(arg):
                 arg.append(True)
 
-            bag[arg[0]] = arg[1]
+            bag[arg[0].replace('-', '_')] = arg[1]
 
 
 def error(message, code):
