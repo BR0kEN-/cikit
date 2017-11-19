@@ -11,3 +11,10 @@
         update: yes
         recursive: yes
         track_submodules: no
+
+    - name: Set the correct path to executable
+      file:
+        src: "{{ (playbook_dir + '/../bin/cikit') | realpath }}"
+        dest: /usr/local/bin/cikit
+        mode: a+x
+        force: yes
