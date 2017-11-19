@@ -34,7 +34,7 @@ __cikit_test()
   local EXIT_CODE
   local OUTPUT
 
-  echo "Testing the \"${COMMAND}\" command."
+  echo "Testing the \"${COMMAND}\" command which ran in \"$(pwd)\"."
 
   OUTPUT="$(${COMMAND})"
   EXIT_CODE="$?"
@@ -59,8 +59,6 @@ if [ ! -d "${TEST_PROJECT}" ]; then
   cikit init --project="${TEST_PROJECT}"
 fi
 
-cd "${TEST_PROJECT}"
-
 export ANSIBLE_VERBOSITY=2
 
 ########################################################################################################################
@@ -77,12 +75,19 @@ __cikit_test \
   0 \
   "cikit init --dry-run --project=test" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/init.yml' -i '${HOME}/.cikit-inventory' -e '{"project": "test"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook '${SELF_DIR}/scripts/init.yml' -i 'localhost,' -e '{"project": "test"}' -e __targetdir__='${SELF_DIR}'
 HERE
 )"
 
 ########################################################################################################################
 # cikit provision.
+
+__cikit_test \
+  20 \
+  "cikit provision --dry-run --limit=test" \
+  "ERROR: Execution of the \"provision\" is available only within the CIKit-project directory."
+
+cd "${TEST_PROJECT}"
 
 for ARGSET in "" "--limit" "--limit=1"; do
   __cikit_test \
@@ -96,5 +101,13 @@ __cikit_test \
   "cikit provision --dry-run --limit=test" \
   "$(cat <<-HERE
 ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"limit": "test"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+HERE
+)"
+
+__cikit_test \
+  0 \
+  "cikit provision --dry-run --limit=test --bla=12 --bla1" \
+  "$(cat <<-HERE
+ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"bla1": true, "limit": "test", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
 HERE
 )"
