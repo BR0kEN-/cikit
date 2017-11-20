@@ -82,6 +82,8 @@ else:
         ansible_executable = functions.call('which', COMMAND)
 
         if '' is ansible_executable:
+            # Only warn and do not fail the execution because it's possible to continue without
+            # these values. The command may be not found in a case it is set as an "alias".
             functions.warn(
                 (
                     'Cannot read environment configuration from "%s". Looks '
@@ -127,11 +129,12 @@ else:
 
     if 'ANSIBLE_INVENTORY' not in os.environ:
         INVENTORY_SRC = DIRS['cikit'] + '/inventory'
-        INVENTORY_DEST = os.path.expanduser('~/.cikit-inventory')
 
         # Move "inventory" into user's home directory because it is not mounted file
         # system and can be affected via Linux commands ("chmod", "chown") under Windows.
         if os.path.isfile(INVENTORY_SRC):
+            INVENTORY_DEST = os.path.expanduser('~/.cikit-inventory')
+
             copy(INVENTORY_SRC, INVENTORY_DEST)
 
             if 0 is call(['chmod', 'a-x', INVENTORY_DEST]):
