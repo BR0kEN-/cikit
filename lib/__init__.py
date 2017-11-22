@@ -127,23 +127,27 @@ else:
     if 'EXTRA_VARS' in os.environ:
         functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
-    if 'ANSIBLE_INVENTORY' not in os.environ:
+    if 'ANSIBLE_INVENTORY' in os.environ:
+        LOCALHOST = False
+
+        if 'cygwin' is platform:
+            os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
+    else:
         INVENTORY_SRC = DIRS['cikit'] + '/inventory'
 
         # Move "inventory" into user's home directory because it is not mounted file
         # system and can be affected via Linux commands ("chmod", "chown") under Windows.
         if os.path.isfile(INVENTORY_SRC):
+            LOCALHOST = False
             INVENTORY_DEST = os.path.expanduser('~/.cikit-inventory')
 
             copy(INVENTORY_SRC, INVENTORY_DEST)
+            os.chmod(INVENTORY_DEST, 0666)
 
-            if 0 is call(['chmod', 'a-x', INVENTORY_DEST]):
-                PARAMS.append("-i '%s'" % INVENTORY_DEST)
-                LOCALHOST = False
-    elif 'cygwin' is platform:
-        os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
-        LOCALHOST = False
+            PARAMS.append("-i '%s'" % INVENTORY_DEST)
 
+    # @todo Improve for Ansible 2.5 - https://github.com/ansible/ansible/pull/30722
+    # Remove these lines and adjust docs in favor of "ANSIBLE_RUN_TAGS" environment variable.
     if 'CIKIT_TAGS' in os.environ:
         PARAMS.append("-t '%s'" % os.environ['CIKIT_TAGS'])
 
