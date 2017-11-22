@@ -4,10 +4,30 @@
     msg: "Solr of {{ solr_version }} version is unsupported. Choose between {{ cikit_solr.versions | join(', ') }}"
   when: solr_version not in cikit_solr.versions
 
+# https://reference.apache.org/pmc/mirror_scripts
+- name: Determine the mirror to download from
+  uri:
+    url: https://www.apache.org/dyn/closer.lua?as_json=1
+    return_content: yes
+  # A value of the "solr_mirror.json" will look similar to:
+  # "backup": [
+  #   "http://www-eu.apache.org/dist/",
+  #   "http://www-us.apache.org/dist/"
+  # ],
+  # "cca2": "ua",
+  # "http": [
+  #   "http://apache.cp.if.ua/",
+  #   "http://apache.ip-connect.vn.ua/",
+  #   "http://apache.volia.net/"
+  # ],
+  # "path_info": "",
+  # "preferred": "http://apache.volia.net/"
+  register: solr_mirror
+
 - name: Download and unarchive
   shell: |-
     if [ ! -f "{{ cikit_solr.package | basename }}" ]; then
-      wget "{{ cikit_solr.package }}"
+      wget -q "{{ solr_mirror.json.preferred }}/{{ cikit_solr.package }}"
     fi
 
     if [ ! -d "{{ cikit_solr.package | basename | splitext | first }}" ]; then
