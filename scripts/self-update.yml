@@ -13,6 +13,8 @@
     # While developing the package you can use "--repository=git@github.com:BR0kEN-/cikit.git"
     # to get the codebase by SSH or from a fork.
     repository: https://github.com/BR0kEN-/cikit.git
+    # Use "--skip-fetch" to not perform a "git pull".
+    skip_fetch: yes
 
   tasks:
     - name: Define the variables
@@ -29,6 +31,7 @@
         version: "{{ version }}"
         recursive: yes
         track_submodules: no
+      when: not skip_fetch
 
     - name: Ensure the current version is defined
       copy:
@@ -47,11 +50,14 @@
 
     # Run the migrations only when the version of CIKit has grown.
     - include_tasks: tasks/migrations/run.yml
+      # A new version of CIKit is greater than current.
       when: cikit_version | version_compare(cikit_current_version, 'gt')
 
-    - name: Store a new version of the package
+    - name: Dump a new version of the package
       copy:
         dest: "{{ cikit_version_file }}"
+        # Create a read-only file to prevent accidental manual modifications.
+        mode: a+r
         # Override the current version, since it got updated.
         force: yes
         content: "{{ cikit_version }}"
