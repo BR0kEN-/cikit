@@ -23,6 +23,7 @@ matrix/*
 # Files.
 !LICENSE
 !install.sh
+!version.txt
 
 # Starting from dot.
 .*
