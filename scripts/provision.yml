@@ -214,13 +214,16 @@
       shell: yes | dpkg --configure -a
       ignore_errors: yes
 
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+        # Update cache if it's older than 31 days.
+        cache_valid_time: 2678400
+
     - name: Install APT packages
       apt:
         name: "{{ item }}"
         state: present
-        update_cache: yes
-        # Update cache if it's older than 31 days.
-        cache_valid_time: 2678400
       register: cikit_apt_needs_cache_update
       with_items: "{{ basic_packages.apt }}"
 
