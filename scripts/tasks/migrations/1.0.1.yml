@@ -10,5 +10,6 @@
   replace:
     path: /etc/exports
     regexp: "{{ cikit_location + '/bash' | regex_escape }}"
-    replace: "{{ cikit_location + '/bin' | realpath }}"
+    replace: "{{ cikit_location }}/bin"
+  # This file requires a privileged user for modifications.
   become: yes

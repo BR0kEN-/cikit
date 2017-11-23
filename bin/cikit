@@ -11,6 +11,6 @@ if '__main__' == __name__:
 
     if 'CIKIT_SUPPRESS_EXECUTION_TIME' not in os.environ:
         start = datetime.now()
-        atexit.register(lambda: sys.stdout.write('Execution time: ' + str(datetime.now() - start) + '\n'))
+        atexit.register(lambda: sys.stdout.write('\nExecution time: ' + str(datetime.now() - start) + '\n'))
 
     import lib
