@@ -1,3 +1,4 @@
+from actions import VersionAction
 from argparse import ArgumentParser
 from functions import parse_extra_vars
 
@@ -17,6 +18,13 @@ parser.add_argument(
     '--help',
     action='help',
     help='Show this help message and exit.',
+)
+
+parser.add_argument(
+    '--version',
+    dest='../.version.txt',
+    action=VersionAction,
+    default='1.0.0',
 )
 
 parser.add_argument(
