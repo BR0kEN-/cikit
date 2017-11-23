@@ -5,7 +5,8 @@
 
   # List of variables that allowed to be changed via command line arguments.
   vars:
-    cikit_repository: https://github.com/BR0kEN-/cikit.git
+    version: "HEAD"
+    repository: https://github.com/BR0kEN-/cikit.git
 
   tasks:
     - name: Define variables
@@ -14,9 +15,10 @@
 
     - name: Update the package
       git:
-        repo: "{{ cikit_repository }}"
+        repo: "{{ repository }}"
         dest: "{{ cikit_location }}"
         update: yes
+        version: "{{ version }}"
         recursive: yes
         track_submodules: no
 
