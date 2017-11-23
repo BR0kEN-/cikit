@@ -1,0 +1,22 @@
+- name: Get the list of migrations
+  find:
+    paths: "tasks/migrations"
+    patterns: '^\d\.\d\.\d\.yml$'
+    use_regex: yes
+  register: cikit_migrations
+
+- name: Determine the versions of migrations
+  set_fact:
+    cikit_migrations: "{{ cikit_migrations.files | map(attribute='path') | map('basename') | map('splitext') | map('first') | list }}"
+
+- include_tasks: "{{ item }}.yml"
+  with_items: "{{ cikit_migrations }}"
+  when: "item | version_compare(cikit_current_version, '>=')"
+
+- name: Store the current version
+  copy:
+    dest: "{{ cikit_version_file }}"
+    # Override the current version, since it got updated.
+    force: yes
+    content: "{{ cikit_version }}"
+  become: yes

@@ -15,9 +15,10 @@
     repository: https://github.com/BR0kEN-/cikit.git
 
   tasks:
-    - name: Define variables
+    - name: Define the variables
       set_fact:
-        cikit_location: "{{ (playbook_dir + '/..') | realpath }}"
+        cikit_location: "{{ '..' | realpath }}"
+        cikit_version_file: "../.version.txt"
 
     - name: Update the package
       git:
@@ -29,22 +30,21 @@
         recursive: yes
         track_submodules: no
 
+    - name: Ensure the current version is defined
+      copy:
+        dest: "{{ cikit_version_file }}"
+        # Defaults to the "1.0.0" only if the file is missing.
+        force: no
+        content: 1.0.0
+      become: yes
+
     - name: Get the version of an updated package
       set_fact:
         # Read the version of the package we've just updated to.
         cikit_version: "{{ lookup('file', cikit_location + '/version.txt') }}"
+        # Read the current version which is updated by the migrations runner.
+        cikit_current_version: "{{ lookup('file', cikit_version_file) }}"
 
-    - name: Get the list of migrations
-      find:
-        paths: "{{ playbook_dir }}/tasks/migrations"
-        patterns: '^\d\.\d\.\d\.yml$'
-        use_regex: yes
-      register: cikit_migrations
-
-    - name: Determine the versions of migrations
-      set_fact:
-        cikit_migrations: "{{ cikit_migrations.files | map(attribute='path') | map('basename') | map('splitext') | map('first') | list }}"
-
-    - include_tasks: "tasks/migrations/{{ item }}.yml"
-      with_items: "{{ cikit_migrations }}"
-      when: "item | version_compare(cikit_version, '>')"
+    # Run the migrations only when the version of CIKit has been received.
+    - include_tasks: tasks/migrations/run.yml
+      when: cikit_version | version_compare(cikit_current_version, 'gt')
