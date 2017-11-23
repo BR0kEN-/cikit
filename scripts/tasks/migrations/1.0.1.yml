@@ -1,0 +1,14 @@
+---
+- name: Set the correct path to executable
+  file:
+    src: "{{ cikit_location }}/bin/cikit"
+    dest: /usr/local/bin/cikit
+    mode: a+x
+    force: yes
+
+- name: Fix NFS exports
+  replace:
+    path: /etc/exports
+    regexp: "{{ cikit_location + '/bash' | regex_escape }}"
+    replace: "{{ cikit_location + '/bin' | realpath }}"
+  become: yes
