@@ -12,11 +12,3 @@
 - include_tasks: "{{ item }}.yml"
   with_items: "{{ cikit_migrations }}"
   when: "item | version_compare(cikit_current_version, '>=')"
-
-- name: Store the current version
-  copy:
-    dest: "{{ cikit_version_file }}"
-    # Override the current version, since it got updated.
-    force: yes
-    content: "{{ cikit_version }}"
-  become: yes
