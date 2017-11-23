@@ -5,6 +5,9 @@
 
   # List of variables that allowed to be changed via command line arguments.
   vars:
+    # Use "--force" to get rid local modifications in the repository (valuable if they
+    # were made and you are sure you won't lose the codebase you wanted to contribute).
+    force: no
     # You can use "--version=issues/62" to get the codebase from specific branch/tag.
     version: HEAD
     # While developing the package you can use "--repository=git@github.com:BR0kEN-/cikit.git"
@@ -20,6 +23,7 @@
       git:
         repo: "{{ repository }}"
         dest: "{{ cikit_location }}"
+        force: "{{ force }}"
         update: yes
         version: "{{ version }}"
         recursive: yes
