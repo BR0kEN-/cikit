@@ -59,6 +59,9 @@ if [ ! -d "${TEST_PROJECT}" ]; then
   cikit init --project="${TEST_PROJECT}"
 fi
 
+# Ensure no environment configuration exist.
+rm "${TEST_PROJECT}/.cikit/environment.yml" > /dev/null 2>&1
+
 export ANSIBLE_VERBOSITY=2
 
 ########################################################################################################################
@@ -109,5 +112,30 @@ __cikit_test \
   "cikit provision --dry-run --limit=test --bla=12 --bla1" \
   "$(cat <<-HERE
 ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"bla1": true, "limit": "test", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+HERE
+)"
+
+echo "---
+php_version: '5.6'
+nodejs_version: '6'
+ruby_version: 2.4.0
+solr_version: 5.5.5
+mssql_install: 'yes'" > ./.cikit/environment.yml
+
+# Ensure the values from the "environment.yml" will be passed as extra variables to the playbook.
+# Also, ensure the custom options are passed as well.
+__cikit_test \
+  0 \
+  "cikit provision --dry-run --limit=test --bla=12 --bla1" \
+  "$(cat <<-HERE
+ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "solr_version": "5.5.5", "bla1": true, "mssql_install": "yes", "ruby_version": "2.4.0", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+HERE
+)"
+
+__cikit_test \
+  0 \
+  "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2" \
+  "$(cat <<-HERE
+ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.2", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
 HERE
 )"
