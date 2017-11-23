@@ -34,7 +34,7 @@ def parse_extra_vars(args, bag):
         if arg.startswith('--', 0):
             arg = arg[2:].split('=', 1)
 
-            if 1 is len(arg):
+            if 1 == len(arg):
                 arg.append(True)
 
             bag[arg[0].replace('-', '_')] = arg[1]

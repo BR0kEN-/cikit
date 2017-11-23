@@ -28,7 +28,7 @@ elif not functions.is_project_root(DIRS['project']):
 DIRS['cikit'] = DIRS['project'] + '/.cikit'
 DIRS['scripts'] = DIRS['project' if INSIDE_VM_OR_CI else 'self'] + '/scripts'
 
-if '' is args.playbook:
+if '' == args.playbook:
     functions.playbooks_print(DIRS['scripts'])
 
     if not INSIDE_VM_OR_CI:
@@ -81,7 +81,7 @@ else:
     if os.path.isfile(ENV_CONFIG):
         ansible_executable = functions.call('which', COMMAND)
 
-        if '' is ansible_executable:
+        if '' == ansible_executable:
             # Only warn and do not fail the execution because it's possible to continue without
             # these values. The command may be not found in a case it is set as an "alias".
             functions.warn(
@@ -130,7 +130,7 @@ else:
     if 'ANSIBLE_INVENTORY' in os.environ:
         LOCALHOST = False
 
-        if 'cygwin' is platform:
+        if 'cygwin' == platform:
             os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
     else:
         INVENTORY_SRC = DIRS['cikit'] + '/inventory'
@@ -150,6 +150,10 @@ else:
     # Remove these lines and adjust docs in favor of "ANSIBLE_RUN_TAGS" environment variable.
     if 'CIKIT_TAGS' in os.environ:
         PARAMS.append("-t '%s'" % os.environ['CIKIT_TAGS'])
+
+# Require privileged execution of CIKit upgrades.
+if 'self-update' == args.playbook:
+    PARAMS.append('--ask-become-pass')
 
 if args.limit:
     PARAMS.append("-l '%s'" % args.limit)
