@@ -3,18 +3,39 @@
   connection: local
   gather_facts: no
 
+  # List of variables that allowed to be changed via command line arguments.
+  vars:
+    cikit_repository: https://github.com/BR0kEN-/cikit.git
+
   tasks:
-    - name: Update the CIKit package
+    - name: Define variables
+      set_fact:
+        cikit_location: "{{ (playbook_dir + '/..') | realpath }}"
+
+    - name: Update the package
       git:
-        repo: https://github.com/BR0kEN-/cikit.git
-        dest: ../
+        repo: "{{ cikit_repository }}"
+        dest: "{{ cikit_location }}"
         update: yes
         recursive: yes
         track_submodules: no
 
-    - name: Set the correct path to executable
-      file:
-        src: "{{ (playbook_dir + '/../bin/cikit') | realpath }}"
-        dest: /usr/local/bin/cikit
-        mode: a+x
-        force: yes
+    - name: Get the version of an updated package
+      set_fact:
+        # Read the version of the package we've just updated to.
+        cikit_version: "{{ lookup('file', cikit_location + '/version.txt') }}"
+
+    - name: Get the list of migrations
+      find:
+        paths: "{{ playbook_dir }}/tasks/migrations"
+        patterns: '^\d\.\d\.\d\.yml$'
+        use_regex: yes
+      register: cikit_migrations
+
+    - name: Determine the versions of migrations
+      set_fact:
+        cikit_migrations: "{{ cikit_migrations.files | map(attribute='path') | map('basename') | map('splitext') | map('first') | list }}"
+
+    - include_tasks: "tasks/migrations/{{ item }}.yml"
+      with_items: "{{ cikit_migrations }}"
+      when: "item | version_compare(cikit_version, '>=')"
