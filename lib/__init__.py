@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import errno
 import shlex
@@ -6,7 +7,6 @@ import functions
 from subprocess import call
 from arguments import args
 from shutil import copy
-from sys import platform
 from re import search
 
 COMMAND = 'ansible-playbook'
@@ -34,7 +34,7 @@ if '' == args.playbook:
     if not INSIDE_VM_OR_CI:
         functions.playbooks_print(DIRS['self'], 'matrix/')
 
-    exit(0)
+    sys.exit(0)
 
 PLAYBOOK = functions.playbooks_find(
     DIRS['scripts'] + '/' + args.playbook,
@@ -130,7 +130,7 @@ else:
     if 'ANSIBLE_INVENTORY' in os.environ:
         LOCALHOST = False
 
-        if 'cygwin' == platform:
+        if 'cygwin' == sys.platform:
             os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
     else:
         INVENTORY_SRC = DIRS['cikit'] + '/inventory'
@@ -181,4 +181,4 @@ if 'ANSIBLE_VERBOSITY' in os.environ:
     print COMMAND
 
 if not args.dry_run:
-    exit(call([COMMAND], shell=True))
+    sys.exit(call([COMMAND], shell=True))
