@@ -36,7 +36,8 @@ __cikit_test()
 
   echo "Testing the \"${COMMAND}\" command which ran in \"$(pwd)\"."
 
-  OUTPUT="$(${COMMAND})"
+  # The "eval" is needed to fully follow the arguments.
+  OUTPUT="$(eval "${COMMAND}")"
   EXIT_CODE="$?"
 
   if [ "${EXPECTED_EXIT_CODE}" != "${EXIT_CODE}" ]; then
@@ -137,5 +138,17 @@ __cikit_test \
   "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2" \
   "$(cat <<-HERE
 ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.2", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+HERE
+)"
+
+# Ensure we can pass JSON as value for custom options.
+__cikit_test \
+  0 \
+  "$(cat <<-HERE
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+HERE
+)" \
+  "$(cat <<-HERE
+ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
 HERE
 )"
