@@ -6,9 +6,9 @@ CIKIT_ARGUMENTS=""
 
 IFS=$'\n'
 
-for PARAMETER in $(cikit --help | \grep -Eo "(--(\w|-)*(\s\[.+?\])?)" | \sort | \uniq); do
+for PARAMETER in $(cikit --help | \tail -n+4 | \grep -Eo "(--(\w|-)*(\s\[.+?\])?)" | \sort | \uniq); do
     if [[ "${PARAMETER}" =~ [[:space:]] ]]; then
-        CIKIT_ARGUMENTS+="${PARAMETER% *}= "
+        CIKIT_ARGUMENTS+="${PARAMETER%% *}= "
     elif [[ ! "${PARAMETER}" =~ ${CIKIT_OPTIONS} ]]; then
         CIKIT_ARGUMENTS+="${PARAMETER} "
     fi
