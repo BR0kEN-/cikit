@@ -54,7 +54,7 @@ _cikit_complete()
 
   COMPREPLY=($(\compgen -W "${WORDS}" -- "${CURRENT}"))
 
-  if ${HAS_COMPOPT} && [[ "${COMPREPLY[@]}}" =~ = ]] ; then
+  if ${HAS_COMPOPT} && [[ "${COMPREPLY[@]}" =~ = ]] ; then
     \compopt -o nospace
   fi
 }
