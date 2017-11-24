@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+if '__main__' == __name__:
+    import atexit
+    from datetime import datetime
+    from sys import stdout
+    from os import environ
+
+    if 'CIKIT_SUPPRESS_EXECUTION_TIME' not in environ:
+        start = datetime.now()
+        atexit.register(lambda: stdout.write('\nExecution time: ' + str(datetime.now() - start) + '\n'))
+
+    import __init__

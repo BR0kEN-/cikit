@@ -3,7 +3,6 @@
 # Directories.
 !.slack/
 !lib/
-!bin/
 !cmf/
 !docs/
 !tests/

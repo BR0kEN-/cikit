@@ -19,8 +19,8 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_location: "{{ '..' | realpath }}"
-        cikit_version_file: "../.version.txt"
+        cikit_location: "{{ (playbook_dir + '/..') | realpath }}"
+        cikit_version_file: "{{ (playbook_dir + '/..') | realpath }}/.version.txt"
 
     - name: Update the package
       git:

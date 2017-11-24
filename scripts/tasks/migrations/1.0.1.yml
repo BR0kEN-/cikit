@@ -1,7 +1,7 @@
 ---
 - name: Set the correct path to executable
   file:
-    src: "{{ cikit_location }}/bin/cikit"
+    src: "{{ cikit_location }}/lib/cikit"
     dest: /usr/local/bin/cikit
     mode: a+x
     force: yes
@@ -10,6 +10,6 @@
   replace:
     path: /etc/exports
     regexp: "{{ cikit_location + '/bash' | regex_escape }}"
-    replace: "{{ cikit_location }}/bin"
+    replace: "{{ cikit_location }}/lib"
   # This file requires a privileged user for modifications.
   become: yes
