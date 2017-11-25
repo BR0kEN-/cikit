@@ -147,10 +147,9 @@ if 'self-update' == args.playbook:
 
 if args.limit:
     # @todo Add a fallback to allow provision the droplet without the matrix.
-    PARAMS.append("-i '%s/inventory.py'" % DIRS['lib'])
+    PARAMS.append("-i '%s/inventory'" % DIRS['lib'])
     PARAMS.append("-l '%s'" % args.limit)
-
-if LOCALHOST:
+elif LOCALHOST:
     PARAMS.append("-i 'localhost,'")
 
 if args.extra:
