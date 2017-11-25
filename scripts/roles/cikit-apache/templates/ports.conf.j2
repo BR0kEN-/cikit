@@ -1,4 +1,4 @@
-# {{ ansible_managed }}
+# {{ ansible_managed | comment }}
 Listen {{ apache_port }}
 
 {% for module in ["ssl_module", "mod_gnutls.c"] %}

@@ -1,4 +1,4 @@
-; {{ ansible_managed }}
+; {{ ansible_managed | comment }}
 {% if 'type' in item.value %}
 {{ item.value.type }}={{ item.key }}.so
 {% endif %}

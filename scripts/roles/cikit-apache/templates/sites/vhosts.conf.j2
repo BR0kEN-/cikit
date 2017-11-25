@@ -1,5 +1,5 @@
 {# @todo Rework the template #}
-# {{ ansible_managed }}
+# {{ ansible_managed | comment }}
 DirectoryIndex index.php index.html
 {# Set up VirtualHosts #}
 {% for vhost in apache_vhosts %}
