@@ -79,3 +79,6 @@
     docker cp '{{ ssh_data.authorized_keys }}' '{{ droplet }}':'{{ ssh_data.destination }}'
     docker stop '{{ droplet }}'
     docker start '{{ droplet }}'
+
+- name: Print the name of newly created droplet
+  debug: msg="The '{{ droplet }}' just have been created."
