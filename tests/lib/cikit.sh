@@ -66,6 +66,14 @@ rm "${TEST_PROJECT}/.cikit/environment.yml" > /dev/null 2>&1
 export ANSIBLE_VERBOSITY=2
 
 ########################################################################################################################
+# Try to use undefined playbook.
+
+__cikit_test \
+  23 \
+  "cikit bla" \
+  "ERROR: The \"bla\" command is not available."
+
+########################################################################################################################
 # cikit init
 
 for ARGSET in "" "--project" "--project=1"; do
@@ -75,9 +83,10 @@ for ARGSET in "" "--project" "--project=1"; do
     "ERROR: The \"--project\" option is required for the \"init\" command and currently missing or has a value less than 2 symbols."
 done
 
+# Try to use a full path to the playbook.
 __cikit_test \
   0 \
-  "cikit init --dry-run --project=test" \
+  "cikit \"${SELF_DIR}/scripts/init.yml\" --dry-run --project=test" \
   "$(cat <<-HERE
 ansible-playbook '${SELF_DIR}/scripts/init.yml' -i 'localhost,' -e '{"project": "test"}' -e __targetdir__='${SELF_DIR}'
 HERE
@@ -152,3 +161,19 @@ HERE
 ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
 HERE
 )"
+
+# Ensure the "EXTRA_VARS" environment variable can override the CLI parameters.
+export EXTRA_VARS="--bla=14 --ob='{\"a\": {\"b\": 2}}' --ar='[1, 2, 4]'"
+
+__cikit_test \
+  0 \
+  "$(cat <<-HERE
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+HERE
+)" \
+  "$(cat <<-HERE
+ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${HOME}/.cikit-inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+HERE
+)"
+
+unset EXTRA_VARS
