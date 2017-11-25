@@ -146,6 +146,7 @@ if 'self-update' == args.playbook:
     PARAMS.append('--ask-become-pass')
 
 if args.limit:
+    # @todo Add a fallback to allow provision the droplet without the matrix.
     PARAMS.append("-i '%s/inventory.py'" % DIRS['lib'])
     PARAMS.append("-l '%s'" % args.limit)
 
