@@ -6,12 +6,12 @@ import shlex
 import functions
 from subprocess import call
 from arguments import args
-from shutil import copy
 from re import search
 
 COMMAND = 'ansible-playbook'
 PARAMS = []
 DIRS = {
+    'lib': os.path.realpath(__file__ + '/..'),
     'self': os.path.realpath(__file__ + '/../..'),
     'project': os.environ.get('CIKIT_PROJECT_DIR'),
 }
@@ -22,7 +22,10 @@ INSIDE_VM_OR_CI = True
 if None is DIRS['project']:
     DIRS['project'] = os.getcwd()
     INSIDE_VM_OR_CI = False
-elif not functions.is_project_root(DIRS['project']):
+
+INSIDE_PROJECT_DIR = functions.is_project_root(DIRS['project'])
+
+if INSIDE_VM_OR_CI and not INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % DIRS['project'], errno.ENOTDIR)
 
 DIRS['cikit'] = DIRS['project'] + '/.cikit'
@@ -50,7 +53,7 @@ if 'CIKIT_LIST_TAGS' in os.environ:
     PARAMS.append('--list-tags')
 else:
     for line in open(PLAYBOOK):
-        if search('^# requires-project-root$', line) and not functions.is_project_root(DIRS['project']):
+        if search('^# requires-project-root$', line) and not INSIDE_PROJECT_DIR:
             functions.error(
                 'Execution of the "%s" is available only within the CIKit-project directory.' % args.playbook,
                 errno.ENOTDIR,
@@ -132,19 +135,6 @@ else:
 
         if 'cygwin' == sys.platform:
             os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
-    else:
-        INVENTORY_SRC = DIRS['cikit'] + '/inventory'
-
-        # Move "inventory" into user's home directory because it is not mounted file
-        # system and can be affected via Linux commands ("chmod", "chown") under Windows.
-        if os.path.isfile(INVENTORY_SRC):
-            LOCALHOST = False
-            INVENTORY_DEST = os.path.expanduser('~/.cikit-inventory')
-
-            copy(INVENTORY_SRC, INVENTORY_DEST)
-            os.chmod(INVENTORY_DEST, 0666)
-
-            PARAMS.append("-i '%s'" % INVENTORY_DEST)
 
     # @todo Improve for Ansible 2.5 - https://github.com/ansible/ansible/pull/30722
     # Remove these lines and adjust docs in favor of "ANSIBLE_RUN_TAGS" environment variable.
@@ -156,6 +146,7 @@ if 'self-update' == args.playbook:
     PARAMS.append('--ask-become-pass')
 
 if args.limit:
+    PARAMS.append("-i '%s/inventory.py'" % DIRS['lib'])
     PARAMS.append("-l '%s'" % args.limit)
 
 if LOCALHOST:

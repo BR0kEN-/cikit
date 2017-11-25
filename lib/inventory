@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+if '__main__' == __name__:
+    import os
+    import re
+    import sys
+    import glob
+    import json
+    import argparse
+
+    INVENTORY = {}
+    EXTENSION = '.private.key'
+
+    try:
+        MATRICES_FILE = '%s/.matrices.json' % (os.path.realpath(__file__ + '/../..'))
+        CREDENTIALS_DIR = '%s/.cikit/credentials' % (os.environ.get('CIKIT_PROJECT_DIR') or os.getcwd())
+
+        if os.path.isdir(CREDENTIALS_DIR) and os.path.isfile(MATRICES_FILE):
+            parser = argparse.ArgumentParser()
+
+            parser.add_argument('--list', action='store_true')
+            parser.add_argument('--host', action='store')
+
+            matrices = json.load(open(MATRICES_FILE))
+            arguments = parser.parse_args()
+
+            if None is arguments.host:
+                arguments.host = '*'
+            else:
+                # The format must be the next: "matrix_name.droplet_name".
+                if '.' not in arguments.host:
+                    raise RuntimeError
+
+                # Extract the name of a matrix from host specification.
+                matrix, arguments.host = arguments.host.split('.')
+
+                if matrix not in matrices:
+                    raise RuntimeError
+
+                # Limit matrix to a single item.
+                matrices = {
+                    matrix: matrices[matrix],
+                }
+
+            for matrix, data in matrices.iteritems():
+                MATRIX_CREDENTIALS_DIR = '%s/%s/ssh' % (CREDENTIALS_DIR, matrix)
+
+                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
+                    for private_key in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, arguments.host, EXTENSION)):
+                        droplet = os.path.basename(private_key).rstrip(EXTENSION)
+
+                        INVENTORY['%s.%s' % (matrix, droplet)] = {
+                            'hosts': ['%s.%s' % (droplet, data['hosts'][0])],
+                            'vars': {
+                                'ansible_user': 'root',
+                                'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet),
+                                'ansible_ssh_private_key_file': private_key,
+                            },
+                        }
+
+            raise RuntimeError
+    except RuntimeError:
+        print json.dumps(INVENTORY)
+        sys.exit(0)
+
