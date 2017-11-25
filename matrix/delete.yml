@@ -1,0 +1,3 @@
+# ro:matrix
+---
+- import_playbook: define.yml __delete=True

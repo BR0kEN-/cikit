@@ -1,0 +1,38 @@
+# ro:matrix
+# ro:domain
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    matrix: ~
+    domain: ~
+    ssh_port: 22
+    ssh_user: root
+    ssh_key: ~/.ssh/id_rsa
+    __delete: no
+    __list: no
+
+  tasks:
+    - name: Define the variables
+      set_fact:
+        cikit_matrices_file: "{{ (playbook_dir + '/..') | realpath }}/.matrices.json"
+
+    - name: Ensure matrices storage exists
+      copy:
+        dest: "{{ cikit_matrices_file }}"
+        force: no
+        content: "{}"
+
+    - name: Load all defined matrices
+      set_fact:
+        cikit_matrices: "{{ lookup('file', cikit_matrices_file) | from_json }}"
+
+    - include_tasks: "tasks/host/{{ 'delete' if __delete else ('list' if __list else 'append') }}.yml"
+
+    - name: Save updated list of matrices
+      copy:
+        dest: "{{ cikit_matrices_file }}"
+        force: yes
+        content: "{{ cikit_matrices | to_nice_json }}"

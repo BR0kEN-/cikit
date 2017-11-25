@@ -1,0 +1,14 @@
+---
+- name: Check whether the matrix already exist
+  fail:
+    msg: "The '{{ matrix }}' matrix is already defined."
+  when: matrix in cikit_matrices
+
+- name: Check matrix's SSH accessibility
+  shell: >
+    ssh -p {{ ssh_port }} -i '{{ ssh_key }}' {{ ssh_user }}@{{ domain }}
+
+- name: Append matrix definition
+  set_fact:
+    cikit_matrices: >
+      {{ cikit_matrices | combine({matrix: {"hosts": [domain], "vars": {"ansible_user": ssh_user, "ansible_port": ssh_port, "ansible_ssh_private_key_file": ssh_key}}}) }}
