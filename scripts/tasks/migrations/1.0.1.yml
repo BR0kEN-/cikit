@@ -1,7 +1,7 @@
 ---
 - name: Set the correct path to executable
   file:
-    src: "{{ cikit_location }}/lib/cikit"
+    src: "{{ __selfdir__ }}/lib/cikit"
     dest: /usr/local/bin/cikit
     mode: a+x
     force: yes
@@ -9,7 +9,7 @@
 - name: Fix NFS exports
   replace:
     path: /etc/exports
-    regexp: "{{ cikit_location + '/bash' | regex_escape }}"
-    replace: "{{ cikit_location }}/lib"
+    regexp: "{{ __selfdir__ + '/bash' | regex_escape }}"
+    replace: "{{ __selfdir__ }}/lib"
   # This file requires a privileged user for modifications.
   become: yes

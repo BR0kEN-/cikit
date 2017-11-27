@@ -27,12 +27,12 @@ matrix/*
 # Files.
 !LICENSE
 !install.sh
-!version.txt
 
 # Starting from dot.
 .*
 !.git*
 !.eslint*
+!.version
 !.codespellignore
 
 # File extensions.

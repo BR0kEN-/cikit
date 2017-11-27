@@ -19,19 +19,7 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_location: "{{ (playbook_dir + '/..') | realpath }}"
-        cikit_version_file: "{{ (playbook_dir + '/..') | realpath }}/.version.txt"
-
-    - name: Update the package
-      git:
-        repo: "{{ repository }}"
-        dest: "{{ cikit_location }}"
-        force: "{{ force }}"
-        update: yes
-        version: "{{ version }}"
-        recursive: yes
-        track_submodules: no
-      when: not skip_fetch
+        cikit_version_file: "{{ __selfdir__ }}/.version"
 
     - name: Ensure the current version is defined
       copy:
@@ -41,24 +29,27 @@
         content: 1.0.0
       become: yes
 
+    - name: Get the current version of the package
+      set_fact:
+        cikit_current_version: "{{ lookup('file', cikit_version_file) }}"
+
+    - name: Update the package
+      git:
+        repo: "{{ repository }}"
+        dest: "{{ __selfdir__ }}"
+        force: "{{ force }}"
+        update: yes
+        version: "{{ version }}"
+        recursive: yes
+        track_submodules: no
+      when: not skip_fetch
+
     - name: Get the version of an updated package
       set_fact:
         # Read the version of the package we've just updated to.
-        cikit_version: "{{ lookup('file', cikit_location + '/version.txt') }}"
-        # Read the current version which is updated by the migrations runner.
-        cikit_current_version: "{{ lookup('file', cikit_version_file) }}"
+        cikit_version: "{{ lookup('file', cikit_version_file) }}"
 
     # Run the migrations only when the version of CIKit has grown.
     - include_tasks: tasks/migrations/run.yml
       # A new version of CIKit is greater than current.
       when: cikit_version | version_compare(cikit_current_version, 'gt')
-
-    - name: Dump a new version of the package
-      copy:
-        dest: "{{ cikit_version_file }}"
-        # Create a read-only file to prevent accidental manual modifications.
-        mode: a+r
-        # Override the current version, since it got updated.
-        force: yes
-        content: "{{ cikit_version }}"
-      become: yes

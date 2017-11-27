@@ -22,7 +22,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--version',
-    dest='../.version.txt',
+    dest='../.version',
     action=VersionAction,
     default='1.0.0',
 )
