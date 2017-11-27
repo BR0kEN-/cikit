@@ -5,7 +5,7 @@
 
 - name: Delete matrix definition
   set_fact:
-    cikit_matrices_new: "{{ cikit_matrices | combine({item.key: item.value}) }}"
+    cikit_matrices_new: "{{ cikit_matrices_new | combine({item.key: item.value}) }}"
   with_dict: "{{ cikit_matrices }}"
   when: item.key != matrix
 

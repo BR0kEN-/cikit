@@ -6,7 +6,7 @@
 
 - name: Check matrix's SSH accessibility
   shell: >
-    ssh -p {{ ssh_port }} -i '{{ ssh_key }}' {{ ssh_user }}@{{ domain }}
+    ssh -p {{ ssh_port }} -i '{{ ssh_key }}' -o ConnectTimeout=10 -o ConnectionAttempts=1 {{ ssh_user }}@{{ domain }}
 
 - name: Append matrix definition
   set_fact:
