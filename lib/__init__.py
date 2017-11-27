@@ -4,45 +4,31 @@ import json
 import errno
 import shlex
 import functions
+import variables
 from subprocess import call
 from arguments import args
 from re import search
 
-COMMAND = 'ansible-playbook'
 PARAMS = []
-DIRS = {
-    'lib': os.path.realpath(__file__ + '/..'),
-    'self': os.path.realpath(__file__ + '/../..'),
-    'project': os.environ.get('CIKIT_PROJECT_DIR'),
-}
-
+COMMAND = 'ansible-playbook'
 LOCALHOST = True
-INSIDE_VM_OR_CI = True
+INSIDE_PROJECT_DIR = functions.is_project_root(variables.dirs['project'])
 
-if None is DIRS['project']:
-    DIRS['project'] = os.getcwd()
-    INSIDE_VM_OR_CI = False
-
-INSIDE_PROJECT_DIR = functions.is_project_root(DIRS['project'])
-
-if INSIDE_VM_OR_CI and not INSIDE_PROJECT_DIR:
-    functions.error('The "%s" directory does not store CIKit project.' % DIRS['project'], errno.ENOTDIR)
-
-DIRS['cikit'] = DIRS['project'] + '/.cikit'
-DIRS['scripts'] = DIRS['project' if INSIDE_VM_OR_CI else 'self'] + '/scripts'
+if variables.INSIDE_VM_OR_CI and not INSIDE_PROJECT_DIR:
+    functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
 if '' == args.playbook:
-    functions.playbooks_print(DIRS['scripts'])
+    functions.playbooks_print(variables.dirs['scripts'])
 
-    if not INSIDE_VM_OR_CI:
-        functions.playbooks_print(DIRS['self'], 'matrix/')
+    if not variables.INSIDE_VM_OR_CI:
+        functions.playbooks_print(variables.dirs['self'], 'matrix/')
 
     sys.exit(0)
 
 PLAYBOOK = functions.playbooks_find(
-    DIRS['scripts'] + '/' + args.playbook,
+    variables.dirs['scripts'] + '/' + args.playbook,
     # Load playbooks from non "scripts" directory within the CIKit package.
-    DIRS['self'] + '/' + args.playbook,
+    variables.dirs['self'] + '/' + args.playbook,
     args.playbook,
 )
 
@@ -79,7 +65,7 @@ else:
                     errno.EPERM
                 )
 
-    ENV_CONFIG = DIRS['cikit'] + '/environment.yml'
+    ENV_CONFIG = variables.dirs['cikit'] + '/environment.yml'
 
     if os.path.isfile(ENV_CONFIG):
         ansible_executable = functions.call('which', COMMAND)
@@ -147,7 +133,7 @@ if 'self-update' == args.playbook:
 
 if args.limit:
     # @todo Add a fallback to allow provision the droplet without the matrix.
-    PARAMS.append("-i '%s/inventory'" % DIRS['lib'])
+    PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
     PARAMS.append("-l '%s'" % args.limit)
 elif LOCALHOST:
     PARAMS.append("-i 'localhost,'")
@@ -155,12 +141,12 @@ elif LOCALHOST:
 if args.extra:
     PARAMS.append("-e '%s'" % json.dumps(args.extra))
 
-PARAMS.append("-e __targetdir__='%s'" % DIRS['project'])
+PARAMS.append("-e __targetdir__='%s'" % variables.dirs['project'])
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 os.environ['PYTHONUNBUFFERED'] = '1'
 # https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
-os.environ['ANSIBLE_ROLES_PATH'] = DIRS['cikit'] + '/roles'
+os.environ['ANSIBLE_ROLES_PATH'] = variables.dirs['cikit'] + '/roles'
 os.environ['ANSIBLE_FORCE_COLOR'] = '1'
 os.environ['DISPLAY_SKIPPED_HOSTS'] = '0'
 os.environ['ANSIBLE_RETRY_FILES_ENABLED'] = '0'

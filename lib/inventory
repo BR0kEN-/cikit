@@ -7,59 +7,71 @@ if '__main__' == __name__:
     import glob
     import json
     import argparse
+    import variables
 
+    WILDCARD = '*'
     INVENTORY = {}
     EXTENSION = '.private.key'
+    MATRICES_FILE = '%s/.matrices.json' % variables.dirs['self']
+    CREDENTIALS_DIR = '%s/credentials' % variables.dirs['cikit']
 
-    try:
-        MATRICES_FILE = '%s/.matrices.json' % (os.path.realpath(__file__ + '/../..'))
-        CREDENTIALS_DIR = '%s/.cikit/credentials' % (os.environ.get('CIKIT_PROJECT_DIR') or os.getcwd())
 
-        if os.path.isdir(CREDENTIALS_DIR) and os.path.isfile(MATRICES_FILE):
-            parser = argparse.ArgumentParser()
-
-            parser.add_argument('--list', action='store_true')
-            parser.add_argument('--host', action='store')
-
-            matrices = json.load(open(MATRICES_FILE))
-            arguments = parser.parse_args()
-
-            if None is arguments.host:
-                arguments.host = '*'
-            else:
-                # The format must be the next: "matrix_name.droplet_name".
-                if '.' not in arguments.host:
-                    raise RuntimeError
-
-                # Extract the name of a matrix from host specification.
-                matrix, arguments.host = arguments.host.split('.')
-
-                if matrix not in matrices:
-                    raise RuntimeError
-
-                # Limit matrix to a single item.
-                matrices = {
-                    matrix: matrices[matrix],
-                }
-
-            for matrix, data in matrices.iteritems():
-                MATRIX_CREDENTIALS_DIR = '%s/%s/ssh' % (CREDENTIALS_DIR, matrix)
-
-                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
-                    for private_key in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, arguments.host, EXTENSION)):
-                        droplet = os.path.basename(private_key).rstrip(EXTENSION)
-
-                        INVENTORY['%s.%s' % (matrix, droplet)] = {
-                            'hosts': ['%s.%s' % (droplet, data['hosts'][0])],
-                            'vars': {
-                                'ansible_user': 'root',
-                                'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet),
-                                'ansible_ssh_private_key_file': private_key,
-                            },
-                        }
-
-            raise RuntimeError
-    except RuntimeError:
+    def goodbye():
         print json.dumps(INVENTORY)
         sys.exit(0)
 
+    if os.path.isdir(CREDENTIALS_DIR) and os.path.isfile(MATRICES_FILE):
+        parser = argparse.ArgumentParser()
+
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument('--list', action='store_true')
+        group.add_argument('--host', action='store')
+
+        matrices = json.load(open(MATRICES_FILE))
+        arguments = parser.parse_args()
+
+        # The format must be the next: "matrix_name.droplet_name".
+        if arguments.host and '.' in arguments.host:
+            # Extract the name of a matrix from host specification.
+            matrix_name, WILDCARD = arguments.host.split('.')
+
+            if matrix_name not in matrices:
+                goodbye()
+
+            # Limit matrix to a single item.
+            matrices = {
+                matrix_name: matrices[matrix_name],
+            }
+
+        for matrix_name, data in matrices.iteritems():
+            MATRIX_CREDENTIALS_DIR = '%s/%s/ssh' % (CREDENTIALS_DIR, matrix_name)
+
+            if os.path.isdir(MATRIX_CREDENTIALS_DIR):
+                for private_key_file in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, WILDCARD, EXTENSION)):
+                    droplet_name = os.path.basename(private_key_file).rstrip(EXTENSION)
+
+                    INVENTORY['%s.%s' % (matrix_name, droplet_name)] = {
+                        'hosts': ['%s.%s' % (droplet_name, data['hosts'][0])],
+                        'vars': {
+                            'ansible_user': 'root',
+                            'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet_name),
+                            'ansible_ssh_private_key_file': private_key_file,
+                        },
+                    }
+
+        # Append available matrices to the inventory.
+        INVENTORY.update(matrices)
+
+        if arguments.host:
+            # A specific host has been requested. Limit the results, to
+            # print only information about it.
+            if arguments.host in INVENTORY:
+                INVENTORY = {
+                    arguments.host: INVENTORY[arguments.host],
+                }
+            # A specific host has been requested but wasn't found in a
+            # list. Nothing to print.
+            else:
+                INVENTORY = {}
+
+    goodbye()
