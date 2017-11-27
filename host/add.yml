@@ -1,4 +1,4 @@
-# ro:matrix
+# ro:alias
 # ro:domain
 ---
 - hosts: localhost
@@ -6,7 +6,7 @@
   gather_facts: no
 
   vars:
-    matrix: ~
+    alias: ~
     domain: ~
     ssh_port: 22
     ssh_user: root
@@ -17,22 +17,22 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_matrices_file: "{{ __selfdir__ }}/.matrices.json"
+        cikit_hosts_file: "{{ __selfdir__ }}/.hosts.json"
 
-    - name: Ensure matrices storage exists
+    - name: Ensure hosts storage exists
       copy:
-        dest: "{{ cikit_matrices_file }}"
+        dest: "{{ cikit_hosts_file }}"
         force: no
         content: "{}"
 
-    - name: Load all defined matrices
+    - name: Load all defined hosts
       set_fact:
-        cikit_matrices: "{{ lookup('file', cikit_matrices_file) | from_json }}"
+        cikit_hosts: "{{ lookup('file', cikit_hosts_file) | from_json }}"
 
     - include_tasks: "tasks/host/{{ 'delete' if __delete else ('list' if __list else 'append') }}.yml"
 
-    - name: Save updated list of matrices
+    - name: Save list of hosts
       copy:
-        dest: "{{ cikit_matrices_file }}"
+        dest: "{{ cikit_hosts_file }}"
         force: yes
-        content: "{{ cikit_matrices | to_nice_json }}"
+        content: "{{ cikit_hosts | to_nice_json }}"

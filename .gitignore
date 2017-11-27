@@ -9,6 +9,12 @@
 !scripts/
 !vagrant/
 
+# Inventory manager.
+!host/
+host/*
+!host/tasks/
+!host/*.yml
+
 # Droplets Matrix.
 !matrix/
 matrix/*

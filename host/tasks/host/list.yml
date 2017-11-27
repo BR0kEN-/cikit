@@ -1,0 +1,4 @@
+---
+- name: Print hosts
+  debug:
+    var: cikit_hosts

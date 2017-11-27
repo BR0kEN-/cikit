@@ -1,4 +1,0 @@
----
-- name: Print matrices
-  debug:
-    var: cikit_matrices

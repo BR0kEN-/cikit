@@ -1,0 +1,14 @@
+---
+- name: Define an empty list
+  set_fact:
+    cikit_hosts_new: {}
+
+- name: Delete host definition
+  set_fact:
+    cikit_hosts_new: "{{ cikit_hosts_new | combine({item.key: item.value}) }}"
+  with_dict: "{{ cikit_hosts }}"
+  when: item.key != alias
+
+- name: Prepare a list of hosts
+  set_fact:
+    cikit_hosts: "{{ cikit_hosts_new }}"

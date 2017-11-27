@@ -18,10 +18,11 @@ if variables.INSIDE_VM_OR_CI and not INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
 if '' == args.playbook:
-    functions.playbooks_print(variables.dirs['scripts'])
-
     if not variables.INSIDE_VM_OR_CI:
-        functions.playbooks_print(variables.dirs['self'], 'matrix/')
+        for group in ['host', 'matrix']:
+            functions.playbooks_print(variables.dirs['self'], '%s/' % group)
+
+    functions.playbooks_print(variables.dirs['scripts'])
 
     sys.exit(0)
 
