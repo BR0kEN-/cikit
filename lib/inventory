@@ -13,22 +13,21 @@ if '__main__' == __name__:
     INVENTORY = {}
     EXTENSION = '.private.key'
     MATRICES_FILE = '%s/.matrices.json' % variables.dirs['self']
-    CREDENTIALS_DIR = '%s/credentials' % variables.dirs['cikit']
 
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument('--list', action='store_true')
+    group.add_argument('--host', action='store')
+
+    arguments = parser.parse_args()
 
     def goodbye():
         print json.dumps(INVENTORY)
         sys.exit(0)
 
-    if os.path.isdir(CREDENTIALS_DIR) and os.path.isfile(MATRICES_FILE):
-        parser = argparse.ArgumentParser()
-
-        group = parser.add_mutually_exclusive_group(required=True)
-        group.add_argument('--list', action='store_true')
-        group.add_argument('--host', action='store')
-
+    if os.path.isfile(MATRICES_FILE):
         matrices = json.load(open(MATRICES_FILE))
-        arguments = parser.parse_args()
 
         # The format must be the next: "matrix_name.droplet_name".
         if arguments.host and '.' in arguments.host:
@@ -48,10 +47,12 @@ if '__main__' == __name__:
             inventory_hostname = data['hosts'][0]
 
             # Check for a directory with credentials using the alias of a host or its FQDN.
-            for item in [matrix_name, inventory_hostname]:
-                MATRIX_CREDENTIALS_DIR = '%s/%s/ssh' % (CREDENTIALS_DIR, item)
+            for possible_matrix_id in [matrix_name, inventory_hostname]:
+                MATRIX_CREDENTIALS_DIR = '%s/credentials/%s/ssh' % (variables.dirs['cikit'], possible_matrix_id)
 
-                if not os.path.isdir(MATRIX_CREDENTIALS_DIR):
+                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
+                    break
+                else:
                     MATRIX_CREDENTIALS_DIR = ''
 
             if '' != MATRIX_CREDENTIALS_DIR:
