@@ -141,6 +141,7 @@ elif LOCALHOST:
 if args.extra:
     PARAMS.append("-e '%s'" % json.dumps(args.extra))
 
+PARAMS.append("-e __selfdir__='%s'" % variables.dirs['self'])
 PARAMS.append("-e __targetdir__='%s'" % variables.dirs['project'])
 
 # https://github.com/sclorg/s2i-python-container/pull/169

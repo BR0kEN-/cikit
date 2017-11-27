@@ -17,7 +17,7 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_matrices_file: "{{ (playbook_dir + '/..') | realpath }}/.matrices.json"
+        cikit_matrices_file: "{{ __selfdir__ }}/.matrices.json"
 
     - name: Ensure matrices storage exists
       copy:
