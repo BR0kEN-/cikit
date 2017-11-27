@@ -15,13 +15,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--help',
+    '-h',
     action='help',
     help='Show this help message and exit.',
 )
 
 parser.add_argument(
-    '--version',
+    '-v',
     dest='../.version',
     action=VersionAction,
     default='1.0.0',
