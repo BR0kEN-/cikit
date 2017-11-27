@@ -14,7 +14,7 @@
     # to get the codebase by SSH or from a fork.
     repository: https://github.com/BR0kEN-/cikit.git
     # Use "--skip-fetch" to not perform a "git pull".
-    skip_fetch: yes
+    skip_fetch: no
 
   tasks:
     - name: Define the variables
