@@ -21,15 +21,30 @@
 - Jenkins on each CI server with an ability to manage several projects.
 - CI strategy via GitHub (builds of PRs).
 
-## Documentation
+## Documentation & support
 
-Global project documentation [available here](docs#documentation).
+- Global project documentation [available here](docs#documentation).
+- All communications are available in our Slack at https://cikit.slack.com
 
-## Slack
+## Dependencies
 
-All communications are available in our Slack account at https://cikit.slack.com
+To have CIKit works you must have the following software installed on your host.
 
-## Quick Start
+### All
+
+|Name|Version|
+|:---|:---|
+|Vagrant|1.9+|
+|Ansible|2.4+|
+|VirtualBox|5.1+|
+
+### Windows
+
+|Name|Version|Reason|
+|:---|:---|:---|
+|PowerShell|3.0+|https://github.com/mitchellh/vagrant/issues/8611|
+
+## Quick start
 
 - Install the **CIKit** (only once, package will be located at `/usr/local/share/cikit`).
 
@@ -91,21 +106,3 @@ Run provisioning of specific component (virtual machine):
 ```shell
 CIKIT_TAGS="COMPONENT1,COMPONENT2" vagrant provision
 ```
-
-## Dependencies
-
-To have CIKit works you must have the following software installed on your host.
-
-### All
-
-|Name|Version|
-|:---|:---|
-|Vagrant|1.9+|
-|Ansible|2.4+|
-|VirtualBox|5.1+|
-
-### Windows
-
-|Name|Version|Reason|
-|:---|:---|:---|
-|PowerShell|3.0+|https://github.com/mitchellh/vagrant/issues/8611|
