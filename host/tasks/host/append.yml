@@ -4,6 +4,14 @@
     msg: "The '{{ alias }}' host is already defined."
   when: alias in cikit_hosts
 
+# We are forming inventory automatically and the "a.b" form (with dots) allowed
+# only within a script, because it says that the part before a dot - is the name
+# of a matrix that stores the right part of an expression - droplet with the name "b".
+- name: Check whether the name of a host is appropriate
+  fail:
+    msg: "The '{{ alias }}' name is inappropriate since it contain dots."
+  when: "'.' in alias"
+
 - name: Check host's SSH accessibility
   shell: >
     ssh -p {{ ssh_port }} -i '{{ ssh_key }}' -o ConnectTimeout=10 -o ConnectionAttempts=1 {{ ssh_user }}@{{ domain }}

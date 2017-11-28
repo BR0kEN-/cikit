@@ -9,10 +9,10 @@ if '__main__' == __name__:
     import argparse
     import variables
 
-    WILDCARD = '*'
+    WILDCARD = '*/*'
     INVENTORY = {}
     EXTENSION = '.private.key'
-    MATRICES_FILE = '%s/.hosts.json' % variables.dirs['self']
+    MATRICES_FILE = '%s/host/.hosts.json' % variables.dirs['self']
 
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -32,10 +32,12 @@ if '__main__' == __name__:
         # The format must be the next: "matrix_name.droplet_name".
         if arguments.host and '.' in arguments.host:
             # Extract the name of a matrix from host specification.
-            matrix_name, WILDCARD = arguments.host.split('.')
+            matrix_name, droplet_name = arguments.host.split('.')
 
             if matrix_name not in matrices:
                 goodbye()
+
+            WILDCARD = '%s/%s' % (matrix_name, droplet_name)
 
             # Limit matrix to a single item.
             matrices = {
@@ -43,24 +45,15 @@ if '__main__' == __name__:
             }
 
         for matrix_name, data in matrices.iteritems():
-            MATRIX_CREDENTIALS_DIR = ''
-            inventory_hostname = data['hosts'][0]
-
             # Check for a directory with credentials using the alias of a host or its FQDN.
-            for possible_matrix_id in [matrix_name, inventory_hostname]:
-                MATRIX_CREDENTIALS_DIR = '%s/credentials/%s/ssh' % (variables.dirs['cikit'], possible_matrix_id)
+            MATRIX_CREDENTIALS_DIR = '%s/%s' % (variables.dirs['credentials'], matrix_name)
 
-                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
-                    break
-                else:
-                    MATRIX_CREDENTIALS_DIR = ''
-
-            if '' != MATRIX_CREDENTIALS_DIR:
+            if os.path.isdir(MATRIX_CREDENTIALS_DIR):
                 for private_key_file in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, WILDCARD, EXTENSION)):
                     droplet_name = os.path.basename(private_key_file).rstrip(EXTENSION)
 
                     INVENTORY['%s.%s' % (matrix_name, droplet_name)] = {
-                        'hosts': ['%s.%s' % (droplet_name, inventory_hostname)],
+                        'hosts': ['%s.%s' % (droplet_name, data['hosts'][0])],
                         'vars': {
                             'ansible_user': 'root',
                             'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet_name),

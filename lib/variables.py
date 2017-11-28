@@ -1,4 +1,5 @@
 import os
+import functions
 
 dirs = {
     'lib': os.path.realpath(__file__ + '/..'),
@@ -18,4 +19,15 @@ else:
     INSIDE_VM_OR_CI = True
 
 dirs['cikit'] = dirs['project'] + '/.cikit'
+
+if functions.is_project_root(dirs['project']):
+    dirs['credentials'] = dirs['cikit']
+
+    INSIDE_PROJECT_DIR = True
+else:
+    dirs['credentials'] = dirs['self']
+
+    INSIDE_PROJECT_DIR = False
+
 dirs['scripts'] += '/scripts'
+dirs['credentials'] += '/credentials'

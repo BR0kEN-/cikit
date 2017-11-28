@@ -12,9 +12,8 @@ from re import search
 PARAMS = []
 COMMAND = 'ansible-playbook'
 LOCALHOST = True
-INSIDE_PROJECT_DIR = functions.is_project_root(variables.dirs['project'])
 
-if variables.INSIDE_VM_OR_CI and not INSIDE_PROJECT_DIR:
+if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
 if '' == args.playbook:
@@ -40,7 +39,7 @@ if 'CIKIT_LIST_TAGS' in os.environ:
     PARAMS.append('--list-tags')
 else:
     for line in open(PLAYBOOK):
-        if search('^# requires-project-root$', line) and not INSIDE_PROJECT_DIR:
+        if search('^# requires-project-root$', line) and not variables.INSIDE_PROJECT_DIR:
             functions.error(
                 'Execution of the "%s" is available only within the CIKit-project directory.' % args.playbook,
                 errno.ENOTDIR,
@@ -136,6 +135,11 @@ if args.limit:
     # @todo Add a fallback to allow provision the droplet without the matrix.
     PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
     PARAMS.append("-l '%s'" % args.limit)
+
+    # When the "--limit" has value in "a.b" form then it means the "a"
+    # represents the name of a matrix that stores a droplet "b". If no
+    # dots in string, then it could be a matrix or an external droplet.
+    variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
 elif LOCALHOST:
     PARAMS.append("-i 'localhost,'")
 
@@ -144,6 +148,7 @@ if args.extra:
 
 PARAMS.append("-e __selfdir__='%s'" % variables.dirs['self'])
 PARAMS.append("-e __targetdir__='%s'" % variables.dirs['project'])
+PARAMS.append("-e __credentialsdir__='%s'" % variables.dirs['credentials'])
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 os.environ['PYTHONUNBUFFERED'] = '1'

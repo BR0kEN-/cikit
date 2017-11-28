@@ -38,7 +38,11 @@
 - name: Compute directory for SSH key-pair
   set_fact:
     ssh_data:
-      source: "{{ credentials_storage }}/{{ limit | default(inventory_hostname) }}/ssh"
+      # If the droplet creation was started within the project
+      # directory, then a value of the "__credentialsdir__" will
+      # be "<PROJECT_PATH>/.cikit/credentials/<MATRIX_NAME>".
+      # Otherwise: "<CIKIT_PATH>/credentials/<MATRIX_NAME>".
+      source: "{{ __credentialsdir__ }}/{{ droplet }}"
       destination: "/root/.ssh"
       private_key: "{{ droplet }}.private.key"
       authorized_keys: "/tmp/authorized_keys"
