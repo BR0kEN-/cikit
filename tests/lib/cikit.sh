@@ -88,7 +88,13 @@ __cikit_test \
   0 \
   "cikit \"${SELF_DIR}/scripts/init.yml\" --dry-run --project=test" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/init.yml' -i 'localhost,' -e '{"project": "test"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}'
+ansible-playbook \
+'${SELF_DIR}/scripts/init.yml' \
+-i 'localhost,' \
+-e '{"project": "test"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}' \
+-e __credentialsdir__='${SELF_DIR}/credentials'
 HERE
 )"
 
@@ -113,7 +119,14 @@ __cikit_test \
   0 \
   "cikit provision --dry-run --limit=test" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"limit": "test"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"limit": "test"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
@@ -121,7 +134,14 @@ __cikit_test \
   0 \
   "cikit provision --dry-run --limit=test --bla=12 --bla1" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"bla1": true, "limit": "test", "bla": "12"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"bla1": true, "limit": "test", "bla": "12"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
@@ -138,7 +158,13 @@ __cikit_test \
   0 \
   "cikit provision --dry-run --limit=test --bla=12 --bla1" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"nodejs_version": "6", "solr_version": "5.5.5", "bla1": true, "mssql_install": "yes", "ruby_version": "2.4.0", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"nodejs_version": "6", "solr_version": "5.5.5", "bla1": true, "mssql_install": "yes", "ruby_version": "2.4.0", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
@@ -146,7 +172,14 @@ __cikit_test \
   0 \
   "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.2", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.2", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
@@ -158,7 +191,14 @@ cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob
 HERE
 )" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
@@ -172,7 +212,14 @@ cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob
 HERE
 )" \
   "$(cat <<-HERE
-ansible-playbook '${SELF_DIR}/scripts/provision.yml' -i '${SELF_DIR}/lib/inventory' -l 'test' -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' -e __selfdir__='${SELF_DIR}' -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}'
+ansible-playbook \
+'${SELF_DIR}/scripts/provision.yml' \
+-i '${SELF_DIR}/lib/inventory' \
+-l 'test' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
+-e __selfdir__='${SELF_DIR}' \
+-e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
+-e __credentialsdir__='${SELF_DIR}/${TEST_PROJECT}/.cikit/credentials/test'
 HERE
 )"
 
