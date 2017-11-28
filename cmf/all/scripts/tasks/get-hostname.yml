@@ -2,6 +2,7 @@
 # - name: the name of group from inventory file.
 # Used built-in variables:
 # - hostvars: list of groups from inventory file.
+# @todo Figure out how to deal with inventory inside of VM.
 ---
 - name: "Check for {{ name }} hostname"
   fail:

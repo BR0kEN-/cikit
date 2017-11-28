@@ -58,12 +58,12 @@ All communications are available in our Slack account at https://cikit.slack.com
   cikit reinstall
   ```
 
-- Add your host credentials to the [inventory](docs/ansible/inventory) file (not needed to continue without remote CI server).
+- [Add your host](docs/host) credentials (not needed to continue without remote CI server).
 
 - Provision remote CI server.
 
   ```
-  cikit provision --limit=<HOST>
+  cikit provision --limit=<HOSTNAME>
   ```
 
 Last two steps are not mandatory. You can omit them and use CIKit as local environment for development.

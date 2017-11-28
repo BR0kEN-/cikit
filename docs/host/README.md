@@ -6,7 +6,7 @@ The manager of hosts provides you abilities to add, delete and list the hosts yo
 cikit host/add --alias=example_matrix --domain=example.com [--ssh-key=~/.ssh/id_rsa] [--ssh-user=root] [--ssh-port=22]
 ```
 
-In short, it's just a credentials for connecting to a server via SSH (options in square brackets are optional and the example above lists their default values).
+In short, it's just credentials for connecting to a server via SSH (options in square brackets are optional and the example above lists their default values).
 
 Good, if the credentials are valid (they are verified at the moment of addition), then a new host will be added and aliased by the associated name (`example_matrix` from the example above, which also checks for uniqueness). Now you can run some operations over it.
 
