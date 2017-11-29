@@ -58,6 +58,7 @@
   shell: |-
     ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ ansible_host }}" -N '' -q -f {{ ssh_data.private_key }}
     mv {{ ssh_data.private_key }}.pub {{ ssh_data.private_key | replace('private', 'public') }}
+    chmod 400 {{ ssh_data.private_key }}
   args:
     chdir: "{{ ssh_data.source }}"
     creates: "{{ ssh_data.private_key }}"
