@@ -132,14 +132,15 @@ if 'self-update' == args.playbook:
     PARAMS.append('--ask-become-pass')
 
 if args.limit:
-    # @todo Add a fallback to allow provision the droplet without the matrix.
-    PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
     PARAMS.append("-l '%s'" % args.limit)
-
     # When the "--limit" has value in "a.b" form then it means the "a"
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
+
+    # Add an inventory only when it's not specified as environment variable.
+    if LOCALHOST:
+        PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
 elif LOCALHOST:
     PARAMS.append("-i 'localhost,'")
 
