@@ -30,19 +30,19 @@
 
 To have CIKit works you must have the following software installed on your host.
 
-### All
+### Linux & macOS
 
 |Name|Version|
 |:---|:---|
-|Vagrant|1.9+|
-|Ansible|2.4+|
-|VirtualBox|5.1+|
+|[Ansible](https://github.com/ansible/ansible)|2.4+|
+|[Vagrant](https://github.com/hashicorp/vagrant)|1.9+|
+|[VirtualBox](https://www.virtualbox.org)|5.1+|
 
 ### Windows
 
 |Name|Version|Reason|
 |:---|:---|:---|
-|PowerShell|3.0+|https://github.com/mitchellh/vagrant/issues/8611|
+|[PowerShell](https://github.com/PowerShell/PowerShell)|3.0+|https://github.com/mitchellh/vagrant/issues/8611|
 
 ## Quick start
 
