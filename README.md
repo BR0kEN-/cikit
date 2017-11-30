@@ -56,6 +56,7 @@ To have CIKit works you must have the following software installed on your host.
 
   ```shell
   cikit init --project=<NAME> [--cmf=drupal|wordpress] [--version=7.56|8.3.x-dev|4.8.1] [--without-sources]
+  cd <NAME>
   ```
 
   The `--without-sources` option affects CMF sources downloading. Use it if you want to create an empty project (CIKit-structured package with empty `docroot` directory, where you have to store the source code of Drupal/WordPress/whatever).
@@ -71,6 +72,7 @@ To have CIKit works you must have the following software installed on your host.
   ```shell
   vagrant ssh
   cikit reinstall
+  exit
   ```
 
 - [Add your host](docs/host) credentials (not needed to continue without remote CI server).
