@@ -17,7 +17,7 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_hosts_file: "{{ __selfdir__ }}/host/.hosts.json"
+        cikit_hosts_file: "{{ __selfdir__ }}/lib/.hosts.json"
 
     - name: Ensure hosts storage exists
       copy:

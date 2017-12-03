@@ -137,16 +137,13 @@ if args.limit:
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
-
-    # Add an inventory only when it's not specified as environment variable.
-    if LOCALHOST:
-        PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
 elif LOCALHOST:
     PARAMS.append("-i 'localhost,'")
 
 if args.extra:
     PARAMS.append("-e '%s'" % json.dumps(args.extra))
 
+PARAMS.append("-i '%s/inventory'" % variables.dirs['lib'])
 PARAMS.append("-e __selfdir__='%s'" % variables.dirs['self'])
 PARAMS.append("-e __targetdir__='%s'" % variables.dirs['project'])
 PARAMS.append("-e __credentialsdir__='%s'" % variables.dirs['credentials'])

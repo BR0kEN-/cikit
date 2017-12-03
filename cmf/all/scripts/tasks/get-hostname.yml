@@ -1,22 +1,30 @@
-# This list of tasks depends on variables:
-# - name: the name of group from inventory file.
+# This list of tasks depends on the variables:
+# - name: the name of a group from inventory.
 # Used built-in variables:
-# - hostvars: list of groups from inventory file.
-# @todo Figure out how to deal with inventory inside of VM.
+# - hostvars: lists of variables for each group.
+# - groups: list of inventory group names.
 ---
-- name: "Check for {{ name }} hostname"
+- name: "Check for the {{ name }} host"
   fail:
-    msg: "{{ name }} hostname is undefined. Configure it inside of inventory file in [{{ name }}] group."
-  when: name not in hostvars
+    msg: "The '{{ name }}' host is undefined. Add it outside of the VM using 'cikit host/add --alias={{ name }}'"
+  when: name not in groups
 
-- name: "Build SSH aguments for the {{ hostvars[name].ansible_host }} host"
+- name: Compute the data of a host
+  set_fact:
+    hostdata: "{{ hostvars[groups[name] | first] }}"
+
+- name: "Build SSH arguments for the '{{ hostdata.inventory_hostname }}' host"
   set_fact:
     hostname_ssh:
-      host: "{{ hostvars[name].ansible_user }}@{{ hostvars[name].ansible_host }}"
-      args: "{{ '-i ' + hostvars[name].ansible_ssh_private_key_file.replace('~', become_home) if 'ansible_ssh_private_key_file' in hostvars[name] else '' }} -S none -o StrictHostKeyChecking=no {{ '-p ' + hostvars[name].ansible_port | string if 'ansible_port' in hostvars[name] else '' }}"
+      host: "{{ hostdata.ansible_user }}@{{ hostdata.inventory_hostname }}"
+      args: >-
+        {{ "-i '" + hostdata.ansible_ssh_private_key_file.replace("~", become_home) + "'" if "ansible_ssh_private_key_file" in hostdata else "" }}
+        {{ "-p " + hostdata.ansible_port | string if "ansible_port" in hostdata else '' }}
+        -o StrictHostKeyChecking=no
+        -S none
 
-- name: Ensure permission for SSH key is appropriate
+- name: Ensure permissions for SSH key is appropriate
   file:
-    path: "{{ hostvars[name].ansible_ssh_private_key_file }}"
+    path: "{{ hostdata.ansible_ssh_private_key_file }}"
     mode: u=r,go-rw
-  when: "'ansible_ssh_private_key_file' in hostvars[name]"
+  when: "'ansible_ssh_private_key_file' in hostdata"

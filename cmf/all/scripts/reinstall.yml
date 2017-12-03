@@ -43,22 +43,6 @@
       # which inherit group and owner from host-OS and it cannot be changed.
       ignore_errors: yes
 
-    - name: Seek for SSH keys
-      find:
-        path: "../.cikit/credentials/"
-        pattern: "*.private.key"
-        recurse: yes
-        file_type: file
-      register: ssh_keys
-
-    - name: Copy SSH keys
-      become_user: "{{ become_name }}"
-      copy:
-        src: "{{ item.path }}"
-        dest: "{{ become_home }}/.ssh/{{ item.path | basename }}"
-        mode: 0400
-      with_items: "{{ ssh_keys.files }}"
-
     - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
 
     - import_tasks: "tasks/reinstall/pre-actions.yml"

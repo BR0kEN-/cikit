@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+INVENTORY = {}
+
+
+def goodbye():
+    print json.dumps(INVENTORY)
+    sys.exit(0)
+
+
 if '__main__' == __name__:
     import os
     import re
@@ -10,9 +18,8 @@ if '__main__' == __name__:
     import variables
 
     WILDCARD = '*/*'
-    INVENTORY = {}
     EXTENSION = '.private.key'
-    MATRICES_FILE = '%s/host/.hosts.json' % variables.dirs['self']
+    MATRICES_FILE = '%s/.hosts.json' % variables.dirs['lib']
 
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -21,10 +28,6 @@ if '__main__' == __name__:
     group.add_argument('--host', action='store')
 
     arguments = parser.parse_args()
-
-    def goodbye():
-        print json.dumps(INVENTORY)
-        sys.exit(0)
 
     if os.path.isfile(MATRICES_FILE):
         matrices = json.load(open(MATRICES_FILE))
@@ -45,21 +48,21 @@ if '__main__' == __name__:
             }
 
         for matrix_name, data in matrices.iteritems():
-            # Check for a directory with credentials using the alias of a host or its FQDN.
-            MATRIX_CREDENTIALS_DIR = '%s/%s' % (variables.dirs['credentials'], matrix_name)
+            for directory in [variables.dirs['cikit'], variables.dirs['self']]:
+                MATRIX_CREDENTIALS_DIR = '%s/credentials/%s' % (directory, matrix_name)
 
-            if os.path.isdir(MATRIX_CREDENTIALS_DIR):
-                for private_key_file in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, WILDCARD, EXTENSION)):
-                    droplet_name = os.path.basename(private_key_file).rstrip(EXTENSION)
+                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
+                    for private_key_file in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, WILDCARD, EXTENSION)):
+                        droplet_name = os.path.basename(private_key_file).rstrip(EXTENSION)
 
-                    INVENTORY['%s.%s' % (matrix_name, droplet_name)] = {
-                        'hosts': ['%s.%s' % (droplet_name, data['hosts'][0])],
-                        'vars': {
-                            'ansible_user': 'root',
-                            'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet_name),
-                            'ansible_ssh_private_key_file': private_key_file,
-                        },
-                    }
+                        INVENTORY['%s.%s' % (matrix_name, droplet_name)] = {
+                            'hosts': ['%s.%s' % (droplet_name, data['hosts'][0])],
+                            'vars': {
+                                'ansible_user': 'root',
+                                'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet_name),
+                                'ansible_ssh_private_key_file': private_key_file,
+                            },
+                        }
 
         # Append available matrices to the inventory.
         INVENTORY.update(matrices)
