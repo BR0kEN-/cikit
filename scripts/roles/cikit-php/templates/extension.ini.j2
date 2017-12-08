@@ -1,4 +1,4 @@
-; {{ ansible_managed | comment }}
+{{ ansible_managed | comment('plain', decoration='; ', prefix_count=0, postfix_count=0) }}
 {% if 'type' in item.value %}
 {{ item.value.type }}={{ item.key }}.so
 {% endif %}
