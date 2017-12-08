@@ -37,12 +37,12 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
   - [Box](vagrant/box) - information and access details.
 - Project
   - [Shippable environment configuration](project/env-config) - share environment configuration with team members.
+  - [MySQL import strategies](project/mysql-import-strategies) - a subset of ways to import a MySQL database from various locations.
   - [Sniffers](project/sniffers) - code quality tests.
   - [MSSQL](project/mssql) - a configuration of the MSSQL and how to use it on different PHP versions.
   - [Solr](project/solr) - all about the way it's configured.
+  - Workflow
+    - [Pantheon](project/workflows/pantheon)
 - [Host](host) - defining/deleting/listing credentials of servers to work with.
 - [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.
-  - Droplet - virtual server on the host.
-    - [Ansible](matrix/droplet/ANSIBLE.md) - control droplets by Ansible from command line.
-    - [GUI](matrix/droplet/UI.md) - no, thank you, I'm mouseclicker.
