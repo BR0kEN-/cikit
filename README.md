@@ -55,7 +55,7 @@ To have CIKit works you must have the following software installed on your host.
 - Create CIKit-based project.
 
   ```shell
-  cikit init --project=<NAME> [--cmf=drupal|wordpress] [--version=7.56|8.3.x-dev|4.8.1] [--without-sources]
+  cikit init --project=<NAME> [--cmf=drupal|wordpress] [--version=7.56|8.5.x-dev|4.9.1] [--without-sources]
   cd <NAME>
   ```
 
