@@ -1,3 +1,4 @@
+from os import path
 from actions import VersionAction
 from argparse import ArgumentParser
 from functions import parse_extra_vars
@@ -22,7 +23,7 @@ parser.add_argument(
 
 parser.add_argument(
     '-v',
-    dest='../.version',
+    dest='%s/.version' % path.realpath(__file__ + '/..'),
     action=VersionAction,
     default='1.0.0',
 )

@@ -19,7 +19,7 @@
   tasks:
     - name: Define the variables
       set_fact:
-        cikit_version_file: "{{ __selfdir__ }}/.version"
+        cikit_version_file: "{{ __selfdir__ }}/lib/.version"
 
     - name: Ensure the current version is defined
       copy:
