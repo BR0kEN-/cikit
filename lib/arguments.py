@@ -15,13 +15,15 @@ parser.add_argument(
     help='The name of a playbook to run.',
 )
 
-parser.add_argument(
+options = parser.add_mutually_exclusive_group()
+
+options.add_argument(
     '-h',
     action='help',
     help='Show this help message and exit.',
 )
 
-parser.add_argument(
+options.add_argument(
     '-v',
     dest='%s/.version' % path.realpath(__file__ + '/..'),
     action=VersionAction,
