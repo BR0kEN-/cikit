@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CIKIT_OPTIONS="--help|--version"
+CIKIT_OPTIONS="$(cikit -h | \tail -n+4 | \grep -Eo "\-\w\s" | \xargs | \tr '[[:blank:]]' '|')"
 CIKIT_PLAYBOOKS="$(CIKIT_SUPPRESS_EXECUTION_TIME=true cikit)"
 CIKIT_ARGUMENTS=""
 HAS_COMPOPT=false
@@ -12,7 +12,7 @@ fi
 
 IFS=$'\n'
 
-for PARAMETER in $(cikit --help | \tail -n+4 | \grep -Eo "(--(\w|-)*(\s\[.+?\])?)" | \sort | \uniq); do
+for PARAMETER in $(cikit -h | \tail -n+4 | \grep -Eo "(--(\w|-)*(\s\[.+?\])?)" | \sort | \uniq); do
   if [[ "${PARAMETER}" =~ [[:space:]] ]]; then
     CIKIT_ARGUMENTS+="${PARAMETER%% *}= "
   elif [[ ! "${PARAMETER}" =~ ${CIKIT_OPTIONS} ]]; then
