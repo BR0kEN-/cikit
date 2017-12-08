@@ -11,7 +11,6 @@ from re import search
 
 PARAMS = []
 COMMAND = 'ansible-playbook'
-LOCALHOST = True
 
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
@@ -117,10 +116,10 @@ else:
         functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
     if 'ANSIBLE_INVENTORY' in os.environ:
-        LOCALHOST = False
-
         if 'cygwin' == sys.platform:
             os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
+
+        PARAMS.append("-i '%s'" % os.environ['ANSIBLE_INVENTORY'])
 
     # @todo Improve for Ansible 2.5 - https://github.com/ansible/ansible/pull/30722
     # Remove these lines and adjust docs in favor of "ANSIBLE_RUN_TAGS" environment variable.
@@ -137,7 +136,7 @@ if args.limit:
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
-elif LOCALHOST:
+else:
     PARAMS.append("-i 'localhost,'")
 
 if args.extra:
