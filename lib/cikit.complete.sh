@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CIKIT_OPTIONS="$(cikit -h | \tail -n+4 | \grep -Eo "\-\w\s" | \xargs | \tr '[[:blank:]]' '|')"
-CIKIT_PLAYBOOKS="$(CIKIT_SUPPRESS_EXECUTION_TIME=true cikit)"
+CIKIT_PLAYBOOKS="$(cikit)"
 CIKIT_ARGUMENTS=""
 HAS_COMPOPT=false
 
