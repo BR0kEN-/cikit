@@ -110,12 +110,6 @@
         localhost: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
       tags: ["always"]
 
-    - name: Fix path to SSH private key
-      set_fact:
-        ansible_ssh_private_key_file: '{{ ansible_ssh_private_key_file | regex_replace("^\.\/", __targetdir__ + "/.cikit/") }}'
-      when: not localhost
-      tags: ["always"]
-
     - include_tasks: tasks/password.yml
       args:
         title: "Compute password for basic HTTP authentication"
@@ -187,12 +181,6 @@
           dest: /etc/bash_completion.d
       when: localhost
 
-    - name: Install CIKit package
-      shell: curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash -s -- --no-requirements-check
-      args:
-        warn: no
-      when: not localhost
-
     - name: Process facts
       set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}
       with_dict:
@@ -230,6 +218,16 @@
         update_cache: yes
       # Update cache only if new packages were installed.
       when: cikit_apt_needs_cache_update.changed
+
+    # We have to install CIKit after getting all mandatory APT packages
+    # because the installer may use some of them (e.g. "curl").
+    - name: Install CIKit package
+      shell: |-
+        curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash -s -- --no-requirements-check
+        cikit -h
+      args:
+        warn: no
+      when: not localhost
 
     - name: Install EasyInstall and PIP
       shell: "[ $(which {{ item.tool }}) ] || {{ item.script }}"
