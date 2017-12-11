@@ -31,15 +31,15 @@
     dest: "{{ reports.comment }}"
     content: 'Build available at: <a href="{{ site_url }}">{{ site_url }}</a>'
 
-- name: Check installation of Composer packages
-  stat:
-    path: ../vendor/
-  register: is_vendor_dir
-
 - name: Check for composer.json existence
   stat:
     path: ../composer.json
   register: is_composer_json
+
+- name: Check installation of Composer packages
+  stat:
+    path: "{{ __targetdir__ }}/{{ ({'config': {'vendor-dir': 'vendor'}} | combine(lookup('file', is_composer_json.stat.path) | from_json if is_composer_json.stat.exists else {}, recursive=True)).config['vendor-dir'] }}"
+  register: is_vendor_dir
 
 - name: Install Composer packages
   shell: "composer install"
