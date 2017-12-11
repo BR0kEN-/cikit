@@ -16,7 +16,6 @@
   register: terminus_installer
 
 - name: Install
-  become_user: "{{ ansible_user }}"
   shell: "php {{ terminus_installer.dest }} install --install-dir={{ terminus_dir.path }}"
   args:
     creates: "{{ terminus_bin }}"
