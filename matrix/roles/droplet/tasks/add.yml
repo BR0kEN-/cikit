@@ -56,7 +56,7 @@
 
 - name: Generate SSH key-pair for droplet
   shell: |-
-    ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ ansible_host }}" -N '' -q -f {{ ssh_data.private_key }}
+    ssh-keygen -t rsa -b 2048 -C "{{ droplet }}@{{ inventory_hostname }}" -N '' -q -f {{ ssh_data.private_key }}
     mv {{ ssh_data.private_key }}.pub {{ ssh_data.private_key | replace('private', 'public') }}
     chmod 400 {{ ssh_data.private_key }}
   args:

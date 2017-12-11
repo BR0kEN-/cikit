@@ -1,9 +1,11 @@
 ---
+apache_documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and localhost else '' }}"
+
 apache_vhosts:
   - servername: "{{ (site_url | regex_replace('^(.*)://', 'http://')) if site_url is defined and localhost else 'JenkinsCI' }}"
-    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and localhost else '' }}"
+    documentroot: "{{ apache_documentroot }}"
 apache_vhosts_ssl:
   - servername: "{{ (site_url | regex_replace('^(.*)://', 'https://')) if site_url is defined and localhost else 'JenkinsCI' }}"
-    documentroot: "{{ webroot }}/{{ 'docroot' if site_url is defined and localhost else '' }}"
+    documentroot: "{{ apache_documentroot }}"
     certificate_file: "{{ ssl_folder }}/ssl.crt"
     certificate_key_file: "{{ ssl_folder }}/ssl.key"
