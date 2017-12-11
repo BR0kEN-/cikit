@@ -43,9 +43,7 @@ Also, you can use host aliases, defined by the [host manager](../../host). Run `
 Create and fetch database snapshots from Pantheon.
 
 ```yaml
-pantheon:
-  # This value will be used by Terminus.
-  site_id: THE_ID_OF_A_PROJECT
+pantheon: "{{ lookup('file', '../pantheon.yml') | from_yaml }}"
 
 databases:
   default:

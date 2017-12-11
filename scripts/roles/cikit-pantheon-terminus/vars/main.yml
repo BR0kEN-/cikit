@@ -1,0 +1,4 @@
+---
+cikit_pantheon_terminus:
+  dir: /usr/share
+  bin: /usr/local/bin

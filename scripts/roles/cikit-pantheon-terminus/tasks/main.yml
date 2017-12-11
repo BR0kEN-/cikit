@@ -1,10 +1,8 @@
 ---
 - name: Ensure directory
   file:
-    path: "{{ user_home.stdout }}/terminus"
+    path: "{{ cikit_pantheon_terminus.dir }}/terminus"
     state: directory
-    group: "{{ ansible_user }}"
-    owner: "{{ ansible_user }}"
   register: terminus_dir
 
 - name: Set path to executable
@@ -15,8 +13,6 @@
   get_url:
     url: https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar
     dest: "{{ terminus_dir.path }}/terminus-installer.phar"
-    group: "{{ ansible_user }}"
-    owner: "{{ ansible_user }}"
   register: terminus_installer
 
 - name: Install
@@ -28,16 +24,12 @@
 - name: Ensure executable
   file:
     src: "{{ terminus_bin }}"
-    dest: "/usr/local/bin/{{ terminus_bin | basename }}"
-    group: "{{ ansible_user }}"
-    owner: "{{ ansible_user }}"
+    dest: "{{ cikit_pantheon_terminus.bin }}/{{ terminus_bin | basename }}"
     state: link
     mode: a+x
 
 - name: Ensure system directory
   file:
-    path: "{{ user_home.stdout }}/.terminus"
+    path: "{{ cikit_pantheon_terminus.dir }}/.terminus"
     state: directory
-    group: "{{ ansible_user }}"
-    owner: "{{ ansible_user }}"
     recurse: yes

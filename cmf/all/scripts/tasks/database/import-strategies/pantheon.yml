@@ -1,9 +1,11 @@
 # Used variables:
-# - pantheon.site_id: an ID of a site on the Pantheon.
+# - pantheon.site: an ID of a site on the Pantheon.
+# - pantheon.user.token: a machine token of a user to authenticate.
+# - pantheon.user.email: an email of a user to authenticate.
 ---
 # The backup will be removed on the next day ("keep-for=1" means to keep the file for one day).
 - name: Create snapshot
-  become: no
   shell: |-
-    terminus backup:create {{ pantheon.site_id }}.{{ item.value.source.db }} --element=db --keep-for=1
-    terminus backup:get {{ pantheon.site_id }}.{{ item.value.source.db }} --element=db --to='{{ dump_local_path }}'
+    terminus auth:login --machine-token='{{ pantheon.user.token }}' --email='{{ pantheon.user.email }}'
+    terminus backup:create {{ pantheon.site }}.{{ item.value.source.db }} --element=db --keep-for=1
+    terminus backup:get {{ pantheon.site }}.{{ item.value.source.db }} --element=db --to='{{ dump_local_path }}'
