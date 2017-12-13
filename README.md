@@ -1,6 +1,6 @@
 # Continuous Integration Kit
 
-**CIKit** - the Ansible-based development for building different development environments. It ships as a package that you can extend.
+**CIKit** - the Ansible-based system for building different development environments. It ships as a package that you can extend.
 
 - Need a VM for local development (JS, NodeJS, Java, PHP, Composer, Solr, Memcache, Selenium, Python, MySQL, MSSQL, Ruby etc.)? Not a problem - `cikit init --project=test && cd test && vagrant up`.
 - Wanna replicate a local (VM) environment on continuous integration server? [Not a problem](docs/matrix).
