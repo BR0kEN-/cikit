@@ -36,7 +36,7 @@ databases:
 
 The value for `from` could be CIKit droplet where the project is hosted. Its name can be found in `<PROJECT_DIR>/.cikit/credentials/<MATRIX_DIR>/<DROPLET_DIR>`. If you have a similar path, then `from` should contain the name of directories, divided by the dot: `<MATRIX_DIR>.<DROPLET_DIR>` (e.g. `matrix1.cikit01` for the `<PROJECT_DIR>/.cikit/credentials/matrix1/cikit01`).
 
-Also, you can use host aliases, defined by the [host manager](../../host). Run `cikit host/list` *on your computer* and use one of the available aliases of hosts that command will print. Refer to the documentation if there are no hosts and you're willing to add some.
+Also, you can use host aliases, defined by the [host manager](../../hosts-manager). Run `cikit host/list` *on your computer* and use one of the available aliases of hosts that command will print. Refer to the documentation if there are no hosts and you're willing to add some.
 
 ### Pantheon
 

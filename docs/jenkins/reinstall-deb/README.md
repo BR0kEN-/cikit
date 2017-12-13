@@ -8,7 +8,7 @@ If you have accidentally broke the service, removed the package or some dependen
 CIKIT_TAGS="jenkins" cikit provision --limit=<HOSTNAME> --jenkins-reinstall-deb
 ```
 
-- What is the [HOSTNAME](../../host)?
+- What is the [HOSTNAME](../../hosts-manager)?
 
 ## Changing version
 

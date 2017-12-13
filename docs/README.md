@@ -43,6 +43,6 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
   - [Solr](project/solr) - all about the way it's configured.
   - Workflow
     - [Pantheon](project/workflows/pantheon)
-- [Host](host) - defining/deleting/listing credentials of servers to work with.
+- [Hosts manager](hosts-manager) - defining/deleting/listing credentials of servers to work with.
 - [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.

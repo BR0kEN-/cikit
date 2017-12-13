@@ -12,7 +12,7 @@ Each CI server can host as much as needed projects. Every project on Jenkins is 
 cikit jenkins-job --project=test2 --limit=<HOSTNAME>
 ```
 
-- What is the [HOSTNAME](../host)?
+- What is the [HOSTNAME](../hosts-manager)?
 
 Some additional jobs are supplied out of the box:
 
