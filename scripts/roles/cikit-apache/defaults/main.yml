@@ -3,7 +3,7 @@ apache_port: 80
 apache_port_ssl: 443
 
 apache_vhosts:
-  - servername: local.dev
+  - servername: local.loc
     documentroot: /var/www/html
 #    certificate_file: "/path/to/certificate.crt"
 #    certificate_key_file: "/path/to/certificate.key"

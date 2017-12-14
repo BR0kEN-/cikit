@@ -60,7 +60,7 @@ Linux, macOS or Windows with [WSL](https://docs.microsoft.com/en-us/windows/wsl/
   vagrant up --provision
   ```
 
-  Install a website inside of VM (will be accessible at `https://<PROJECT-NAME>.dev`).
+  Install a website inside of VM (will be accessible at `https://<PROJECT-NAME>.loc`).
 
   ```shell
   vagrant ssh

@@ -78,7 +78,7 @@
     - name: Update config.yml
       lineinfile:
         dest: "{{ project_directory }}/.cikit/config.yml"
-        line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | replace('_', '-') }}.dev"
+        line: "cmf: {{ cmf }}\ncore: {{ major }}\nproject: {{ project }}\nsite_url: https://{{ project | replace('_', '-') }}.loc"
         insertafter: "^---$"
 
     - name: Update config.yml

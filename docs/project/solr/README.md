@@ -22,7 +22,7 @@ You may simplify the entire command to execute to `sudo solr` and suppress warni
 
 ### UI
 
-- Local UI, inside of VM, is available on: `http://PROJECT.dev:8078`
+- Local UI, inside of VM, is available on: `http://PROJECT.loc:8078`
 - Remote UI, on CI server, is available on: `https://DOMAIN/solr`
 
 
