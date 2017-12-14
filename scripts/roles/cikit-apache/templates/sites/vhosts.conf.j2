@@ -14,7 +14,7 @@ DirectoryIndex index.php index.html
         VirtualDocumentRoot {{ vhost.documentroot }}
       {% endif %}
 
-      {% if vhost.certificate_file and vhost.certificate_key_file %}
+      {% if "certificate_file" in vhost and "certificate_key_file" in vhost %}
         SSLEngine on
         SSLCipherSuite {{ cikit_apache.ssl.cipher_suite }}
         SSLProtocol {{ cikit_apache.ssl.protocol }}
@@ -22,7 +22,7 @@ DirectoryIndex index.php index.html
         SSLCompression off
         SSLCertificateFile {{ vhost.certificate_file }}
         SSLCertificateKeyFile {{ vhost.certificate_key_file }}
-          {% if vhost.certificate_chain_file is defined %}
+          {% if "certificate_chain_file" in vhost %}
             SSLCertificateChainFile {{ vhost.certificate_chain_file }}
           {% endif %}
       {% endif %}

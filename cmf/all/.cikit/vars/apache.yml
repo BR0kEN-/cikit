@@ -1,5 +1,5 @@
 ---
-apache_documentroot: "{{ webroot }}/{{ '' if site_url is defined and localhost else '/%1/' }}docroot"
+apache_documentroot: "{{ webroot }}/{{ '' if site_url is defined and localhost else '%1/' }}docroot"
 
 apache_vhosts:
   - servername: "{{ (site_url | regex_replace('^(.*)://', 'http://')) if site_url is defined and localhost else 'JenkinsCI' }}"
