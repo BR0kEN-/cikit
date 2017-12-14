@@ -15,7 +15,7 @@
       url: "{{ site_url }}/reports"
     # Get pages through localhost to avoid HTTP authentication. Useful for automated testing.
     # Do not change the "localhost" by "127.0.0.1" since it manages by local DNS resolver.
-    testing_url: "{{ 'http://' + build_id + '.localhost:8080/' if build_id is defined else site_url }}"
+    testing_url: "{{ 'http://' + build_id + '.localhost:8080' if build_id is defined else site_url }}"
 
 - name: Ensure that project directory has correct permissions
   file:
