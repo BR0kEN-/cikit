@@ -249,6 +249,10 @@
     - role: cikit-security
       tags: ["security"]
 
+    - role: cikit-dns
+      when: not localhost
+      tags: ["dns"]
+
     - role: cikit-nginx
       when: not localhost
       tags: ["nginx", "php-stack", "security"]
@@ -301,7 +305,7 @@
       tags: ["jenkins"]
 
     - role: cikit-project
-      tags: ["always"]
+      tags: ["project"]
 
   tasks:
     - name: Starting random rnd-tools service

@@ -1,7 +1,7 @@
 ---
 - name: Set path to directory, where project accessible from web
   set_fact:
-    project_webroot: "{{ webroot + '/' + (build_id if build_id is defined else 'docroot') }}"
+    project_webroot: "{{ webroot }}/{{ build_id + '/' if build_id is defined else '' }}docroot"
 
 - name: Set path to directory, where project codebase located
   set_fact:
@@ -14,7 +14,8 @@
       dir: "{{ project_workspace }}/reports"
       url: "{{ site_url }}/reports"
     # Get pages through localhost to avoid HTTP authentication. Useful for automated testing.
-    testing_url: "{{ 'http://127.0.0.1:8080/' + build_id if build_id is defined else site_url }}"
+    # Do not change the "localhost" by "127.0.0.1" since it manages by local DNS resolver.
+    testing_url: "{{ 'http://' + build_id + '.localhost:8080/' if build_id is defined else site_url }}"
 
 - name: Ensure that project directory has correct permissions
   file:

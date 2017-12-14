@@ -1,0 +1,28 @@
+---
+- name: Install
+  apt:
+    name: dnsmasq
+    state: present
+
+- name: Configure DNS
+  lineinfile:
+    dest: "/etc/dnsmasq.conf"
+    line: "{{ item.key }}={{ item.value }}"
+    insertbefore: BOF
+  with_dict:
+    # https://github.com/nicolasff/docker-cassandra/issues/8#issuecomment-36922132
+    user: "{{ ansible_user }}"
+    address: "/localhost/127.0.0.1"
+    listen-address: 127.0.0.1
+
+- name: Configure nameserver
+  # We can't use the "lineinfile" here since Docker doesn't allow replacing this file.
+  # https://docs.docker.com/engine/userguide/networking/default_network/configure-dns/
+  shell: >-
+    echo "nameserver 127.0.0.1\nnameserver {{ dns_nameservers | join('\nnameserver ') }}" > /etc/resolv.conf
+
+- name: Start service
+  service:
+    name: dnsmasq
+    state: restarted
+    enabled: yes
