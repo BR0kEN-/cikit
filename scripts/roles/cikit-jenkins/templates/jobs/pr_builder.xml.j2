@@ -121,6 +121,8 @@ cikit sniffers \
   --build-id=${BUILD_NAME} \
   --workspace=${WORKSPACE}
 
+# Move reports to the website directory.
+sudo cp -r ./docroot/{reports/,commentinfo.md} "${DESTINATION}/docroot/"
 sudo chown -R jenkins:jenkins ./
 </command>
     </hudson.tasks.Shell>
