@@ -42,3 +42,4 @@ plugins:
   parameterized-trigger: latest
   slack: latest
   simple-theme-plugin: latest
+  build-name-setter: latest
