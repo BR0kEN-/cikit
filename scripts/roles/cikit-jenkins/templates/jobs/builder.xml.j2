@@ -1,7 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Manually build project instances.</description>
+  <description><style>
+      .envs a {
+      display: inline-block;
+      padding: 0 15px;
+      line-height: 30px;
+      background: #ccc;
+      border-radius: 3px;
+      margin-right: 5px;
+      }
+    </style>
+
+<div class="envs">
+  <a href="https://{{ project }}_demo.{{ ansible_host }}">Demo</a>
+</div></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.0">
