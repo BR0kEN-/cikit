@@ -46,3 +46,4 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
 - [Hosts manager](hosts-manager) - defining/deleting/listing credentials of servers to work with.
 - [Matrix](matrix) - storage and controller of virtual servers.
   - [Host](matrix/host) - prepare machine for hosting virtual machines.
+  - [Droplet login](matrix/droplet-login) - the ways to physically get onto a machine.
