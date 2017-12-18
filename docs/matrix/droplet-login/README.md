@@ -26,6 +26,6 @@ ssh root@cikit04.example.com -p2204 -i /usr/local/share/cikit/credentials/matrix
 
 ### Docker
 
-Login to your matrix via SSH and to the droplet from there via `docker run -it DROPLET_NAME bash`.
+Login to your matrix via SSH and to the droplet from there via `docker exec -it DROPLET_NAME bash`.
 
 To get the list of matrices you can refer to the [host manager](../../hosts-manager) documentation.
