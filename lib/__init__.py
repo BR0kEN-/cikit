@@ -151,6 +151,7 @@ PARAMS.append("-e __credentialsdir__='%s'" % variables.dirs['credentials'])
 os.environ['PYTHONUNBUFFERED'] = '1'
 # https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
 os.environ['ANSIBLE_ROLES_PATH'] = variables.dirs['cikit'] + '/roles'
+os.environ['ANSIBLE_PIPELINING'] = '1'
 os.environ['ANSIBLE_FORCE_COLOR'] = '1'
 os.environ['DISPLAY_SKIPPED_HOSTS'] = '0'
 os.environ['ANSIBLE_RETRY_FILES_ENABLED'] = '0'
