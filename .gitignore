@@ -33,7 +33,6 @@ matrix/*
 !.git*
 !.eslint*
 !.version
-!.travis.yml
 !.codespellignore
 
 # File extensions.
