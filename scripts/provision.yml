@@ -258,7 +258,7 @@
       tags: ["nginx", "php-stack", "security"]
 
     - role: cikit-apache
-      tags: ["apache", "php-stack"]
+      tags: ["apache", "php-stack", "security"]
 
     # Should be before installing/configuring PHP since it may
     # install the "sqlsrv" extension which is based on "mssql".
