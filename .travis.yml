@@ -11,7 +11,7 @@ addons:
 
 install:
   - sudo bash ./tests/ansible.sh
-  - sudo bash ./install.sh
+  - sudo bash ./install.sh --no-requirements-check
 
 script:
   - cikit init --project=test_project
