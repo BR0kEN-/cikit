@@ -1,0 +1,14 @@
+sudo: required
+dist: trusty
+
+python:
+  - "2.7"
+
+install:
+  - ./tests/ansible.sh
+  - ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
+  - ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
+  - ./install.sh
+
+script:
+  - cikit init --project=test_project
