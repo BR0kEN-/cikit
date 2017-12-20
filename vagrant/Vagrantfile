@@ -70,7 +70,6 @@ if ["up", "resume"].include?(ARGV[0])
 # Smart "hostsupdater" plugin use configured IP of VM to clean up the hosts file, so we don't need to
 # worry about this at the following commands: "destroy", "suspend", "reload", "halt".
 elsif ["destroy", "suspend", "reload", "halt"].include?(ARGV[0])
-  system "./selenium.sh --stop"
 end
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
