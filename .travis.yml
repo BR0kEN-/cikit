@@ -7,14 +7,10 @@ python:
 addons:
   apt:
     packages:
-      - build-essential
-      - libffi-dev
-      - libssl-dev
+      - vagrant
 
 install:
   - sudo bash ./tests/ansible.sh
-  - sudo bash ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
-  - sudo bash ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
   - sudo bash ./install.sh
 
 script:
