@@ -16,8 +16,8 @@ DirectoryIndex index.php index.html
 
       {% if "certificate_file" in vhost and "certificate_key_file" in vhost %}
         SSLEngine on
-        SSLCipherSuite {{ cikit_apache.ssl.cipher_suite }}
-        SSLProtocol {{ cikit_apache.ssl.protocol }}
+        SSLCipherSuite AES256+EECDH:AES256+EDH
+        SSLProtocol All -SSLv2 -SSLv3
         SSLHonorCipherOrder On
         SSLCompression off
         SSLCertificateFile {{ vhost.certificate_file }}

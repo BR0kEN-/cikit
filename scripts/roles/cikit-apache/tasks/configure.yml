@@ -15,11 +15,3 @@
   with_dict: "{{ apache_data }}"
   loop_control:
     loop_var: list
-
-- name: Ensure that directory for SSL certificates exists
-  file:
-    path: "{{ cikit_apache.ssl.dest }}"
-    state: directory
-
-- name: Generate SSL certificates
-  shell: "openssl req -x509 -nodes -days 365 -new -subj '/C=US/ST=Oregon/L=Portland/O=IT/CN={{ ansible_fqdn }}' -keyout {{ cikit_apache.ssl.dest }}/apache.key -out {{ cikit_apache.ssl.dest }}/apache.crt -extensions v3_ca creates={{ cikit_apache.ssl.dest }}/apache.crt"
