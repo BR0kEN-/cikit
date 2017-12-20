@@ -4,8 +4,15 @@ dist: trusty
 python:
   - "2.7"
 
+addons:
+  apt:
+    packages:
+      - build-essential
+      - libffi-dev
+      - libssl-dev
+
 install:
-  - pip install pyopenssl ndg-httpsclient pyasn1
+#  - pip install pyopenssl ndg-httpsclient pyasn1
   - bash ./tests/ansible.sh
   - bash ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
   - bash ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
