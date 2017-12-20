@@ -1,17 +1,26 @@
 ---
+# Repository: https://pkg.jenkins.io/debian
+# A list of required dependencies for this role:
+# - apt-transport-https
+# - curl
+# - wget
+# - sudo
 - name: Add APT key
   apt_key:
-    url: "{{ jenkins.key }}"
+    url: https://pkg.jenkins.io/debian/jenkins.io.key
     state: present
 
 - name: Add APT repository
   apt_repository:
-    repo: "{{ jenkins.repo }}"
+    repo: "deb https://pkg.jenkins.io/debian binary/"
     state: present
-  ignore_errors: yes
 
-- name: Install dependencies
+- name: Install package
   apt:
-    name: "{{ item }}"
-    state: installed
-  with_items: "{{ jenkins.dependencies }}"
+    name: jenkins
+    state: latest
+
+- name: Create configuration
+  template:
+    src: jenkins.j2
+    dest: /etc/default/jenkins

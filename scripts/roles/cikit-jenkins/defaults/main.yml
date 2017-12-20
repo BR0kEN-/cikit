@@ -22,7 +22,7 @@ jenkins_data:
     - name: root
       template: root.xml.j2
 
-plugins:
+jenkins_plugins:
   ansicolor: latest
   token-macro: latest
   ssh-agent: latest

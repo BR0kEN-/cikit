@@ -1,6 +1,6 @@
 # Reinstall Debian package
 
-May happen that you will need to reinstall, downgrade or upgrade version of Jenkins and **CIKit** provides such possibility. By default we supply the package with [predefined value](../../../scripts/roles/cikit-jenkins/vars/main.yml#L5). Before updating it there we are checking operability and compatibility with plugins, so you can rely on it.
+It might happen that you'll need to reinstall a Jenkins and **CIKit** provides such possibility.
 
 If you have accidentally broke the service, removed the package or some dependency (*not configuration*) then just reinstall the package executing the next command on your local machine:
 
@@ -9,7 +9,3 @@ CIKIT_TAGS="jenkins" cikit provision --limit=<HOSTNAME> --jenkins-reinstall-deb
 ```
 
 - What is the [HOSTNAME](../../hosts-manager)?
-
-## Changing version
-
-If you need to have concrete version then [update it manually](../../../scripts/roles/cikit-jenkins/vars/main.yml#L5) and execute above command.

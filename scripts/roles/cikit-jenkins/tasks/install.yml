@@ -1,8 +1,5 @@
 ---
 - import_tasks: repo.yml
-- import_tasks: install-deb.yml
-- import_tasks: restart-service.yml
-- import_tasks: cli.yml
 
 - name: Copy configs
   template:
@@ -21,17 +18,35 @@
     group: "{{ jenkins_data.group }}"
 
 - import_tasks: restart-service.yml
+- import_tasks: cli.yml
 
-- name: Install/update plugins
-  # Firstly: plugin downloading.
-  # Secondly: install plugin dependencies.
+- name: Install a plugin
+  jenkins_plugin:
+    url: "{{ jenkins_host }}"
+    name: "{{ item.key }}"
+    owner: "{{ jenkins_data.user }}"
+    group: "{{ jenkins_data.group }}"
+    updates_url: "{{ jenkins.updates.url }}"
+    jenkins_home: "{{ jenkins_lib }}"
+  with_dict: "{{ jenkins_plugins }}"
+
+- name: Enable a plugin
   shell: |-
-    java -jar {{ jenkins.cli }} -s {{ jenkins_host }} install-plugin http://mirrors.jenkins-ci.org/plugins/{{ item.key }}/{{ item.value }}/{{ item.key }}.hpi
-    curl -d "<jenkins><install plugin='{{ item.key }}@{{ item.value }}' /></jenkins>" -H 'Content-Type: text/xml' {{ jenkins_host }}/pluginManager/installNecessaryPlugins
-  with_dict: "{{ plugins }}"
+    curl {{ jenkins_host }}/pluginManager/installNecessaryPlugins \
+      -H "Content-Type: text/xml" \
+      -H "$({{ jenkins_csrf_command }})" \
+      -d "<jenkins>{% for key, value in jenkins_plugins.iteritems() %}<install plugin='{{ key }}@{{ value }}' />{% endfor %}</jenkins>"
+  args:
+    warn: no
+  failed_when: "'' != jenkins_plugins_status.stdout"
+  register: jenkins_plugins_status
+
+- import_tasks: restart-service.yml
 
 - name: Execute script
-  shell: "curl -d 'script={{ item }}' {{ jenkins_host }}/scriptText"
+  jenkins_script:
+    url: "{{ jenkins_host }}"
+    script: "{{ item }}"
   with_items:
     # Enable HTML markup.
     - |-
@@ -45,13 +60,13 @@
     state: restarted
   ignore_errors: yes
 
-- name: Adding Jenkins user to permitted groups
+- name: Add a user to permitted groups
   user:
     name: "{{ jenkins_data.user }}"
     groups: shadow,adm
     append: yes
 
-- name: Adding Jenkins user to nopasswd sudoers
+- name: Add a user to nopasswd sudoers
   lineinfile:
     dest: /etc/sudoers
     line: "{{ jenkins_data.user }} ALL=(ALL) NOPASSWD:ALL"

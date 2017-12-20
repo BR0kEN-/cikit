@@ -4,10 +4,17 @@
     jenkins_job: "{{ jenkins_job | upper }}"
     jenkins_host: "http://127.0.0.1:{{ jenkins_port }}/{{ jenkins_prefix }}"
 
+- name: Prepare variables
+  set_fact:
+    jenkins_csrf_command: |-
+      wget -q --auth-no-challenge --output-document - '{{ jenkins_host }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)'
+
 - include_tasks: install.yml
   when: jenkins_install and not jenkins_reinstall_deb
 
 - import_tasks: jobs.yml
 
-- include_tasks: install-deb.yml
+- include_tasks: repo.yml
   when: jenkins_reinstall_deb
+
+- import_tasks: restart-service.yml

@@ -11,7 +11,7 @@
     curl {{ jenkins_host }}/createView?name={{ jenkins_job }} \
       -X POST \
       -H "Content-Type: text/xml" \
-      -H "$(wget -q --auth-no-challenge --output-document - '{{ jenkins_host }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')" \
+      -H "$({{ jenkins_csrf_command }})" \
       -d @{{ jenkins_lib }}/list-view.xml
   args:
     warn: no
@@ -31,5 +31,3 @@
     owner: "{{ jenkins_data.user }}"
     group: "{{ jenkins_data.group }}"
   with_items: "{{ jenkins_data.jobs }}"
-
-- import_tasks: restart-service.yml
