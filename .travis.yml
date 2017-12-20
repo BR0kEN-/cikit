@@ -5,10 +5,10 @@ python:
   - "2.7"
 
 install:
-  - ./tests/ansible.sh
-  - ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
-  - ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
-  - ./install.sh
+  - bash ./tests/ansible.sh
+  - bash ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
+  - bash ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
+  - bash ./install.sh
 
 script:
   - cikit init --project=test_project
