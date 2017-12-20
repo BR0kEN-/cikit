@@ -16,11 +16,13 @@
   - [Produce a host for CI servers](docs/matrix#usage) by a single command.
   - [Manage CI servers (droplets)](docs/matrix#management) via single command.
 - CI server
-  - Docker. More system resources for your needs. (comparative to the hypervisor).
+  - Docker. More system resources for your needs (comparative to the hypervisor).
   - Jenkins with configured GitHub workflow.
 - Virtual machine
   - Automatic IP allocation. You're no longer care about changing the IP for every new VM.
+  - User interaction. You'll be asked what to install during provisioning the machine.
   - [Shippable environment configuration](docs/project/env-config). Once created - everywhere updated.
+  - Selenium 2.x grid: a hub in VM and node on your host.
 
 ## Documentation & support
 
