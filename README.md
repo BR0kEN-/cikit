@@ -26,8 +26,9 @@
 
 ## Documentation & support
 
-- Global project documentation [available here](docs#documentation).
-- All communications are available in our Slack at https://cikit.slack.com
+- Global project documentation [available within the repository](docs#documentation) and replicated at http://cikit.tools
+- Releases changelog - https://cikit.slack.com/messages/general
+- Technical support - https://cikit.slack.com/messages/support
 
 ## Dependencies
 
