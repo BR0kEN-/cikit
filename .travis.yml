@@ -5,7 +5,7 @@ python:
   - "2.7"
 
 install:
-  - pip install requests[security]
+  - pip install pyopenssl ndg-httpsclient pyasn1
   - bash ./tests/ansible.sh
   - bash ./tests/virtualbox.sh ubuntu 64 /usr/local/share/vb
   - bash ./tests/vagrant.sh ubuntu 64 /usr/local/share/vg
