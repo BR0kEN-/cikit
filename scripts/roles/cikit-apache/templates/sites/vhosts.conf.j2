@@ -5,7 +5,9 @@ DirectoryIndex index.php index.html
 {# Set up VirtualHosts #}
 {% for vhost in apache_vhosts %}
   {% if vhost.servername != "" and vhost.documentroot != "" %}
-    <VirtualHost *:{{ apache_port }}>
+    {% set is_ssl = "certificate_file" in vhost and "certificate_key_file" in vhost %}
+
+    <VirtualHost *:{{ apache_port_ssl if is_ssl else apache_port }}>
       ServerName {{ vhost.servername }}
 
       {% if localhost %}
@@ -14,7 +16,7 @@ DirectoryIndex index.php index.html
         VirtualDocumentRoot {{ vhost.documentroot }}
       {% endif %}
 
-      {% if "certificate_file" in vhost and "certificate_key_file" in vhost %}
+      {% if is_ssl %}
         SSLEngine on
         SSLCipherSuite AES256+EECDH:AES256+EDH
         SSLProtocol All -SSLv2 -SSLv3
