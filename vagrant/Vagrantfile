@@ -1,29 +1,16 @@
 require "yaml"
 
 VAGRANT_API_VERSION ||= "2"
-VAGRANT_MIN_VERSION ||= "1.9.0"
+VAGRANT_MIN_VERSION ||= "1.9.5"
 ANSIBLE_MIN_VERSION ||= "2.4.0"
 
 Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 
 # Basic variables.
+isWsl = Vagrant::Util::Platform.wsl?
 arguments = ARGV.join(" ")
-isCygwin = Vagrant::Util::Platform.cygwin?
 configValues = YAML::load_file(".cikit/config.yml")
 vagrantfileDir = File.dirname(__FILE__)
-
-if isCygwin
-  # Prevent "hostsupdater" to fail with impossibility to write hosts.
-  # TODO: Remove this requirement since running of VMs must not use admin privileges.
-  if not Vagrant::Util::Platform.windows_admin?
-    puts "You have to run Cygwin with administrative privileges to continue."
-    exit 6
-  end
-
-  # Prevent closing connection.
-  # https://github.com/ansible/ansible/issues/6363#issuecomment-49349902
-  ENV["ANSIBLE_SSH_ARGS"] = "-o ControlMaster=no"
-end
 
 # Check whether CIKit cannot be bootstrapped properly.
 if (arguments.include?("up") or arguments.include?("provision")) and not arguments.include?("no-provision")
@@ -34,8 +21,7 @@ if (arguments.include?("up") or arguments.include?("provision")) and not argumen
     exit 1
   end
 
-  # TODO: Find a way to run this on Cygwin!
-  if not isCygwin and Gem::Version.new(`#{ANSIBLE} --version | head -n1 | awk '{print $2}'`) < Gem::Version.new(ANSIBLE_MIN_VERSION)
+  if Gem::Version.new(`#{ANSIBLE} --version | head -n1 | awk '{print $2}'`) < Gem::Version.new(ANSIBLE_MIN_VERSION)
     puts "Installed version of Ansible must not be lower than #{ANSIBLE_MIN_VERSION}."
     exit 2
   end
@@ -74,7 +60,7 @@ end
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
 
-if not Vagrant.has_plugin?("vagrant-hostsupdater")
+if not isWsl and not Vagrant.has_plugin?("vagrant-hostsupdater")
   system "vagrant plugin install vagrant-hostsupdater"
 end
 
@@ -101,6 +87,9 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 ██║      ██║    ██╔═██╗  ██║    ██║
 ╚██████╗ ██║    ██║  ██╗ ██║    ██║
  ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝
+
+IP address: #{configValues["vm"]["ip"]}
+Hostname: #{config.vm.hostname} #{isWsl ? '(add "127.0.0.1 ' + config.vm.hostname + '" to "%SYSTEMROOT%\system32\drivers\etc\hosts")' : ''}
 "
 
   # Change the name of VM.
@@ -143,8 +132,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 
     config.vm.synced_folder folder["source"], folder["target"],
       :id => folder["target"],
-      # Use VBoxSF native system to mount folders on Windows.
-      :type => isCygwin ? false : "nfs",
+      # Use VBoxSF native system to mount folders on Windows WSL.
+      :type => isWsl ? false : "nfs",
       :nfs_udp => folder["nfs"]["udp"],
       :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3
   end

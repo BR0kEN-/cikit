@@ -116,9 +116,6 @@ else:
         functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
     if 'ANSIBLE_INVENTORY' in os.environ:
-        if 'cygwin' == sys.platform:
-            os.environ['ANSIBLE_INVENTORY'] = functions.call('cygpath', "'%s'" % os.environ['ANSIBLE_INVENTORY'])
-
         PARAMS.append("-i '%s'" % os.environ['ANSIBLE_INVENTORY'])
 
     # @todo Improve for Ansible 2.5 - https://github.com/ansible/ansible/pull/30722
