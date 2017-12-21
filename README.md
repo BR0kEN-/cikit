@@ -35,10 +35,10 @@
 |Name|Version|
 |:---|:---|
 |[Ansible](https://github.com/ansible/ansible)|2.4+|
-|[Vagrant](https://github.com/hashicorp/vagrant)|1.9+|
+|[Vagrant](https://github.com/hashicorp/vagrant)|1.9.5+|
 |[VirtualBox](https://www.virtualbox.org)|5.1+|
 
-Linux, macOS or Windows with [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+Linux, macOS or [Windows with WSL](docs/vagrant/wsl).
 
 ## Quick start
 

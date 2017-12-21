@@ -9,7 +9,6 @@ vm:
   folders:
     - source: ./
       target: /var/www
-      # Not supported on Cygwin.
       nfs:
         # If you're using guest machine more often than host for manipulating
         # by big file data, then you should configure NFS over TCP connection
