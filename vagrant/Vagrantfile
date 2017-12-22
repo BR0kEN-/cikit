@@ -30,19 +30,21 @@ end
 # Ensure that configured IP ain't owned by other VM.
 # This should be executed even when machine state is already "running" to always
 # keep "hostsupdater" plugin updated. Otherwise it'll propose you to setup wrong IP.
-if ["up", "resume"].include?(ARGV[0])
+if ["up", "resume", "reload"].include?(ARGV[0])
   VBoxManage = VagrantPlugins::ProviderVirtualBox::Driver::Meta.new
 
   # The output looks like:
   # "Windows7" {0c7dd8ed-8187-44c7-9d6e-c372305fb573}
   # Iterate over the list of virtual machines.
   VBoxManage.execute("list", "vms").scan(/".+?"/) do |vmName|
+    # Trim quotes at the end and start.
+    vmName = vmName[1..-2]
     # The output looks like:
     # Name: /VirtualBox/GuestInfo/Net/1/V4/IP, value: 192.168.59.101, timestamp: 1489077258093051000, flags: TRANSIENT, TRANSRESET
     # Property "/VirtualBox/GuestInfo/Net/0/V4/IP" contains internal IP, like "10.0.2.15".
-    vmIp = VBoxManage.execute("guestproperty", "enumerate", vmName[1..-2], "--patterns", "/VirtualBox/GuestInfo/Net/1/V4/IP").gsub(/.*value:\s+(.+?),.*/, '\1').chomp
+    vmIp = VBoxManage.execute("guestproperty", "enumerate", vmName, "--patterns", "/VirtualBox/GuestInfo/Net/1/V4/IP").gsub(/.*value:\s+(.+?),.*/, '\1').chomp
 
-    if not vmIp.empty? and vmIp == configValues["vm"]["ip"] and not vmName.include?(configValues["project"])
+    if not vmIp.empty? and vmIp == configValues["vm"]["ip"] and vmName != configValues["project"]
       ipSections = vmIp.split(".")
       # Increase last number of IP by 1.
       ipSections[-1] = ipSections.last.to_i + 1
@@ -60,7 +62,7 @@ end
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
 
-if not isWsl and not Vagrant.has_plugin?("vagrant-hostsupdater")
+if not Vagrant.has_plugin?("vagrant-hostsupdater")
   system "vagrant plugin install vagrant-hostsupdater"
 end
 

@@ -6,11 +6,11 @@
 
   Having a lower build number you won't be able to run the whole stack and below operations will be redundant.
 
-- Enable developer mode and [install Ubuntu as Windows Subsytem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+- [Install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 - Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) as a regular Windows program. Installation of Guest Additions isn't needed.
 
-- Install Pip and Ansible inside of a WSL.
+- Install Pip and Ansible inside of Ubuntu.
 
   ```bash
   sudo apt update
@@ -19,7 +19,7 @@
   sudo pip install ansible
   ```
 
-- Install Vagrant inside of a WSL (https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation, https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270). You might change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
+- Install Vagrant inside of Ubuntu (https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation, https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270). You might change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
 
   You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in a case you already have it and don't want to remove.
 
