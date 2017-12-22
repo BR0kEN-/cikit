@@ -121,6 +121,14 @@ Hostname: #{config.vm.hostname} #{isWsl ? '(add "127.0.0.1 ' + config.vm.hostnam
   (configValues["vm"]["folders"] ||= []).push({
     "source" => "#{vagrantfileDir}/../lib",
     "target" => "/var/lib/cikit",
+    # This directory is not available for mounting since CIKit is installed
+    # within the WSL on Windows. Only simple copy and paste. NFSd can't work
+    # there since "systemd" is not available. The "vboxsf" will be ended up
+    # with "Protocol error". So we go with simple "rsync" which will copy
+    # updated (if so) files everytime the machine will be booted/rebooted.
+    # It's okay to do like this since there are executables only and they
+    # mustn't be modified.
+    "type" => isWsl ? "rsync" : "nfs",
     "nfs" => {
       "udp" => true,
       "version" => 3,
@@ -133,7 +141,7 @@ Hostname: #{config.vm.hostname} #{isWsl ? '(add "127.0.0.1 ' + config.vm.hostnam
     config.vm.synced_folder folder["source"], folder["target"],
       :id => folder["target"],
       # Use VBoxSF native system to mount folders on Windows WSL.
-      :type => isWsl ? false : "nfs",
+      :type => folder.key?("type") ? folder["type"] : (isWsl ? false : "nfs"),
       :nfs_udp => folder["nfs"]["udp"],
       :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3
   end
