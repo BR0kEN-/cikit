@@ -91,7 +91,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
  ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝
 
 IP address: #{configValues["vm"]["ip"]}
-Hostname: #{config.vm.hostname} #{isWsl ? '(add "127.0.0.1 ' + config.vm.hostname + '" to "%SYSTEMROOT%\system32\drivers\etc\hosts")' : ''}
+Hostname: #{config.vm.hostname}
 "
 
   # Change the name of VM.
