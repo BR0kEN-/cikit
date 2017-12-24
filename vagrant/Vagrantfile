@@ -51,7 +51,7 @@ if ["up", "resume", "reload"].include?(ARGV[0])
 
       vmIp = ipSections.join(".")
 
-      puts "[IP conflict resolved]: #{configValues["vm"]["ip"]} (used by #{vmName}) was changed to #{vmIp}."
+      puts "[IP conflict resolved]: #{configValues["vm"]["ip"]} (used by \"#{vmName}\") was changed to #{vmIp}."
       configValues["vm"]["ip"] = vmIp
     end
   end
