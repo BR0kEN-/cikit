@@ -8,9 +8,9 @@ Dependencies that should be on your computer (host):
 - [Vagrant](https://www.vagrantup.com/downloads.html)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
-### Windows
+### Windows with WSL
 
-Run the [install.bat](https://github.com/BR0kEN-/cikit/blob/master/tests/cygwin/install.bat) (save and double-click) to have all necessary software installed on **Windows** host (*OS will be automatically restarted if don't have PowerShell 3 to complete a setup of it*). Then open a Cygwin (which will be installed automatically by the mentioned script) and follow the below instructions.
+Read and follow the [instructions to prepare your host for operating with CIKit](https://github.com/BR0kEN-/cikit/blob/master/docs/vagrant/wsl).
 
 ## Usage
 
