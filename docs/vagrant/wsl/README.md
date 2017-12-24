@@ -68,6 +68,14 @@
   export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
   ```
 
-- Do never place files, you're gonna edit, within WSL. Locate them on `/mnt/` only. Modifying data in Linux subsystem by Windows tools will lead to **their corruption and loss**. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-352183860 issue has some clarification on that.
+- **Do never place files, you're gonna edit, within WSL**. Locate them on `/mnt/` only. Modifying data in Linux subsystem by Windows tools will lead to **their corruption and loss**. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-352183860 issue has some clarification on that.
 
-- Install CIKit as usual, create a project and provision a VM. Remember that you'll be required to add hostnames of your projects manually to the `%SYSTEMROOT%\system32\drivers\etc\hosts`. Use `127.0.0.1` and not the actual IP of VM. Read the https://github.com/Microsoft/WSL/issues/1032#issuecomment-244160207 to know why.
+- Install CIKit as usual, create a project and provision a VM. Remember that you'll be required to manage hostnames of your projects manually in the `%SYSTEMROOT%\system32\drivers\etc\hosts`. Windows system files are not modifiable from a WSL even if WSL is running in privileged mode. Moreover, do not run `Bash` with administrative privileges because VirtualBox won't operate properly.
+
+## Limitations
+
+This section list the explanations of limitations you'll have in WSL under Windows.
+
+- You have to define IP aliases for hosts by yourself.
+- You are not able to use NFS shares and forced to go with VBoxSF.
+- Microsoft Edge ignores the modifications of `hosts` file and doesn't open websites.
