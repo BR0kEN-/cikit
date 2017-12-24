@@ -2,11 +2,21 @@
 
 - Ensure OS build number is greater than [14951](https://docs.microsoft.com/ru-ru/windows/wsl/release-notes#build-14951) (run `ver` in `cmd.exe` to check this). Refer the https://blogs.windows.com/windowsexperience/2016/10/19/announcing-windows-10-insider-preview-build-14951-for-mobile-and-pc official blog post and the https://blogs.msdn.microsoft.com/commandline/2016/10/19/interop-between-windows-and-bash explanation for more.
 
-  Make sure your are not using Enterprise version of Windows since "Fall Creators Update" cannot be installed on that one easily. More info at https://support.microsoft.com/en-us/help/3188105/-contact-your-system-administrator-to-upgrade-windows-server-or-enterp.
+  Make sure your are not using Enterprise version of Windows since "Fall Creators Update" cannot be installed on that one easily (valuable only if your build is lower than required). More info at https://support.microsoft.com/en-us/help/3188105/-contact-your-system-administrator-to-upgrade-windows-server-or-enterp.
 
-  Having a lower build number you won't be able to run the whole stack and below operations will be redundant.
+  Having a lower build number you won't be able to run the whole stack due to missing [WSL interoperability](https://docs.microsoft.com/en-us/windows/wsl/interop) and below operations will be redundant.
 
-- [Install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+  *At the moment of writing these instructions, the Windows 10 of version `1709`, having the `16299.125` build, has been used for testing*.
+
+- [Install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Remember, that it is not recommended to use `lxrun` for installing WSL if OS build number is `16215` or later.
+
+  **Not recommended, legacy installation via `lxrun`**.
+
+  ![Installation via lxrun](images/16215-lxrun.png)
+
+  **Recommended installation from Microsoft Store**.
+
+  ![Installation from store](images/16215-store.png)
 
 - Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) as a regular Windows program. Installation of Guest Additions isn't needed.
 
@@ -40,7 +50,9 @@
 
 - Run the following script if you don't have the `%LOCALAPPDATA%\lxss` directory (verify in the `cmd.exe` executing the `dir %LOCALAPPDATA%\lxss`). Check the https://github.com/berkshelf/vagrant-berkshelf/issues/323#issue-267607656 for more.
 
-  In short, it'll be missing if you install Ubuntu from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`.
+  In short, it'll be missing if you install WSL from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`. And it must be missing because `lxrun` - is legacy way to install WSL.
+
+  At the moment this is an issue in Vagrant and later it should be resolved so this step won't be needed.
 
   Start PowerShell with administrative privileges executing this by pasting into the search bar.
 
@@ -56,6 +68,8 @@
   $WSLFSPATH=(Get-ItemProperty "$WSLREGKEY\$WSLDEFID").BasePath
   New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\rootfs"
   ```
+
+  ![Vagrant provisioning](images/vagrant.png)
 
 - Allow Vagrant to use VirtualBox within WSL. It'll be easier for you to preserve this variable in `~/.profile`, for instance.
 
