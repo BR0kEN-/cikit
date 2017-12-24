@@ -106,3 +106,7 @@ Run provisioning of a specific component (virtual machine):
 ```shell
 CIKIT_TAGS="COMPONENT1,COMPONENT2" vagrant provision
 ```
+
+## A special thanks to
+
+- [@Diam0n](https://github.com/Diam0n), who is helping to provide environments for testings.

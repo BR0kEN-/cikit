@@ -50,9 +50,7 @@
 
 - Run the following script if you don't have the `%LOCALAPPDATA%\lxss` directory (verify in the `cmd.exe` executing the `dir %LOCALAPPDATA%\lxss`). Check the https://github.com/berkshelf/vagrant-berkshelf/issues/323#issue-267607656 for more.
 
-  In short, it'll be missing if you install WSL from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`. And it must be missing because `lxrun` - is legacy way to install WSL.
-
-  At the moment this is an issue in Vagrant and later it should be resolved so this step won't be needed.
+  In short, it'll be missing if you install WSL from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`. And it must be missing because `lxrun` - is legacy way to install WSL. At the moment this is an issue in Vagrant and later it should be resolved so this step won't be needed.
 
   Start PowerShell with administrative privileges executing this by pasting into the search bar.
 
