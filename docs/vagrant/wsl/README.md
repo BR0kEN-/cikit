@@ -38,14 +38,14 @@ Installation of Guest Additions is not needed.
 
 ## Install PIP and Ansible inside of WSL
 
-Prepare installation on **Ubuntu**.
+Execute this script on **Ubuntu**.
 
 ```bash
 sudo apt update
 sudo apt install python-setuptools -y
 ```
 
-Prepare installation on **openSUSE**.
+Execute this script on **openSUSE**.
 
 ```bash
 sudo zypper addrepo --check --refresh --name 'openSUSE-42.2-OSS' http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss
@@ -53,7 +53,7 @@ sudo zypper update
 sudo zypper install python-setuptools -y
 ```
 
-Use the following script in any distro.
+Execute this script on any distro.
 
 ```bash
 sudo easy_install pip
@@ -66,21 +66,21 @@ sudo pip install ansible
 - You don't need to have Vagrant as a Windows program.
 - Do never use `vagrant.exe` in a case you already have it and don't want to remove.
 
-Prepare installation on **Ubuntu**.
+Execute this script on **Ubuntu**.
 
 ```bash
 PACKAGE_EXT="deb"
 PACKAGE_UTIL="dpkg"
 ```
 
-Prepare installation on **openSUSE**.
+Execute this script on **openSUSE**.
 
 ```bash
 PACKAGE_EXT="rpm"
 PACKAGE_UTIL="rpm"
 ```
 
-Use the following script in any distro.
+Execute this script on any distro.
 
 ```bash
 VAGRANT_VERSION="2.0.1"
@@ -93,23 +93,30 @@ rm "${VAGRANT_FILENAME}"
 
 ## Prepare Linux environment for Vagrant operation
 
-Relying on Windows / WSL interoperability, [cheat WSL](https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270) that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
+Relying on WSL interoperability, [cheat WSL](https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270) that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
 
 ```bash
 sudo ln -s "/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" /usr/bin/VBoxManage
 sudo ln -s "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe" /usr/bin/powershell
 ```
 
-Allow Vagrant to use VirtualBox within WSL. It'll be easier for you to preserve this variable in `~/.profile`, for instance.
+Allow Vagrant to operate in WSL.
 
 ```bash
+cat << 'HERE' > ~/.vagrant.profile
 # Without enabling this feature the ".vagrant.d" will be placed to
 # the "/mnt/c/Users/$USER/.vagrant.d". This will break SSH because
 # the private key will have too open permissions and you won't be
-# able to apply "chmod" for the file in Windows file system.
+# able to apply "chmod" for the file in Windows file system. Moreover,
+# we are isolating Vagrant in WSL container and don't want to expose
+# boxes and other info from outside of it.
 export VAGRANT_WSL_DISABLE_VAGRANT_HOME=1
+# Allow Vagrant to operate in WSL.
 # https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation
 export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
+HERE
+
+echo "source ~/.vagrant.profile" >> ~/.profile
 ```
 
 ## Resolution of known problem (@todo)
