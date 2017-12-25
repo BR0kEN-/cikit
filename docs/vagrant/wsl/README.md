@@ -22,7 +22,7 @@
   Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
   ```
 
-  If you made sure all good, open the Microsoft Store and use search to find Ubuntu. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
+  If you made sure all good, open the Microsoft Store and use search to find Ubuntu/openSUSE/other distro. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
 
   **Not recommended, legacy installation via `lxrun`**.
 
@@ -34,25 +34,56 @@
 
 - Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) as a regular Windows program. Installation of Guest Additions isn't needed.
 
-- Install Pip and Ansible inside of Ubuntu.
+- Install PIP and Ansible inside of WSL.
+
+  Get the `easy_install` on **Ubuntu**.
 
   ```bash
   sudo apt update
   sudo apt install python-setuptools -y
+  ```
+
+  Get the `easy_install` on **openSUSE**.
+
+  ```bash
+  sudo zypper addrepo --check --refresh --name 'openSUSE-42.2-OSS' http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss
+  sudo zypper update
+  sudo zypper install python-setuptools -y
+  ```
+
+  Install PIP & Ansible on any distro.
+
+  ```bash
   sudo easy_install pip
   sudo pip install ansible
   ```
 
-- Install Vagrant inside of Ubuntu (https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation, https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270). You might change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
+- Install Vagrant inside of WSL (https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation, https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270). You might change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
 
   You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in a case you already have it and don't want to remove.
 
+  Prepare installation on **Ubuntu**.
+
+  ```bash
+  PACKAGE_EXT="deb"
+  PACKAGE_UTIL="dpkg"
+  ```
+
+  Prepare installation on **openSUSE**.
+
+  ```bash
+  PACKAGE_EXT="rpm"
+  PACKAGE_UTIL="rpm"
+  ```
+
+  Download and install Vagrant on any distro.
+
   ```bash
   VAGRANT_VERSION="2.0.1"
-  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.deb"
+  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.${PACKAGE_EXT}"
 
   wget -q "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/${VAGRANT_FILENAME}"
-  sudo dpkg -i "${VAGRANT_FILENAME}"
+  sudo ${PACKAGE_UTIL} -i "${VAGRANT_FILENAME}"
   rm "${VAGRANT_FILENAME}"
   ```
 
@@ -106,3 +137,9 @@ This section list the explanations of limitations you'll have in WSL under Windo
 - You have to define IP aliases for hosts by yourself.
 - You are not able to use NFS shares and forced to go with VBoxSF.
 - Microsoft Edge ignores the modifications of `hosts` file and doesn't open websites.
+
+## Result
+
+As a proof, you may take a look at the screenshot which shows that single Windows instance might have many WSL containers running with the CIKit.
+
+![CIKit VM on openSUSE and Ubuntu](images/wsl-cikit-opensuse-and-ubuntu.png)
