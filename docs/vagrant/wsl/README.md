@@ -98,7 +98,7 @@
 
   In short, it'll be missing if you install WSL from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`. And it must be missing because `lxrun` - is legacy way to install WSL. At the moment this is [the issue in Vagrant](https://github.com/hashicorp/vagrant/issues/9298) and later it should be resolved so this step won't be needed.
 
-  Start PowerShell with administrative privileges executing this by pasting into the search bar.
+  Start PowerShell with administrative privileges by pasting this script into Windows search bar.
 
   ```
   cmd /c powershell "Start-Process powershell -Verb runAs"
@@ -112,6 +112,8 @@
   $WSLFSPATH=(Get-ItemProperty "$WSLREGKEY\$WSLDEFID").BasePath
   New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\rootfs"
   ```
+
+  Bear in mind that this step brings you an additional limitation, disallowing Vagrant to operate in multiple WSL instances (doubt someone needs this, but just FYI). The limitation is gone for sure when [the issue in Vagrant](https://github.com/hashicorp/vagrant/issues/9298) will be solved.
 
   ![Vagrant provisioning](images/vagrant.png)
 
@@ -143,3 +145,5 @@ This section list the explanations of limitations you'll have in WSL under Windo
 As a proof, you may take a look at the screenshot which shows that single Windows instance might have many WSL containers running with the CIKit.
 
 ![CIKit VM on openSUSE and Ubuntu](images/wsl-cikit-opensuse-and-ubuntu.png)
+
+*For now it's possible only with the https://github.com/hashicorp/vagrant/pull/9300 patch applied.*
