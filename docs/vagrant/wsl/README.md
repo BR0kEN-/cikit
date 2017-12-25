@@ -8,7 +8,21 @@
 
   *At the moment of writing these instructions, the Windows 10 of version `1709`, having the `16299.125` build, has been used for testing*.
 
-- [Install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Remember, that it is not recommended to use `lxrun` for installing WSL if OS build number is `16215` or later.
+- [Install a Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Remember, that **it is not recommended to use `lxrun` for installing WSL** if OS build number is `16215` or later.
+
+  Imagine we have a *good enough* build. If so we can simplify this step by just running a PowerShell (should be in a privileged mode) one-line command (needs restart afterward).
+
+  ```powershell
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+  ```
+
+  Check whether everything went smoothly (again, PowerShell ought to be started with administrative rights) after the system is boot again.
+
+  ```powerhsell
+  Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+  ```
+
+  If you made sure all good, open the Microsoft Store and use search to find Ubuntu. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
 
   **Not recommended, legacy installation via `lxrun`**.
 
@@ -42,10 +56,11 @@
   rm "${VAGRANT_FILENAME}"
   ```
 
-- Relying on Windows / WSL interoperability, cheat a WSL that `VBoxManage` is a Linux binary. This needed because Vagrant uses exactly that executable.
+- Relying on Windows / WSL interoperability, cheat a WSL that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
 
   ```bash
   sudo ln -s "/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" /usr/bin/VBoxManage
+  sudo ln -s "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe" /usr/bin/powershell
   ```
 
 - Run the following script if you don't have the `%LOCALAPPDATA%\lxss` directory (verify in the `cmd.exe` executing the `dir %LOCALAPPDATA%\lxss`). Check the https://github.com/berkshelf/vagrant-berkshelf/issues/323#issue-267607656 for more.
