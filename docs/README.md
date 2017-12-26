@@ -35,6 +35,7 @@ Always remember that you've copied SSH key-pair to the project tree! They are ne
   - [Parameterized builds](jenkins/builds-actions) - define your own tasks, controllable by commit messages.
 - Vagrant
   - [Box](vagrant/box) - information and access details.
+  - [WSL](vagrant/wsl) - a tutorial for installing on Windows 10.
 - Project
   - [Shippable environment configuration](project/env-config) - share environment configuration with team members.
   - [MySQL import strategies](project/mysql-import-strategies) - a subset of ways to import a MySQL database from various locations.
