@@ -40,10 +40,9 @@ Installation of Guest Additions is not needed.
 
 - Change the `WINDOWS_SYSTEMDRIVE` if Windows is installed not on `C:\\` drive.
 - You might want to change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
-- You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in a case you already have it and don't want to remove.
-- Relying on WSL interoperability, [cheat WSL](https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270) that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
+- You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
 
-Save this script to the `wsl-provision.sh` and run within WSL shell.
+Save this script to file and run it in WSL. Don't forget to restart WSL afterward.
 
 ```bash
 #!/usr/bin/env bash
@@ -61,6 +60,7 @@ if [ ! -f "${POWERSHELL_EXE}" ]; then
   echo "PowerShell cannot be found at \"${POWERSHELL_EXE}\". Are you sure Windows system drive is \"${WINDOWS_SYSDRV^^}:\\\"?"
   exit 1
 elif ! command -v "powershell" > /dev/null; then
+  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
   sudo ln -s "${POWERSHELL_EXE}" /usr/bin/powershell
 fi
 
@@ -73,6 +73,7 @@ if [ ! -f "${VIRTUALBOX_EXE}" ]; then
   echo "VirtualBox cannot be found at \"${VIRTUALBOX_EXE}\". Is it installed?"
   exit 2
 elif ! command -v "VBoxManage" > /dev/null; then
+  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
   sudo ln -s "${VIRTUALBOX_EXE}" /usr/bin/VBoxManage
 fi
 
@@ -85,9 +86,9 @@ LINUX_DISTRO_ID="$(python -c "import platform;print(platform.linux_distribution(
 case "${LINUX_DISTRO_ID}" in
   SUSE)
     if ! command -v "easy_install" > /dev/null; then
-      sudo zypper addrepo --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
+      sudo zypper addrepo --no-gpgcheck --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
       sudo zypper update
-      sudo zypper install python-setuptools -y
+      sudo zypper install --auto-agree-with-licenses --no-confirm python-setuptools
     fi
 
     PACKAGE_EXT="rpm"
