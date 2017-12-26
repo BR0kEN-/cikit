@@ -2,18 +2,11 @@
 
 INSTALL_PATH="/usr/local/share/cikit"
 
-if ! \command -v "sudo" >/dev/null && \command -v "cygstart" >/dev/null; then
-  sudo()
-  {
-    cygstart --action=runas "$@"
-  }
-fi
-
 if [ "--no-requirements-check" != "${1}" ]; then
   MISSING=""
 
   for COMMAND in vagrant VBoxManage ansible-playbook; do
-    if ! \command -v "${COMMAND}" >/dev/null; then
+    if ! \command -v "${COMMAND}" > /dev/null; then
       MISSING+="\n- ${COMMAND}"
     fi
   done

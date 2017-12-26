@@ -20,7 +20,7 @@ Imagine we have a *good enough* build. If so, we can simplify this step by just 
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 ```
 
-After the system is boot again, open the Microsoft Store and use search to find Ubuntu/openSUSE/another distro. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
+After the system is boot again, open the Microsoft Store and use search to find `Ubuntu` or `openSUSE`. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
 
 **Not recommended, legacy installation via `lxrun`**.
 
@@ -36,74 +36,116 @@ This is achievable without any inconvenience and extra steps. Just download Virt
 
 Installation of Guest Additions is not needed.
 
-## Install PIP and Ansible inside of WSL
+## Install PIP, Ansible and Vagrant inside of WSL
 
-Execute this script on **Ubuntu**.
+- Change the `WINDOWS_SYSTEMDRIVE` if Windows is installed not on `C:\\` drive.
+- You might want to change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
+- You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in a case you already have it and don't want to remove.
+- Relying on WSL interoperability, [cheat WSL](https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270) that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
 
-```bash
-sudo apt update
-sudo apt install python-setuptools -y
-```
-
-Execute this script on **openSUSE**.
+Save this script to the `wsl-provision.sh` and run within WSL shell.
 
 ```bash
-sudo zypper addrepo --check --refresh --name 'openSUSE-42.2-OSS' http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss
-sudo zypper update
-sudo zypper install python-setuptools -y
-```
+#!/usr/bin/env bash
 
-Execute this script on any distro.
-
-```bash
-sudo easy_install pip
-sudo pip install ansible
-```
-
-## Install Vagrant inside of WSL
-
-- You might change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
-- You don't need to have Vagrant as a Windows program.
-- Do never use `vagrant.exe` in a case you already have it and don't want to remove.
-
-Execute this script on **Ubuntu**.
-
-```bash
-PACKAGE_EXT="deb"
-PACKAGE_UTIL="dpkg"
-```
-
-Execute this script on **openSUSE**.
-
-```bash
-PACKAGE_EXT="rpm"
-PACKAGE_UTIL="rpm"
-```
-
-Execute this script on any distro.
-
-```bash
+# Must be in lowercase.
+WINDOWS_SYSDRV="c"
 VAGRANT_VERSION="2.0.1"
-VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.${PACKAGE_EXT}"
+VIRTUALBOX_EXE="/mnt/${WINDOWS_SYSDRV}/Program Files/Oracle/VirtualBox/VBoxManage.exe"
+POWERSHELL_EXE="/mnt/${WINDOWS_SYSDRV}/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 
-wget -q "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/${VAGRANT_FILENAME}"
-sudo ${PACKAGE_UTIL} -i "${VAGRANT_FILENAME}"
-rm "${VAGRANT_FILENAME}"
-```
+################################################################################
 
-## Prepare Linux environment for Vagrant operation
+# Can't continue without PowerShell.
+if [ ! -f "${POWERSHELL_EXE}" ]; then
+  echo "PowerShell cannot be found at \"${POWERSHELL_EXE}\". Are you sure Windows system drive is \"${WINDOWS_SYSDRV^^}:\\\"?"
+  exit 1
+elif ! command -v "powershell" > /dev/null; then
+  sudo ln -s "${POWERSHELL_EXE}" /usr/bin/powershell
+fi
 
-Relying on WSL interoperability, [cheat WSL](https://github.com/Microsoft/WSL/issues/733#issuecomment-266175270) that `VBoxManage.exe` and `powershell.exe` are Linux binaries. This needed because Vagrant uses exactly that executables.
+powershell -Command "Get-Host"
 
-```bash
-sudo ln -s "/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" /usr/bin/VBoxManage
-sudo ln -s "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe" /usr/bin/powershell
-```
+################################################################################
 
-Allow Vagrant to operate in WSL.
+# Can't continue without VirtualBox.
+if [ ! -f "${VIRTUALBOX_EXE}" ]; then
+  echo "VirtualBox cannot be found at \"${VIRTUALBOX_EXE}\". Is it installed?"
+  exit 2
+elif ! command -v "VBoxManage" > /dev/null; then
+  sudo ln -s "${VIRTUALBOX_EXE}" /usr/bin/VBoxManage
+fi
 
-```bash
+VBoxManage --version
+
+################################################################################
+
+LINUX_DISTRO_ID="$(python -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
+
+case "${LINUX_DISTRO_ID}" in
+  SUSE)
+    if ! command -v "easy_install" > /dev/null; then
+      sudo zypper addrepo --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
+      sudo zypper update
+      sudo zypper install python-setuptools -y
+    fi
+
+    PACKAGE_EXT="rpm"
+    PACKAGE_UTIL="rpm"
+    ;;
+
+  Ubuntu)
+    if ! command -v "easy_install" > /dev/null; then
+      sudo apt update
+      sudo apt install python-setuptools -y
+    fi
+
+    PACKAGE_EXT="deb"
+    PACKAGE_UTIL="dpkg"
+    ;;
+
+  *)
+    echo "The \"${LINUX_DISTRO_ID}\" Linux distribution is not supported."
+    exit 3
+    ;;
+esac
+
+easy_install --version
+
+################################################################################
+
+if ! command -v "pip" > /dev/null; then
+  sudo easy_install pip
+fi
+
+pip --version
+
+################################################################################
+
+if ! command -v "ansible" > /dev/null; then
+  sudo pip install ansible
+fi
+
+ansible --version
+
+################################################################################
+
+if ! command -v "vagrant" > /dev/null; then
+  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.${PACKAGE_EXT}"
+
+  wget -q "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/${VAGRANT_FILENAME}"
+  sudo ${PACKAGE_UTIL} -i "${VAGRANT_FILENAME}"
+  rm "${VAGRANT_FILENAME}"
+fi
+
+vagrant --version
+
+################################################################################
+
 cat << 'HERE' > ~/.vagrant.profile
+# Allow Vagrant to operate in WSL.
+# https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation
+export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
 # Without enabling this feature the ".vagrant.d" will be placed to
 # the "/mnt/c/Users/$USER/.vagrant.d". This will break SSH because
 # the private key will have too open permissions and you won't be
@@ -111,12 +153,11 @@ cat << 'HERE' > ~/.vagrant.profile
 # we are isolating Vagrant in WSL container and don't want to expose
 # boxes and other info from outside of it.
 export VAGRANT_WSL_DISABLE_VAGRANT_HOME=1
-# Allow Vagrant to operate in WSL.
-# https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation
-export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
 HERE
 
-echo "source ~/.vagrant.profile" >> ~/.profile
+if ! grep "source ~/.vagrant.profile" ~/.profile > /dev/null; then
+  echo "source ~/.vagrant.profile" >> ~/.profile
+fi
 ```
 
 ## Resolution of known problem (@todo)
