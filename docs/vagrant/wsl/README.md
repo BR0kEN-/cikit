@@ -20,9 +20,9 @@ Imagine we have a *good enough* build. If so, we can simplify this step by just 
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 ```
 
-After the system is boot again, open the Microsoft Store and use search to find `Ubuntu` or `openSUSE`. Proceed to its page and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
+After the system is boot again, open the Microsoft Store and use search to find `Ubuntu` or `openSUSE`. Proceed to the page of a chosen package and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
 
-**Not recommended, legacy installation via `lxrun`**.
+**Not recommended and deprecated installation via `lxrun`**.
 
 ![Installation via lxrun](images/16215-lxrun.png)
 
@@ -32,134 +32,22 @@ After the system is boot again, open the Microsoft Store and use search to find 
 
 ## Install VirtualBox
 
-This is achievable without any inconvenience and extra steps. Just download VirtualBox at https://www.virtualbox.org/wiki/Downloads and install it as a regular Windows program.
+This is achievable without any inconvenience and extra steps. Just download the VirtualBox at https://www.virtualbox.org/wiki/Downloads and install it as a regular Windows program.
 
 Installation of Guest Additions is not needed.
 
 ## Install PIP, Ansible and Vagrant inside of WSL
 
-- Change the `WINDOWS_SYSTEMDRIVE` if Windows is installed not on `C:\\` drive.
-- You might want to change the value of the `VAGRANT_VERSION` but it must not be lower than `1.9.5`.
-- You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
+Read [the provisioning script](wsl-provision.sh) first and then execute it in WSL (if you're willing to change something in it - download, modify and run). Don't forget to restart WSL afterward.
 
-Save this script to file and run it in WSL. Don't forget to restart WSL afterward.
+- The first argument - is a system drive where Windows is installed. Defaults to `c`. Must be in lowercase and without extra chars - only drive letter.
+- The second argument - is a version of Vagrant to install. Defaults to `2.0.1` and must not be lower than `1.9.5` due to CIKit requirements.
 
 ```bash
-#!/usr/bin/env bash
-
-# Must be in lowercase.
-WINDOWS_SYSDRV="c"
-VAGRANT_VERSION="2.0.1"
-VIRTUALBOX_EXE="/mnt/${WINDOWS_SYSDRV}/Program Files/Oracle/VirtualBox/VBoxManage.exe"
-POWERSHELL_EXE="/mnt/${WINDOWS_SYSDRV}/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
-
-################################################################################
-
-# Can't continue without PowerShell.
-if [ ! -f "${POWERSHELL_EXE}" ]; then
-  echo "PowerShell cannot be found at \"${POWERSHELL_EXE}\". Are you sure Windows system drive is \"${WINDOWS_SYSDRV^^}:\\\"?"
-  exit 1
-elif ! command -v "powershell" > /dev/null; then
-  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
-  sudo ln -s "${POWERSHELL_EXE}" /usr/bin/powershell
-fi
-
-powershell -Command "Get-Host"
-
-################################################################################
-
-# Can't continue without VirtualBox.
-if [ ! -f "${VIRTUALBOX_EXE}" ]; then
-  echo "VirtualBox cannot be found at \"${VIRTUALBOX_EXE}\". Is it installed?"
-  exit 2
-elif ! command -v "VBoxManage" > /dev/null; then
-  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
-  sudo ln -s "${VIRTUALBOX_EXE}" /usr/bin/VBoxManage
-fi
-
-VBoxManage --version
-
-################################################################################
-
-LINUX_DISTRO_ID="$(python -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
-
-case "${LINUX_DISTRO_ID}" in
-  openSUSE|SUSE)
-    if ! command -v "easy_install" > /dev/null; then
-      sudo zypper addrepo --no-gpgcheck --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
-      sudo zypper update
-      sudo zypper install --auto-agree-with-licenses --no-confirm python-setuptools
-    fi
-
-    PACKAGE_EXT="rpm"
-    PACKAGE_UTIL="rpm"
-    ;;
-
-  Ubuntu)
-    if ! command -v "easy_install" > /dev/null; then
-      sudo apt update
-      sudo apt install python-setuptools -y
-    fi
-
-    PACKAGE_EXT="deb"
-    PACKAGE_UTIL="dpkg"
-    ;;
-
-  *)
-    echo "The \"${LINUX_DISTRO_ID}\" Linux distribution is not supported."
-    exit 3
-    ;;
-esac
-
-easy_install --version
-
-################################################################################
-
-if ! command -v "pip" > /dev/null; then
-  sudo easy_install pip
-fi
-
-pip --version
-
-################################################################################
-
-if ! command -v "ansible" > /dev/null; then
-  sudo pip install ansible
-fi
-
-ansible --version
-
-################################################################################
-
-if ! command -v "vagrant" > /dev/null; then
-  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.${PACKAGE_EXT}"
-
-  wget -q "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/${VAGRANT_FILENAME}"
-  sudo ${PACKAGE_UTIL} -i "${VAGRANT_FILENAME}"
-  rm "${VAGRANT_FILENAME}"
-fi
-
-vagrant --version
-
-################################################################################
-
-cat << 'HERE' > ~/.vagrant.profile
-# Allow Vagrant to operate in WSL.
-# https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation
-export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
-# Without enabling this feature the ".vagrant.d" will be placed to
-# the "/mnt/c/Users/$USER/.vagrant.d". This will break SSH because
-# the private key will have too open permissions and you won't be
-# able to apply "chmod" for the file in Windows file system. Moreover,
-# we are isolating Vagrant in WSL container and don't want to expose
-# boxes and other info from outside of it.
-export VAGRANT_WSL_DISABLE_VAGRANT_HOME=1
-HERE
-
-if ! grep "source ~/.vagrant.profile" ~/.profile > /dev/null; then
-  echo "source ~/.vagrant.profile" >> ~/.profile
-fi
+curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/52/docs/vagrant/wsl/wsl-provision.sh | bash -s -- "c" "2.0.1"
 ```
+
+**NOTE**: you don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
 
 ## Resolution of known problem (@todo)
 
@@ -178,7 +66,7 @@ $WSLFSPATH=(Get-ItemProperty "$WSLREGKEY\$WSLDEFID").BasePath
 New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\rootfs"
 ```
 
-**WARNING**: this step - is a workaround for the issue and has been added for process simplification. If you think you have enough experience to patch the Vagrant with the https://github.com/hashicorp/vagrant/pull/9300 - do it and skip that PowerShell crutch.
+**WARNING**: this step - is a workaround for the issue and has been described in a way to simplify the preparation process. If you think you have enough experience to patch the Vagrant with the https://github.com/hashicorp/vagrant/pull/9300 - do it and skip that PowerShell crutch.
 
 ## All ready
 
