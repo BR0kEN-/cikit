@@ -84,7 +84,7 @@ VBoxManage --version
 LINUX_DISTRO_ID="$(python -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
 
 case "${LINUX_DISTRO_ID}" in
-  SUSE)
+  openSUSE|SUSE)
     if ! command -v "easy_install" > /dev/null; then
       sudo zypper addrepo --no-gpgcheck --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
       sudo zypper update
