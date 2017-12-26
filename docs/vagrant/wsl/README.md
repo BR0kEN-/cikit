@@ -70,11 +70,11 @@ New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\ro
 
 ## All ready
 
-- **Do never place files, you're gonna edit, within WSL**. Locate them on `/mnt/` only. Modifying data in Linux subsystem by Windows tools will lead to **their corruption and loss**. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-352183860 issue has some clarification on that.
-- Install CIKit as usual, create a project and provision VM.
+Install CIKit as usual, create a project and provision VM.
 
 ## Limitations
 
+- You won't be able to store projects anywhere except `/mnt`. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-257107090 issue has some clarification on that.
 - You have to manage hostnames of your projects manually by editing the `%SYSTEMROOT%\system32\drivers\etc\hosts`. Windows system files are not modifiable from WSL even if it's running in privileged mode. Moreover, do not run WSL with administrative privileges because VirtualBox won't operate properly.
 - You are not able to use NFS shares and forced to go with VBoxSF.
 - Microsoft Edge ignores the modifications of `hosts` file and doesn't open websites (temporary, investigation on this is going forward).
