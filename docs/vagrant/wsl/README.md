@@ -49,7 +49,7 @@ curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/52/docs/vagrant
 
 **NOTE**: you don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
 
-## Resolution of known problem (@todo)
+## Resolution of known problem
 
 Bear in mind that this step brings you an additional limitation, disallowing Vagrant to operate in multiple WSL instances (doubt someone needs this, but just FYI). The limitation is gone for sure when [the issue in Vagrant](https://github.com/hashicorp/vagrant/issues/9298) will be solved.
 
@@ -85,4 +85,4 @@ As a proof, you may take a look at the screenshot which shows that single Window
 
 ![CIKit VM on openSUSE and Ubuntu](images/wsl-cikit-opensuse-and-ubuntu.png)
 
-*For now it's possible only with the https://github.com/hashicorp/vagrant/pull/9300 patch applied. (@todo)*
+*For now it's possible only with the https://github.com/hashicorp/vagrant/pull/9300 patch applied.*
