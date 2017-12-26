@@ -178,6 +178,8 @@ $WSLFSPATH=(Get-ItemProperty "$WSLREGKEY\$WSLDEFID").BasePath
 New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\rootfs"
 ```
 
+**WARNING**: this step - is a workaround for the issue and has been added for process simplification. If you think you have enough experience to patch the Vagrant with the https://github.com/hashicorp/vagrant/pull/9300 - do it and skip that PowerShell crutch.
+
 ## All ready
 
 - **Do never place files, you're gonna edit, within WSL**. Locate them on `/mnt/` only. Modifying data in Linux subsystem by Windows tools will lead to **their corruption and loss**. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-352183860 issue has some clarification on that.
