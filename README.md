@@ -38,7 +38,7 @@
 |[Vagrant](https://github.com/hashicorp/vagrant)|1.9.5+|
 |[VirtualBox](https://www.virtualbox.org)|5.1+|
 
-Linux, macOS or Windows with WSL.
+Linux, macOS or Windows 10 (WSL).
 
 Please read [the manual for provisioning Windows host](docs/vagrant/wsl) first without relying on your knowledge. Even if you're 100% sure how to deal with it. The WSL is in active development and things changes quite often. There were many hours spent for investigation and providing a working step-by-step tutorial.
 
