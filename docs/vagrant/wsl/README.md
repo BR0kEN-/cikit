@@ -1,8 +1,6 @@
 # Install CIKit on Windows Subsystem for Linux
 
-## Requirements
-
-- Windows 10, build `16215` or greater (run `ver` in `cmd.exe` to check this).
+You must have the `16215` OS build or greater to continue (run `ver` in `cmd.exe` to check this).
 
 ## Install VirtualBox
 
@@ -21,7 +19,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-L
 After the system is boot again, open Microsoft Store and use search to find `Ubuntu` or one of `SUSE` distributions. Proceed to the page of a chosen package and click `Get`. After distro will be downloaded, click `Launch` and do the installation.
 
 **Notes**:
-- Will not work on WSL, installed via `lxrun /install /y`.
+- Will not work on WSL, installed via `lxrun /install /y`. Moreover, do not use this way since it's [deprecated](https://docs.microsoft.com/en-us/windows/wsl/reference).
 
 ## Install PIP, Ansible and Vagrant on WSL
 
