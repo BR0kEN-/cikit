@@ -42,7 +42,14 @@ VBoxManage --version
 # ==============================================================================
 # Install the "python-setuptools" and check whether Linux distro is supported.
 
-LINUX_DISTRO_ID="$(python -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
+LINUX_DISTRO_ID=""
+
+for PYTHON_COMMAND in "python" "python2" "python3"; do
+  if command -v "${PYTHON_COMMAND}" > /dev/null; then
+    LINUX_DISTRO_ID="$(${PYTHON_COMMAND} -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
+    break
+  fi
+done
 
 case "${LINUX_DISTRO_ID}" in
   openSUSE|SUSE)
@@ -66,9 +73,14 @@ case "${LINUX_DISTRO_ID}" in
     PACKAGE_UTIL="dpkg"
     ;;
 
+  '')
+    echo "Cannot compute a name of Linux distribution."
+    exit 3
+    ;;
+
   *)
     echo "The \"${LINUX_DISTRO_ID}\" Linux distribution is not supported."
-    exit 3
+    exit 4
     ;;
 esac
 
