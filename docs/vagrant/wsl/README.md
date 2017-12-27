@@ -58,12 +58,9 @@ Install CIKit as usual, create a project and provision VM.
 - You won't be able to store projects anywhere except `/mnt`. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-257107090 issue has some clarification on that.
 - You have to manage hostnames of your projects manually by editing the `%SYSTEMROOT%\system32\drivers\etc\hosts`. Windows system files are not modifiable from WSL even if it's running in privileged mode. Moreover, do not run WSL with administrative privileges because VirtualBox won't operate properly.
 - You are not able to use NFS shares and forced to go with VBoxSF.
-- Microsoft Edge ignores the modifications of `hosts` file and doesn't open websites (temporary, investigation on this is going forward).
 
 ## Result
 
 As a proof, you may take a look at the screenshot which shows that single Windows instance might have many WSL containers running with the CIKit.
 
 ![CIKit VM on openSUSE and Ubuntu](images/wsl-cikit-opensuse-and-ubuntu.png)
-
-*For now it's possible only with the https://github.com/hashicorp/vagrant/pull/9300 patch applied.*
