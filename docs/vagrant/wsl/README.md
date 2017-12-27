@@ -49,25 +49,6 @@ curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/issues/52/docs/vagrant
 
 **NOTE**: you don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
 
-## Resolution of known problem
-
-Bear in mind that this step brings you an additional limitation, disallowing Vagrant to operate in multiple WSL instances (doubt someone needs this, but just FYI). The limitation is gone for sure when [the issue in Vagrant](https://github.com/hashicorp/vagrant/issues/9298) will be solved.
-
-Run the following script if you don't have the `%LOCALAPPDATA%\lxss` directory (verify in the `cmd.exe` executing the `dir %LOCALAPPDATA%\lxss`). Check the https://github.com/berkshelf/vagrant-berkshelf/issues/323#issue-267607656 for more.
-
-In short, it'll be missing if you install WSL from Windows Store and not by running the `lxrun /install /y` from `cmd.exe`. And it must be missing because `lxrun` - is legacy way to install WSL.
-
-Copy and run the PowerShell script (in privileged mode).
-
-```powershell
-$WSLREGKEY="HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss"
-$WSLDEFID=(Get-ItemProperty "$WSLREGKEY").DefaultDistribution
-$WSLFSPATH=(Get-ItemProperty "$WSLREGKEY\$WSLDEFID").BasePath
-New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\lxss" -Value "$WSLFSPATH\rootfs"
-```
-
-**WARNING**: this step - is a workaround for the issue and has been described in a way to simplify the preparation process. If you think you have enough experience to patch the Vagrant with the https://github.com/hashicorp/vagrant/pull/9300 - do it and skip that PowerShell crutch.
-
 ## All ready
 
 Install CIKit as usual, create a project and provision VM.

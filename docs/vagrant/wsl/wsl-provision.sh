@@ -124,3 +124,33 @@ EOF
 if ! grep "source ~/.vagrant.profile" ~/.profile > /dev/null; then
   echo "source ~/.vagrant.profile" >> ~/.profile
 fi
+
+# ==============================================================================
+# Patch Vagrant.
+# @todo Remove patching section when the https://github.com/hashicorp/vagrant/issues/9298 issue will be resolved.
+
+VAGRANT_PATCH_NAME="vagrant-${VAGRANT_VERSION}-issue-9298.patch"
+VAGRANT_INSTALL_DIR="/opt/vagrant/embedded/gems/gems/vagrant-${VAGRANT_VERSION}"
+
+cd "${VAGRANT_INSTALL_DIR}"
+
+# Proceed only if we don't have the patch.
+if [ ! -f "${VAGRANT_PATCH_NAME}" ]; then
+  VAGRANT_PATCH_URL="https://raw.githubusercontent.com/BR0kEN-/cikit/issues/52/docs/vagrant/wsl/patches/${VAGRANT_PATCH_NAME}"
+
+  # Check whether the patch can be downloaded.
+  if wget -q --spider "${VAGRANT_PATCH_URL}"; then
+    sudo wget -q "${VAGRANT_PATCH_URL}"
+
+    # Apply the patch only if it wasn't applied previously.
+    if sudo patch -p1 -N --dry-run < ${VAGRANT_PATCH_NAME} > /dev/null; then
+      sudo patch -p1 < ${VAGRANT_PATCH_NAME}
+    fi
+  else
+    cat << HERE
+$(tput setaf 3)[WARNING] Patch for the Vagrant ${VAGRANT_VERSION} is missing and you have to create and apply it by yourself.
+
+Use the codebase from https://github.com/hashicorp/vagrant/pull/9300 PR.
+HERE
+  fi
+fi
