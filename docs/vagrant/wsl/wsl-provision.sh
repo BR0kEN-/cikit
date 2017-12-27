@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# Drive letter must be in lowercase.
-WINDOWS_SYSDRV="$1"
 VAGRANT_VERSION="$2"
-
-: "${WINDOWS_SYSDRV:="c"}"
 : "${VAGRANT_VERSION:="2.0.1"}"
 
 # ==============================================================================
 # Set up the runtime variables.
 
+# Drive letter must be in lowercase.
+WINDOWS_SYSDRV="$(powershell.exe -Command '$env:SYSTEMDRIVE.replace(":", "").ToLower()')"
+# Trim trailing whitespaces.
+WINDOWS_SYSDRV="${WINDOWS_SYSDRV%"${WINDOWS_SYSDRV##*[![:space:]]}"}"
 VIRTUALBOX_EXE="/mnt/${WINDOWS_SYSDRV}/Program Files/Oracle/VirtualBox/VBoxManage.exe"
 POWERSHELL_EXE="/mnt/${WINDOWS_SYSDRV}/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 
@@ -136,7 +136,7 @@ cd "${VAGRANT_INSTALL_DIR}"
 
 # Proceed only if we don't have the patch.
 if [ ! -f "${VAGRANT_PATCH_NAME}" ]; then
-  VAGRANT_PATCH_URL="https://raw.githubusercontent.com/BR0kEN-/cikit/issues/52/docs/vagrant/wsl/patches/${VAGRANT_PATCH_NAME}"
+  VAGRANT_PATCH_URL="https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/vagrant/wsl/patches/${VAGRANT_PATCH_NAME}"
 
   # Check whether the patch can be downloaded.
   if wget -q --spider "${VAGRANT_PATCH_URL}"; then
