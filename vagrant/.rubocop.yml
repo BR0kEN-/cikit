@@ -1,0 +1,10 @@
+Metrics/LineLength:
+  Max: 120
+Metrics/BlockLength:
+  Max: 120
+Metrics/BlockNesting:
+  Max: 5
+Style/NumericLiterals:
+  MinDigits: 6
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented

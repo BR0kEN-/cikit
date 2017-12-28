@@ -1,85 +1,91 @@
-require "yaml"
+require 'yaml'
 
-VAGRANT_API_VERSION ||= "2"
-VAGRANT_MIN_VERSION ||= "1.9.5"
-ANSIBLE_MIN_VERSION ||= "2.4.0"
+VAGRANT_API_VERSION ||= '2'.freeze
+VAGRANT_MIN_VERSION ||= '1.9.5'.freeze
+ANSIBLE_MIN_VERSION ||= '2.4.0'.freeze
 
 Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 
 # Basic variables.
-isWsl = Vagrant::Util::Platform.wsl?
-arguments = ARGV.join(" ")
-configValues = YAML::load_file(".cikit/config.yml")
-vagrantfileDir = File.dirname(__FILE__)
+ui = Vagrant::UI::Colored.new
+is_wsl = Vagrant::Util::Platform.wsl?
+arguments = ARGV.join(' ')
+config_values = YAML.load_file('.cikit/config.yml')
+vagrantfile_dir = File.dirname(__FILE__)
+cikit_package_dir = File.realdirpath(vagrantfile_dir + '/..')
 
 # Check whether CIKit cannot be bootstrapped properly.
-if (arguments.include?("up") or arguments.include?("provision")) and not arguments.include?("no-provision")
+if (arguments.include?('up') || arguments.include?('provision')) && !arguments.include?('no-provision')
   ANSIBLE = `bash -c "which ansible"`.chomp
 
   if ANSIBLE.empty?
-    puts "You have to install Ansible #{ANSIBLE_MIN_VERSION} or better before continue."
-    exit 1
+    ui.say(:error, "You have to install Ansible #{ANSIBLE_MIN_VERSION} or better before continue.")
+    exit(1)
   end
 
   if Gem::Version.new(`#{ANSIBLE} --version | head -n1 | awk '{print $2}'`) < Gem::Version.new(ANSIBLE_MIN_VERSION)
-    puts "Installed version of Ansible must not be lower than #{ANSIBLE_MIN_VERSION}."
-    exit 2
+    ui.say(:error, "Installed version of Ansible must not be lower than #{ANSIBLE_MIN_VERSION}.")
+    exit(2)
   end
 end
 
 # Ensure that configured IP ain't owned by other VM.
 # This should be executed even when machine state is already "running" to always
 # keep "hostsupdater" plugin updated. Otherwise it'll propose you to setup wrong IP.
-if ["up", "resume", "reload"].include?(ARGV[0])
-  VBoxManage = VagrantPlugins::ProviderVirtualBox::Driver::Meta.new
+if %w[up resume reload].include?(ARGV[0])
+  virtualbox = VagrantPlugins::ProviderVirtualBox::Driver::Meta.new
 
   # The output looks like:
   # "Windows7" {0c7dd8ed-8187-44c7-9d6e-c372305fb573}
   # Iterate over the list of virtual machines.
-  VBoxManage.execute("list", "vms").scan(/".+?"/) do |vmName|
+  virtualbox.execute('list', 'vms').scan(/".+?"/) do |vm_name|
     # Trim quotes at the end and start.
-    vmName = vmName[1..-2]
+    vm_name = vm_name[1..-2]
     # The output looks like:
     # Name: /VirtualBox/GuestInfo/Net/1/V4/IP, value: 192.168.59.101, timestamp: 1489077258093051000, flags: TRANSIENT, TRANSRESET
     # Property "/VirtualBox/GuestInfo/Net/0/V4/IP" contains internal IP, like "10.0.2.15".
-    vmIp = VBoxManage.execute("guestproperty", "enumerate", vmName, "--patterns", "/VirtualBox/GuestInfo/Net/1/V4/IP").gsub(/.*value:\s+(.+?),.*/, '\1').chomp
+    vm_ip = virtualbox
+      .execute('guestproperty', 'enumerate', vm_name, '--patterns', '/VirtualBox/GuestInfo/Net/1/V4/IP')
+      .gsub(/.*value:\s+(.+?),.*/, '\1')
+      .chomp
 
-    if not vmIp.empty? and vmIp == configValues["vm"]["ip"] and vmName != configValues["project"]
-      ipSections = vmIp.split(".")
+    if !vm_ip.empty? && vm_ip == config_values['vm']['ip'] && vm_name != config_values['project']
+      ip_sections = vm_ip.split('.')
       # Increase last number of IP by 1.
-      ipSections[-1] = ipSections.last.to_i + 1
+      ip_sections[-1] = ip_sections.last.to_i + 1
 
-      vmIp = ipSections.join(".")
+      vm_ip = ip_sections.join('.')
 
-      puts "[IP conflict resolved]: #{configValues["vm"]["ip"]} (used by \"#{vmName}\") was changed to #{vmIp}."
-      configValues["vm"]["ip"] = vmIp
+      ui.say(:warn, %([IP conflict resolved]: #{config_values['vm']['ip']} is used by the "#{vm_name}" so changed to #{vm_ip}.))
+
+      config_values['vm']['ip'] = vm_ip
     end
   end
 # Smart "hostsupdater" plugin use configured IP of VM to clean up the hosts file, so we don't need to
 # worry about this at the following commands: "destroy", "suspend", "reload", "halt".
-elsif ["destroy", "suspend", "reload", "halt"].include?(ARGV[0])
+elsif %w[destroy suspend reload halt].include?(ARGV[0])
 end
 
-ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
-if isWsl
+if is_wsl
   # Make sure that mounted shares will be within DrvFS.
   # https://github.com/Microsoft/WSL/issues/1283#issuecomment-257107090
-  if not Vagrant::Util::Platform.wsl_path?(__dir__)
-    puts "You cannot have a VM outside of the \"/mnt\" on WSL."
-    exit 3
+  unless Vagrant::Util::Platform.wsl_path?(__dir__)
+    ui.say(:error, 'You cannot have a VM outside of the "/mnt" on WSL.')
+    exit(3)
   end
-# Under the WSL the "%SYSTEMROOT%\system32\drivers\etc\hosts" file must be modified
-# in order to add IP aliases. Everybody knows this file is a system one and it's not
-# available for modifications even when Bash is running with administrative privileges.
-# Moreover, VirtualBox in WSL won't operate properly when Bash is in privileged mode.
-# So, we simply do not need this plugin in WSL.
-elsif not Vagrant.has_plugin?("vagrant-hostsupdater")
-  system "vagrant plugin install vagrant-hostsupdater"
+  # Under the WSL the "%SYSTEMROOT%\system32\drivers\etc\hosts" file must be modified
+  # in order to add IP aliases. Everybody knows this file is a system one and it's not
+  # available for modifications even when Bash is running with administrative privileges.
+  # Moreover, VirtualBox in WSL won't operate properly when Bash is in privileged mode.
+  # So, we simply do not need this plugin in WSL.
+elsif !Vagrant.has_plugin?('vagrant-hostsupdater')
+  system('vagrant plugin install vagrant-hostsupdater')
 end
 
 # Automatically load custom provisioners.
-Dir["#{vagrantfileDir}/provisioners/*"].each do |file|
+Dir["#{vagrantfile_dir}/provisioners/*"].each do |file|
   file += "/#{File.basename(file)}.rb"
 
   require file if File.exist?(file)
@@ -89,10 +95,9 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # The "hostsupdater" plugin insert this value to "hosts".
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
-  config.vm.hostname = configValues["site_url"].split('//').last
+  config.vm.hostname = config_values['site_url'].split('//').last
   # Handle port collisions.
   config.vm.usable_port_range = (10200..10500)
-
   config.vm.post_up_message = "Documentation: https://github.com/BR0kEN-/cikit
 
  ██████╗ ██╗    ██╗  ██╗ ██╗ ████████╗
@@ -102,81 +107,94 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
 ╚██████╗ ██║    ██║  ██╗ ██║    ██║
  ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝
 
-IP address: #{configValues["vm"]["ip"]}
-Hostname: #{config.vm.hostname}
-"
+IP address: #{config_values['vm']['ip']}
+Hostname: #{config.vm.hostname}"
 
   # Change the name of VM.
-  config.vm.define config.vm.hostname do |vm|
-  end
+  config.vm.define(config.vm.hostname) {}
 
   config.vm.provider :virtualbox do |vb|
-    vb.name = configValues["project"]
+    vb.name = config_values['project']
 
-    configValues["vm"]["virtualbox"]["modifyvm"].each do |key, value|
-      vb.customize ["modifyvm", :id, "--#{key}", "#{value}"]
+    config_values['vm']['virtualbox']['modifyvm'].each do |key, value|
+      vb.customize(['modifyvm', :id, "--#{key}", value.to_s])
     end
   end
 
-  config.vm.network :private_network,
-    :ip => configValues["vm"]["ip"],
-    :lxc__bridge_name => "lxcbr0"
+  config.vm.network(
+    :private_network,
+    ip: config_values['vm']['ip'],
+    lxc__bridge_name: 'lxcbr0'
+  )
 
-  configValues["vm"]["ports"].each do |port|
-    config.vm.network :forwarded_port,
-      :host => port.to_i,
-      :guest => port.to_i,
+  config_values['vm']['ports'].each do |port|
+    config.vm.network(
+      :forwarded_port,
+      host: port.to_i,
+      guest: port.to_i,
       # https://github.com/mitchellh/vagrant/issues/8395#issuecomment-288379271
-      :host_ip => "127.0.0.1",
-      :auto_correct => true
+      host_ip: '127.0.0.1',
+      auto_correct: true
+    )
   end
 
-  # Mount the directory containing Bash scripts additionally.
-  (configValues["vm"]["folders"] ||= []).push({
-    "source" => "#{vagrantfileDir}/../lib",
-    "target" => "/var/lib/cikit",
+  # Mount the directory containing CIKit scripts additionally.
+  (config_values['vm']['folders'] ||= []).push(
+    'source' => "#{cikit_package_dir}/lib",
+    'target' => '/var/lib/cikit',
     # This directory is not available for mounting since CIKit is installed
     # within the WSL on Windows. Only simple copy and paste. NFSd can't work
     # there since "systemd" is not available. The "vboxsf" will be ended up
     # with "Protocol error". So we go with simple "rsync" which will copy
-    # updated (if so) files everytime the machine will be booted/rebooted.
+    # updated (if so) files every time the machine will be booted/rebooted.
     # It's okay to do like this since there are executables only and they
     # mustn't be modified.
-    "type" => isWsl ? "rsync" : "nfs",
-    "nfs" => {
-      "udp" => true,
-      "version" => 3,
-    },
-  })
+    'type' => is_wsl ? 'rsync' : 'nfs',
+    'nfs' => {
+      'udp' => true,
+      'version' => 3
+    }
+  )
 
-  configValues["vm"]["folders"].each do |folder|
-    nfsVersion = folder["nfs"]["version"].to_i
-
-    config.vm.synced_folder folder["source"], folder["target"],
-      :id => folder["target"],
+  config_values['vm']['folders'].each do |folder|
+    unless folder.key?('type')
       # Use VBoxSF native system to mount folders on Windows WSL.
-      :type => folder.key?("type") ? folder["type"] : (isWsl ? false : "nfs"),
-      :nfs_udp => folder["nfs"]["udp"],
-      :nfs_version => nfsVersion.between?(2, 4) ? nfsVersion : 3
+      folder['type'] = is_wsl ? false : 'nfs'
+    end
+
+    config.vm.synced_folder(
+      folder['source'],
+      folder['target'],
+      id: folder['target'],
+      type: folder['type'],
+      nfs_udp: folder['nfs']['udp'],
+      nfs_version: folder['nfs']['version'].to_i.between?(2, 4) ? folder['nfs']['version'] : 3
+    )
   end
 
-  config.vm.provision :cikit,
-    :controller => "#{vagrantfileDir}/../lib/cikit",
-    :playbook => "#{vagrantfileDir}/../scripts/provision"
+  config.vm.provision(
+    :cikit,
+    controller: "#{cikit_package_dir}/lib/cikit",
+    playbook: "#{cikit_package_dir}/scripts/provision"
+  )
 
   # Create Selenium hub.
-  config.vm.provision :shell,
-    :keep_color => true,
-    :inline => "cikit tests",
-    :run => "always"
+  config.vm.provision(
+    :shell,
+    keep_color: true,
+    inline: 'cikit tests',
+    run: 'always'
+  )
 
   # Create Selenium node.
-  config.vm.provision :cikit,
-    :controller => "#{vagrantfileDir}/../lib/cikit",
-    :playbook => "#{vagrantfileDir}/../scripts/selenium && true",
-    :run => "always"
+  config.vm.provision(
+    :cikit,
+    controller: "#{cikit_package_dir}/lib/cikit",
+    playbook: "#{cikit_package_dir}/scripts/selenium && true",
+    run: 'always'
+  )
 
-  config.ssh.shell = "sh"
+  config.ssh.shell = 'sh'
   config.ssh.insert_key = false
   config.ssh.forward_agent = true
 end

@@ -34,6 +34,7 @@ matrix/*
 !.eslint*
 !.version
 !.codespellignore
+!.rubocop.yml
 
 # File extensions.
 *.retry

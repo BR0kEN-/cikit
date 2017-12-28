@@ -1,6 +1,6 @@
 # Install CIKit on Windows Subsystem for Linux
 
-You must have the `16215` OS build or greater to continue (run `ver` in `cmd.exe` to check this).
+You must have the `16215` OS build or greater to continue (run `ver` in `cmd.exe` to check).
 
 ## Install VirtualBox
 
@@ -41,9 +41,12 @@ Install CIKit as usual, create a project and provision VM.
 
 ## Limitations
 
-- You won't be able to store projects anywhere except `/mnt`. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-257107090 issue has some clarification on that.
-- You have to manage hostnames of your projects manually by editing the `%SYSTEMROOT%\system32\drivers\etc\hosts`. Windows system files are not modifiable from WSL even if it's running in privileged mode. Moreover, do not run WSL with administrative privileges because VirtualBox won't operate properly.
-- You are not able to use NFS shares and forced to go with VBoxSF.
+- NFS mounts are not available and you'll be forced to use VBoxSF.
+- Local websites can't be opened in Microsoft Edge (https://stackoverflow.com/questions/32384571). Internet Explorer and other browsers works okay.
+- Projects cannot be located anywhere except `/mnt`. The https://github.com/Microsoft/WSL/issues/1283#issuecomment-257107090 issue has some clarification on that.
+- Hostnames of the projects have to be manually managed in the `%SYSTEMROOT%\system32\drivers\etc\hosts`. System files in Windows are not modifiable within WSL even if it's running in privileged mode. Moreover, do not run WSL as an admin because VirtualBox won't operate properly.
+
+*None of the limitations are connected to CIKit. Each one is a small part of the issues WSL/Windows has at the moment.*
 
 ## Result
 

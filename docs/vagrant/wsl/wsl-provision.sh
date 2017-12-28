@@ -124,13 +124,6 @@ cat << 'EOF' > ~/.vagrant.profile
 # Allow Vagrant to operate in WSL.
 # https://www.vagrantup.com/docs/other/wsl.html#vagrant-installation
 export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
-# Without enabling this feature the ".vagrant.d" will be placed to
-# the "/mnt/c/Users/$USER/.vagrant.d". This will break SSH because
-# the private key will have too open permissions and you won't be
-# able to apply "chmod" for the file in Windows file system. Moreover,
-# we are isolating Vagrant in WSL container and don't want to expose
-# boxes and other info from outside of it.
-export VAGRANT_WSL_DISABLE_VAGRANT_HOME=1
 EOF
 
 if ! grep "source ~/.vagrant.profile" ~/.profile > /dev/null; then
