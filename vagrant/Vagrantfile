@@ -75,11 +75,11 @@ if is_wsl
     ui.say(:error, 'You cannot have a VM outside of the "/mnt" on WSL.')
     exit(3)
   end
-  # Under the WSL the "%SYSTEMROOT%\system32\drivers\etc\hosts" file must be modified
-  # in order to add IP aliases. Everybody knows this file is a system one and it's not
-  # available for modifications even when Bash is running with administrative privileges.
-  # Moreover, VirtualBox in WSL won't operate properly when Bash is in privileged mode.
-  # So, we simply do not need this plugin in WSL.
+# Under the WSL the "%SYSTEMROOT%\system32\drivers\etc\hosts" file must be modified
+# in order to add IP aliases. Everybody knows this file is a system one and it's not
+# available for modifications even when Bash is running with administrative privileges.
+# Moreover, VirtualBox in WSL won't operate properly when Bash is in privileged mode.
+# So, we simply do not need this plugin in WSL.
 elsif !Vagrant.has_plugin?('vagrant-hostsupdater')
   system('vagrant plugin install vagrant-hostsupdater')
 end

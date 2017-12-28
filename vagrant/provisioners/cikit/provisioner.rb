@@ -126,7 +126,7 @@ module VagrantPlugins
           end
         end
 
-        write_cache(inventory_file, inventory_content.join('\n'))
+        write_cache(inventory_file, inventory_content.join("\n"))
 
         inventory_file
       end
