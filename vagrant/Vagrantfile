@@ -1,4 +1,5 @@
 require 'yaml'
+require_relative 'message'
 
 VAGRANT_API_VERSION ||= '2'.freeze
 VAGRANT_MIN_VERSION ||= '1.9.5'.freeze
@@ -96,25 +97,23 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # The "site_url" will appear in "config.yml" via repository builder.
   # See "scripts/repository.yml".
   config.vm.hostname = config_values['site_url'].split('//').last
+  # Add an informative message about CIKit.
+  config.vm.post_up_message = cikit_message(config_values['vm']['ip'], config.vm.hostname, is_wsl)
   # Handle port collisions.
   config.vm.usable_port_range = (10200..10500)
-  config.vm.post_up_message = "Documentation: https://github.com/BR0kEN-/cikit
 
- ██████╗ ██╗    ██╗  ██╗ ██╗ ████████╗
-██╔════╝ ██║    ██║ ██╔╝ ██║ ╚══██╔══╝
-██║      ██║    █████╔╝  ██║    ██║
-██║      ██║    ██╔═██╗  ██║    ██║
-╚██████╗ ██║    ██║  ██╗ ██║    ██║
- ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝
+  # This Vagrant file is a third one which configures the VM. First one - within the
+  # project that has a bare minimum to use CIKit box. Second - within the box. Third -
+  # this one, included by second, which is within the box. The situation is that you
+  # can define a VM explicitly only via the first call of "Vagrant.configure()" and
+  # can't change this in other calls because the "default" has been already created
+  # and in use. So, uncommenting the next line will attempt to create a new, unneeded
+  # VM.
+  # config.vm.define(config.vm.hostname)
+  # Leaving the above line here for documentation purposes only.
 
-IP address: #{config_values['vm']['ip']}
-Hostname: #{config.vm.hostname}"
-
-  # Change the name of VM.
-  config.vm.define(config.vm.hostname) {}
-
-  config.vm.provider :virtualbox do |vb|
-    vb.name = config_values['project']
+  config.vm.provider(:virtualbox) do |vb|
+    vb.name = config.vm.hostname
 
     config_values['vm']['virtualbox']['modifyvm'].each do |key, value|
       vb.customize(['modifyvm', :id, "--#{key}", value.to_s])
