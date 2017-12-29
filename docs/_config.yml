@@ -1,1 +1,40 @@
-theme: jekyll-theme-cayman
+url: http://cikit.tools
+name: &name "Sergii Bondarenko"
+title: "CIKit - Continuous Integration Kit"
+locale: "en-US"
+description: "Ansible-based system for building different development environments."
+
+search: true
+breadcrumbs: true
+
+twitter:
+  username: &twitter "brO_0keN"
+
+facebook:
+  username: &facebook "alwayswannarock"
+  app_id:
+  publisher:
+og_image: "/assets/images/site-logo.png"
+
+social:
+  links:
+    - "https://twitter.com/brO_0keN"
+    - "https://facebook.com/alwayswannarock"
+
+author:
+  # *name is a YAML reference pointing to the &anchor earlier.
+  name: *name
+  location: "Dnipro, UA"
+  email: sb@firstvector.org
+  bitbucket: BR0kEN
+  facebook: *facebook
+  github: BR0kEN-
+  google_plus: 118101065933954772499
+  linkedin: BR0kEN
+  twitter: *twitter
+
+remote_theme: "mmistakes/minimal-mistakes"
+minimal_mistakes_skin: "default"
+
+plugins:
+  - jekyll-remote-theme
