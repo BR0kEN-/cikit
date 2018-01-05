@@ -16,7 +16,7 @@ def cikit_message(ip, host, is_wsl)
     |#{blue}██║      ██║    ██╔═██╗  ██║    ██║#{reset}
     |#{blue}╚██████╗ ██║    ██║  ██╗ ██║    ██║#{reset}
     |#{blue} ╚═════╝ ╚═╝    ╚═╝  ╚═╝ ╚═╝    ╚═╝#{reset}
-    | 
+    |
     |#{green}IP address: #{yellow}#{ip}#{reset}
     |#{green}Hostname: #{yellow}#{host}#{reset}
   END
