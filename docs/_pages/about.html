@@ -1,0 +1,51 @@
+---
+title: About
+permalink: /about/
+author_profile: false
+---
+<style>
+  .contributors {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    list-style: none;
+  }
+  .contributors li {
+    width: 150px;
+    margin-right: 7px;
+  }
+  .contributors img {
+    width: 150px;
+    height: 150px;
+  }
+</style>
+
+<strong>CIKit</strong> has been inspired by <a href="http://cibox.tools" target="_blank">CIBox</a> in 2015 and born (forked) on <a href="https://github.com/BR0kEN-/cikit/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab">November 9</a>. <a href="https://github.com/BR0kEN-/cikit/commit/6245de17ae533294b24bdacab54493c32cb54fb3">13 months later</a> CIKit got its own license since has undergone a lot of architectural changes and have been no longer included technical approaches inherited from CIBox.
+
+<p class="notice--info">
+  Continuous Integration Kit is leading by <a href="{{ site.github.owner_url }}">Sergii Bondarenko</a>, who are maintaining and coordinating the project since 2015.
+</p>
+
+<h2 id="contributors">Contributors</h2>
+
+<p>These guys put a lot of efforts and deserved having many thanks.</p>
+
+<ul class="contributors">
+  {% for contributor in site.github.contributors %}
+  <li>
+    <a href="{{ contributor.url }}">
+      <img src="{{ contributor.avatar_url }}" alt="{{ contributor.login }}" title="{{ contributor.contributions }} contributions" />
+      <h6>@{{ contributor.login }}</h6>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<h2 id="special-thanks">Special thanks</h2>
+
+<ul>
+  <li>
+    <a href="https://github.com/Diam0n">@Diam0n</a>, who is helping to provide environments for testings.
+  </li>
+</ul>

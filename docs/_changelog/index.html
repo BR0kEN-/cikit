@@ -1,0 +1,14 @@
+---
+title: Changelog
+permalink: /changelog/
+---
+
+<ul>
+  {% for item in site.changelog %}
+    {% if item.title != page.title %}
+      <li>
+        <a href="{{ item.url }}">{{ item.title }}</a> - {{ item.description }}
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

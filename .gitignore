@@ -5,6 +5,7 @@
 !lib/
 !cmf/
 !docs/
+docs/_site/
 !tests/
 !scripts/
 !vagrant/
@@ -39,4 +40,5 @@ matrix/*
 # File extensions.
 *.retry
 *.py[co]
+Gemfile.lock
 !*.md
