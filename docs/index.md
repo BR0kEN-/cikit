@@ -11,19 +11,19 @@ header:
 feature_row:
   - title: "Hosts manager"
     excerpt: "A command line tool for collecting and managing SSH credentials of various hosts."
-    url: "/docs/configuration/"
+    url: "documentation/hosts-manager/"
     btn_class: "btn--primary"
     btn_label: "Learn More"
 
   - title: "Matrix of CI servers"
     excerpt: "Transform your server with a nude **Ubuntu 16.04** into the machine that's able to host **Docker**-based CI servers. 5 minutes and you're done."
-    url: "/docs/layouts/"
+    url: "documentation/matrix/"
     btn_class: "btn--primary"
     btn_label: "Learn More"
 
   - title: "Cross-platform VM"
     excerpt: "A virtual machine with a preset of software you choose interactively. Automatic IP allocation and VPN configuration. **macOS**, **Linux** and **Windows** compatibility."
-    url: "/docs/license/"
+    url: "documentation#dependencies"
     btn_class: "btn--primary"
     btn_label: "Learn More"
 ---

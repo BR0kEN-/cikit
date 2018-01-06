@@ -1,0 +1,22 @@
+This page contains a listing of subpages with their excerptions for chosen category.
+
+<div>
+  {% for group in site.data.navigation[include.collection] %}
+    {% if group.url == page.url %}
+      {% for item in group.children %}
+        <h2>{{ item.title }}</h2>
+
+        {% for collection_item in site[include.collection] %}
+          {% if item.url == collection_item.permalink %}
+            {{ collection_item.excerpt }}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+
+        <a href="{{ item.url }}">Read more</a>
+      {% endfor %}
+
+      {% break %}
+    {% endif %}
+  {% endfor %}
+</div>

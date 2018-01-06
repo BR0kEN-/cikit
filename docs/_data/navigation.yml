@@ -1,6 +1,6 @@
 main:
   - title: Documentation
-    url: /docs/
+    url: /documentation/
   - title: Changelog
     url: /changelog/
   - title: Support
@@ -8,45 +8,53 @@ main:
   - title: About
     url: /about/
 
-docs:
+documentation:
   - title: Hosts manager
+    url: /documentation/hosts-manager/
     children:
       - title: How to define, check or delete server credentials
-        url: /docs/hosts-manager/
+        url: /documentation/hosts-manager/
 
   - title: Matrix of CI servers
+    url: /documentation/matrix/
     children:
-      - title: Getting started
-        url: /docs/matrix/
+      - title: Terminology and management
+        url: /documentation/matrix/
       - title: Access droplet via SSH
-        url: /docs/matrix/droplet-ssh/
+        url: /documentation/matrix/droplet-ssh/
       - title: Protect droplet via HTTP auth
-        url: /docs/matrix/droplet-http-auth/
+        url: /documentation/matrix/droplet-http-auth/
 
   - title: CI server (droplet)
+    url: /documentation/jenkins/
     children:
       - title: Configure Jenkins
-        url: /docs/jenkins/
+        url: /documentation/jenkins/
+      - title: Reinstall Jenkins
+        url: /documentation/jenkins/reinstall/
       - title: Configure Github bot
-        url: /docs/jenkins/github-bot/
+        url: /documentation/jenkins/github-bot/
       - title: Parameterized builds
-        url: /docs/jenkins/parameterized-builds/
-      - title: Reinstall/update Jenkins
-        url: /docs/jenkins/reinstall/
+        url: /documentation/jenkins/parameterized-builds/
 
   - title: Project
+    url: /documentation/project/
     children:
       - title: Environment configuration
-        url: /docs/project/env-config/
+        url: /documentation/project/env-config/
       - title: MySQL import strategies
-        url: /docs/project/mysql-import-strategies/
+        url: /documentation/project/mysql-import-strategies/
       - title: Microsoft SQL server
-        url: /docs/project/mssql/
+        url: /documentation/project/mssql/
       - title: Solr
-        url: /docs/project/solr/
+        url: /documentation/project/solr/
       - title: Sniffers
-        url: /docs/project/sniffers/
+        url: /documentation/project/sniffers/
       - title: Vagrant box
-        url: /docs/project/vagrant-box/
-      - title: Pantheon workflow
-        url: /docs/project/pantheon-workflow/
+        url: /documentation/project/vagrant-box/
+
+  - title: Workflow
+    url: /documentation/workflow/
+    children:
+      - title: Pantheon
+        url: /documentation/workflow/pantheon/

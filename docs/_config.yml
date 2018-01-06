@@ -1,6 +1,7 @@
 url: http://cikit.tools
 name: &name "Sergii Bondarenko"
 title: "CIKit"
+title_long: "Continuous Integration Kit"
 locale: "en-US"
 # https://help.github.com/articles/repository-metadata-on-github-pages/#using-repository-metadata-locally
 #repository: BR0kEN-/cikit
@@ -22,8 +23,8 @@ og_image: "/assets/images/site-logo.png"
 
 social:
   links:
-    - "https://twitter.com/brO_0keN"
-    - "https://facebook.com/alwayswannarock"
+    - "https://twitter.com/*twitter"
+    - "https://facebook.com/*facebook"
 
 author:
   # *name is a YAML reference pointing to the &anchor earlier.
@@ -100,68 +101,61 @@ kramdown:
 
 # Collections
 collections:
-  docs:
+  documentation:
     output: true
   changelog:
     output: true
 
 
-# Defaults
+# Defaults.
 defaults:
-  # _posts
-  - scope:
-      path: "_posts"
-      type: posts
-    values:
-      layout: single
-      author_profile: true
-      read_time: true
-      comments: true
-      share: true
-      related: true
-
   - scope:
       path: "_pages"
       type: pages
     values:
       layout: single
-      author_profile: true
 
   - scope:
-      path: "_docs"
-      type: docs
+      path: "_documentation"
+      type: documentation
     values:
+      toc: true
+      toc_label: Page contents
       layout: single
       read_time: false
       author_profile: false
       share: false
       comments: false
       sidebar:
-        nav: "docs"
+        nav: "documentation"
 
   - scope:
       path: "_changelog"
       type: changelog
     values:
-      layout: archive
+      toc: true
+      toc_label: Releases
+      layout: single
       read_time: false
       author_profile: false
       share: false
       comments: false
       sidebar:
-        nav: "docs"
+        nav: "documentation"
 
-# Sass/SCSS
+# Sass/SCSS.
 sass:
   sass_dir: _sass
-  style: compressed # http://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
+  # http://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
+  style: compressed
 
 
-# Outputting
+# Outputting.
 permalink: /:categories/:title/
 # paginate: 5 # amount of posts to show
 # paginate_path: /page:num/
-timezone: America/New_York # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: Europe/Kiev
 
 
 # Plugins (previously gems:)
@@ -175,7 +169,6 @@ plugins:
   - jekyll-relative-links
   - jekyll-github-metadata
 
-# mimic GitHub Pages with --safe
 # https://help.github.com/articles/configuring-jekyll-plugins/
 whitelist:
   - jekyll-paginate
@@ -226,8 +219,8 @@ tag_archive:
 #     tag: /tags/:name/
 
 
-# HTML Compression
-# - http://jch.penibelst.de/
+# HTML Compression.
+# http://jch.penibelst.de/
 compress_html:
   clippings: all
   ignore:
