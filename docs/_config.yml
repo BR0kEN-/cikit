@@ -11,6 +11,15 @@ title_separator: "|"
 
 search: true
 breadcrumbs: true
+words_per_minute: 200
+
+cikit_parent:
+  url: "http://cibox.tools"
+  title: "CIBox"
+  title_long: "Continuous Integration Box"
+  author:
+    name: "Andrii Podanenko"
+    github: "podarok"
 
 twitter:
   username: &twitter "brO_0keN"
@@ -19,17 +28,18 @@ facebook:
   username: &facebook "alwayswannarock"
   app_id:
   publisher:
-og_image: "/assets/images/site-logo.png"
+og_image: "/assets/site-logo.png"
 
 social:
   links:
-    - "https://twitter.com/*twitter"
-    - "https://facebook.com/*facebook"
+    - "https://twitter.com/brO_0keN"
+    - "https://facebook.com/alwayswannarock"
 
 author:
   # *name is a YAML reference pointing to the &anchor earlier.
   name: *name
-  location: "Dnipro, UA"
+  avatar: "/assets/BR0kEN.jpg"
+  location: "Dnipro, Ukraine"
   email: sb@firstvector.org
   bitbucket: BR0kEN
   facebook: *facebook
@@ -110,6 +120,17 @@ collections:
 # Defaults.
 defaults:
   - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      related: true
+      share: true
+
+  - scope:
       path: "_pages"
       type: pages
     values:
@@ -122,10 +143,6 @@ defaults:
       toc: true
       toc_label: Page contents
       layout: single
-      read_time: false
-      author_profile: false
-      share: false
-      comments: false
       sidebar:
         nav: "documentation"
 
@@ -134,12 +151,8 @@ defaults:
       type: changelog
     values:
       toc: true
-      toc_label: Releases
+      toc_label: Page contents
       layout: single
-      read_time: false
-      author_profile: false
-      share: false
-      comments: false
       sidebar:
         nav: "documentation"
 
@@ -151,7 +164,7 @@ sass:
 
 
 # Outputting.
-permalink: /:categories/:title/
+permalink: /blog/:categories/:title/
 # paginate: 5 # amount of posts to show
 # paginate_path: /page:num/
 # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -168,6 +181,7 @@ plugins:
   - jekyll-remote-theme
   - jekyll-relative-links
   - jekyll-github-metadata
+  - jekyll-redirect-from
 
 # https://help.github.com/articles/configuring-jekyll-plugins/
 whitelist:
@@ -179,6 +193,7 @@ whitelist:
   - jekyll-remote-theme
   - jekyll-relative-links
   - jekyll-github-metadata
+  - jekyll-redirect-from
 
 
 relative_links:

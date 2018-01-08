@@ -1,30 +1,41 @@
 ---
 title: About
 permalink: /about/
+special_thanks:
+  - name: Diam0n
+    thanks: "helping to provide environments for testings."
+  - name: lokeoke
+    thanks: "helping with testing the newest approaches."
+  - name: mitsuroseba
+    thanks: "sharing his creative ideas."
+  - name: gajdamaka
+    thanks: "sharing his creative ideas."
 ---
-<style>
-  .contributors {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    flex-wrap: wrap;
-    list-style: none;
-  }
-  .contributors li {
-    width: 150px;
-    margin-right: 7px;
-  }
-  .contributors img {
-    width: 150px;
-    height: 150px;
-  }
-</style>
 
-<strong>CIKit</strong> has been inspired by <a href="http://cibox.tools" target="_blank">CIBox</a> in 2015 and born (forked) on <a href="https://github.com/BR0kEN-/cikit/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab">November 9</a>. <a href="https://github.com/BR0kEN-/cikit/commit/6245de17ae533294b24bdacab54493c32cb54fb3">13 months later</a> CIKit got its own license since has undergone a lot of architectural changes and have been no longer included technical approaches inherited from CIBox.
+<p>
+  <abbr title="{{ site.title_long }}">{{ site.title }}</abbr> is an acronym for the <strong>{{ site.title_long }}</strong> and the software, underlying behind the name, empowers you with a subset of various instruments aiming to simplify a day-to-day routine for the teams that are focused to develop, continuously test and deploy the solutions based on an extensive stack of technologies.
+</p>
+
+<h3 id="advantages">Main advantages</h3>
+
+<ul>
+  <li>One-time, <a href="/documentation/#installation">system-wide installation</a> via Bash script.</li>
+  <li>Isolated environments (inside of virtual machines) using VirtualBox on top of Vagrant for <a href="/documentation/#create-a-project">local development</a>.</li>
+  <li>An instrument to boot and manage <a href="/documentation/matrix">the matrix of continuous integration servers</a> (droplets).</li>
+  <li>A <a href="/documentation/#build-a-remote-continuous-integration-server">replication of a local environment</a> to CI server and <a href="/documentation/project/env-config">shipment of its configuration in a YAML format</a>.</li>
+</ul>
+
+<h2 id="history">History</h2>
+
+<abbr title="{{ site.title_long }}">{{ site.title }}</abbr> has been inspired by <abbr title="{{ site.cikit_parent.title_long }}">{{ site.cikit_parent.title }}</abbr> in 2015 and born (forked) on <a href="https://github.com/BR0kEN-/cikit/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab">November 9</a>. <a href="https://github.com/BR0kEN-/cikit/commit/6245de17ae533294b24bdacab54493c32cb54fb3">13 months later</a> {{ site.title }} got its own license since has undergone a lot of architectural changes and have been no longer included technical approaches inherited from <a href="{{ site.cikit_parent.url }}">{{ site.cikit_parent.title }}</a>.
 
 <p class="notice--info">
-  Continuous Integration Kit is leading by <a href="{{ site.github.owner_url }}">Sergii Bondarenko</a>, who are maintaining and coordinating the project since 2015.
+  {{ site.title_long }} is leading by <a href="https://github.com/{{ site.github.owner_url }}">{{ site.name }}</a>, who are maintaining and coordinating the project since 2015.
 </p>
+
+<h3 id="crucial-moment">Crucial moment</h3>
+
+On January 1, 2018, <a href="{{ site.cikit_parent.author.github }}">{{ site.cikit_parent.author.name }}</a>, who is the author of {{ site.cikit_parent.title }}, filed the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-02-CIKit.md">DMCA notice</a> for taking down the {{ site.title }} and got the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-03-CIKit-CounterNotice.md">counter-notice</a>. Read continuation of the story in the <a href="{% post_url 2018-01-08-cikit-dmca-takedown %}">blog post</a>.
 
 <h2 id="contributors">Contributors</h2>
 
@@ -34,8 +45,7 @@ permalink: /about/
   {% for contributor in site.github.contributors %}
   <li>
     <a href="{{ contributor.url }}">
-      <img src="{{ contributor.avatar_url }}" alt="{{ contributor.login }}" title="{{ contributor.contributions }} contributions" />
-      <h6>@{{ contributor.login }}</h6>
+      <img src="{{ contributor.avatar_url }}" title="{{ contributor.login }}" alt="{{ contributor.contributions }} contributions" />
     </a>
   </li>
   {% endfor %}
@@ -44,7 +54,9 @@ permalink: /about/
 <h2 id="special-thanks">Special thanks</h2>
 
 <ul>
-  <li>
-    <a href="https://github.com/Diam0n">@Diam0n</a>, who is helping to provide environments for testings.
-  </li>
+  {% for contributor in page.special_thanks %}
+    <li>
+      <a href="https://github.com/{{ contributor.name }}">@{{ contributor.name }}</a>, who is {{ contributor.thanks }}
+    </li>
+  {% endfor %}
 </ul>

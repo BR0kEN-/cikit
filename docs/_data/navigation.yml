@@ -3,6 +3,8 @@ main:
     url: /documentation/
   - title: Changelog
     url: /changelog/
+  - title: Blog
+    url: /blog/
   - title: Support
     url: https://cikit.slack.com/messages/support
   - title: About

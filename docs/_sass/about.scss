@@ -1,0 +1,22 @@
+.contributors {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  list-style: none;
+}
+@media (min-width: 600px) {
+  .contributors li {
+    width: 25%;
+    padding: 0 1%;
+  }
+}
+@media (max-width: 599px) {
+  .contributors li {
+    width: 50%;
+    padding: 0 2%;
+  }
+}
+.contributors img {
+  width: 100%;
+}
