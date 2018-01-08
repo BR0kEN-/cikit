@@ -4,8 +4,7 @@ title: "CIKit"
 title_long: "Continuous Integration Kit"
 locale: "en-US"
 # https://help.github.com/articles/repository-metadata-on-github-pages/#using-repository-metadata-locally
-#repository: BR0kEN-/cikit
-repository: cibox/cibox
+repository: BR0kEN-/cikit
 description: "Ansible-based system for building environments for local development and continuous integration."
 title_separator: "|"
 
