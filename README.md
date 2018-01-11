@@ -28,9 +28,9 @@
 
 |Section|Link|
 |:---|:---|
-|Documentation|http://cikit.tools/docs|
-|Dependencies|http://cikit.tools/docs#dependencies|
-|Installation|http://cikit.tools/docs#installation|
+|Documentation|http://cikit.tools/documentation|
+|Dependencies|http://cikit.tools/documentation#dependencies|
+|Installation|http://cikit.tools/documentation#installation|
 |Changelog|http://cikit.tools/changelog|
 |About|http://cikit.tools/about|
 |Support|https://cikit.slack.com/messages/support|
