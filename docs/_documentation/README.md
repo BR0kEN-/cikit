@@ -20,17 +20,39 @@ The installation process on **Windows 10** is a bit complicated and must be done
 
 Run the script to install the package and consider the `--no-requirements-check` option that allows you to ignore missing dependencies (CIKit will operate in a limited mode or won't operate at all).
 
-```shell
+```bash
 curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash
 ```
 
 *Package will be located at* `/usr/local/share/cikit`.
 
+## Update
+
+```bash
+cikit self-update
+```
+
+Available options:
+
+- `--force` to clear the changes that have been locally made and get the latest codebase without conflicts.
+- `--version` to specify the branch or tag within the repository to get the codebase from.
+- `--repository` to specify the repository of the package that could be, for instance, your fork of the main project.
+- `--skip-fetch` to not pull the latest codebase and just ensure that all migrations to a new version were correctly applied.
+
+Example:
+
+```bash
+cikit self-update \
+  --force \
+  --version=issues/52 \
+  --repository=https://github.com/gajdamaka/cikit.git
+```
+
 ## Create a project
 
 Use what is needed instead of the `PROJECT` and remember that the directory with a name in the option will be created in the location of command execution.
 
-```shell
+```bash
 cikit init --project=PROJECT
 cd PROJECT
 ```
@@ -43,13 +65,13 @@ Available options:
 
 ## Build a virtual machine for local development
 
-```shell
+```bash
 vagrant up --provision
 ```
 
 Install a website inside of VM that will be accessible at `https://PROJECT.loc`.
 
-```shell
+```bash
 vagrant ssh
 cikit reinstall
 exit
@@ -69,7 +91,7 @@ Read more about the `HOSTNAME` in a section about the [hosts manager](hosts-mana
 
 The information below is a good reminder of commands to run (order preserved).
 
-```shell
+```bash
 cikit init --project=PROJECT
 cd PROJECT
 
@@ -103,18 +125,18 @@ At the very first time you are required to run full provisioning to build an env
 
 Get the list of available components:
 
-```shell
+```bash
 CIKIT_LIST_TAGS=true cikit provision
 ```
 
 Run provisioning of a specific component (CI server):
 
-```shell
+```bash
 CIKIT_TAGS="COMPONENT1,COMPONENT2" cikit provision
 ```
 
 Run provisioning of a specific component (VM):
 
-```shell
+```bash
 CIKIT_TAGS="COMPONENT1,COMPONENT2" vagrant provision
 ```
