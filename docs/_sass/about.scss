@@ -1,9 +1,12 @@
-.contributors {
+%flex-list {
   display: flex;
   margin: 0;
   padding: 0;
   flex-wrap: wrap;
   list-style: none;
+}
+.contributors {
+  @extend %flex-list;
 }
 @media (min-width: 600px) {
   .contributors li {
@@ -19,4 +22,10 @@
 }
 .contributors img {
   width: 100%;
+}
+ul.page__meta {
+  @extend %flex-list;
+  li {
+    margin-right: 10px;
+  }
 }

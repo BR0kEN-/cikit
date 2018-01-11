@@ -35,7 +35,7 @@ special_thanks:
 
 <h3 id="crucial-moment">Crucial moment</h3>
 
-On January 1, 2018, <a href="{{ site.cikit_parent.author.github }}">{{ site.cikit_parent.author.name }}</a>, who is the author of {{ site.cikit_parent.title }}, filed the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-02-CIKit.md">DMCA notice</a> for taking down the {{ site.title }} and got the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-03-CIKit-CounterNotice.md">counter-notice</a>. Read continuation of the story in the <a href="{% post_url 2018-01-08-cikit-dmca-takedown %}">blog post</a>.
+On January 1, 2018, <a href="https://github.com/{{ site.cikit_parent.author.github }}">{{ site.cikit_parent.author.name }}</a>, who is the author of {{ site.cikit_parent.title }}, filed the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-02-CIKit.md">DMCA notice</a> for taking down the {{ site.title }} and got the <a href="https://github.com/github/dmca/blob/master/2018/2018-01-03-CIKit-CounterNotice.md">counter-notice</a>. Read continuation of the story in the <a href="{% post_url 2018-01-10-cikit-dmca-takedown %}">blog post</a>.
 
 <h2 id="contributors">Contributors</h2>
 
@@ -44,7 +44,7 @@ On January 1, 2018, <a href="{{ site.cikit_parent.author.github }}">{{ site.ciki
 <ul class="contributors">
   {% for contributor in site.github.contributors %}
   <li>
-    <a href="{{ contributor.url }}">
+    <a href="{{ contributor.html_url }}">
       <img src="{{ contributor.avatar_url }}" title="{{ contributor.login }}" alt="{{ contributor.contributions }} contributions" />
     </a>
   </li>
