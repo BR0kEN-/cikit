@@ -6,22 +6,22 @@
 - Wanna replicate a local (VM) environment on continuous integration server? [Not a problem](http://cikit.tools/docs/matrix).
 - Need a park for CI servers? [Not a big deal](http://cikit.tools/docs/matrix).
 
-*Currently based on [Ubuntu 16.04 LTS (64 bit)](http://cikit.tools/docs/vagrant/box)*.
+*Currently based on [Ubuntu 16.04 LTS (64 bit)](http://cikit.tools/documentation/project/vagrant-box)*.
 
 ## Features
 
 - Hosts manager
-  - [Define a connection to a server](http://cikit.tools/docs/hosts-manager) via command line.
+  - [Define a connection to a server](http://cikit.tools/documentation/hosts-manager) via command line.
 - Hosts matrices
-  - [Produce a host for CI servers](http://cikit.tools/docs/matrix#usage) by a single command.
-  - [Manage CI servers (droplets)](http://cikit.tools/docs/matrix#management) via single command.
+  - [Produce a host for CI servers](http://cikit.tools/documentation/matrix#usage) by a single command.
+  - [Manage CI servers (droplets)](http://cikit.tools/documentation/matrix#management) via single command.
 - CI server
   - Docker. More system resources for your needs (comparative to the hypervisor).
   - Jenkins with configured GitHub workflow.
 - Virtual machine
   - Automatic IP allocation. You're no longer care about changing the IP for every new VM.
   - User interaction. You'll be asked what to install during provisioning the machine.
-  - [Shippable environment configuration](http://cikit.tools/docs/project/env-config). Once created - everywhere updated.
+  - [Shippable environment configuration](http://cikit.tools/documentation/project/env-config). Once created - everywhere updated.
   - Selenium 2.x grid: a hub in VM and node on your host.
 
 ## Information
