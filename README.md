@@ -3,8 +3,8 @@
 **CIKit** - Ansible-based system for building environments for local development and continuous integration.
 
 - Need a VM for local development (JS, NodeJS, Java, PHP, Composer, Solr, Memcache, Selenium, Python, MySQL, MSSQL, Ruby etc.)? Not a problem - `cikit init --project=test && cd test && vagrant up`.
-- Wanna replicate a local (VM) environment on continuous integration server? [Not a problem](http://cikit.tools/docs/matrix).
-- Need a park for CI servers? [Not a big deal](http://cikit.tools/docs/matrix).
+- Wanna replicate a local (VM) environment on continuous integration server? [Not a problem](http://cikit.tools/documentation/matrix).
+- Need a park for CI servers? [Not a big deal](http://cikit.tools/documentation/matrix).
 
 *Currently based on [Ubuntu 16.04 LTS (64 bit)](http://cikit.tools/documentation/project/vagrant-box)*.
 
