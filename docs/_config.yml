@@ -203,6 +203,11 @@ optional_front_matter:
   enabled: true
 
 
+comments:
+  provider: disqus
+  disqus:
+    shortname: cikit-tools
+
 # Archives
 #  Type
 #  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
