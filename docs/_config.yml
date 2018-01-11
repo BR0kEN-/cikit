@@ -208,6 +208,15 @@ comments:
   disqus:
     shortname: cikit-tools
 
+
+analytics:
+  provider: google-universal
+  google:
+    tracking_id: UA-32545287-5
+
+google_site_verification: Csf2JYJK2XpT-DXk3rKpRFBko7Z3m3P4arAngEdNbEg
+
+
 # Archives
 #  Type
 #  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
