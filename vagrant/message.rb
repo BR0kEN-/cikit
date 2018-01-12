@@ -28,7 +28,7 @@ def cikit_message(ip, host, is_wsl)
       |#{blue}project to the #{yellow}"%SYSTEMROOT%\\system32\\drivers\\etc\\hosts".#{reset}
       |
       |#{blue}Also, make sure you are aware of the other limitations#{reset}
-      |#{blue}on WSL: #{yellow}http://cikit.tools/vagrant/wsl/#limitations#{reset}
+      |#{blue}on WSL: #{yellow}https://cikit.tools/vagrant/wsl/#limitations#{reset}
     END
   end
 
