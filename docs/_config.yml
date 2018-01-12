@@ -12,14 +12,6 @@ search: true
 breadcrumbs: true
 words_per_minute: 200
 
-cikit_parent:
-  url: "http://cibox.tools"
-  title: "CIBox"
-  title_long: "Continuous Integration Box"
-  author:
-    name: "Andrii Podanenko"
-    github: "podarok"
-
 twitter:
   username: &twitter "brO_0keN"
 
