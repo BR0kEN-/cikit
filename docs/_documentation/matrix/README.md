@@ -36,11 +36,11 @@ The recommendation is to run the provisioning using `root` user. But you may cho
 
 Recommended (will work as untrusted connection):
 
-- [SSL certificates](../../../matrix/vars/ssl.yml#L3). Use trusted certificates to provide secure connection.
+- [SSL certificates](https://github.com/BR0kEN-/cikit/tree/master/matrix/vars/ssl.yml#L3). Use trusted certificates to provide secure connection.
 
 Not recommended (general credentials - not good for each virtual machine):
 
-- [Basic HTTP authentication](../../../matrix/vars/nginx.yml#L4-L12). Not recommended to set it up for the whole server - better to do this for every particular virtual machine.
+- [Basic HTTP authentication](https://github.com/BR0kEN-/cikit/tree/master/matrix/vars/nginx.yml#L4-L9). Not recommended to set it up for the whole server - better to do this for every particular virtual machine.
 
 ## Usage
 

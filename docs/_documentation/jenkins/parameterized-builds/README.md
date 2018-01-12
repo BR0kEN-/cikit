@@ -5,7 +5,7 @@ permalink: /documentation/jenkins/parameterized-builds/
 
 We believe everyone can invent or already faced the need to occasionally perform some actions. For instance, run `composer update` when the `vendor` directory is not under VCS. It's easy to get this done locally, but how to achieve this on CI server?
 
-Meet the [actions](../../../../cmf/all/scripts/tasks/reinstall/pre-actions.yml) - list of Ansible tasks which will be executed on a build if commit message contains constructions with text between square brackets (like `[test action1][test action2] Regular message`).
+Meet the [actions](https://github.com/BR0kEN-/cikit/tree/master/cmf/all/scripts/tasks/reinstall/pre-actions.yml) - list of Ansible tasks which will be executed on a build if commit message contains constructions with text between square brackets (like `[test action1][test action2] Regular message`).
 
 ## Usage
 

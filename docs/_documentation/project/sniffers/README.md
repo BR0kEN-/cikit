@@ -55,13 +55,13 @@ phpcs --standard=WordPress-Core /var/www/docroot
 Configuration:
 
 - Drupal
-  - [standards](../../../../cmf/drupal/all/scripts/vars/tests.yml#L3)
-  - [file extensions](../../../../cmf/drupal/all/scripts/vars/tests.yml#L4)
-  - [directories](../../../../cmf/drupal/all/scripts/vars/tests.yml#L17)
+  - [standards](https://github.com/BR0kEN-/cikit/tree/master/cmf/drupal/all/scripts/vars/tests.yml#L3)
+  - [file extensions](https://github.com/BR0kEN-/cikit/tree/master/cmf/drupal/all/scripts/vars/tests.yml#L4)
+  - [directories](https://github.com/BR0kEN-/cikit/tree/master/cmf/drupal/all/scripts/vars/tests.yml#L17)
 - WordPress
-  - [standards](../../../../cmf/wordpress/all/scripts/vars/tests.yml#L3)
-  - [file extensions](../../../../cmf/wordpress/all/scripts/vars/tests.yml#L4)
-  - [directories](../../../../cmf/wordpress/all/scripts/vars/tests.yml#L17)
+  - [standards](https://github.com/BR0kEN-/cikit/tree/master/cmf/wordpress/all/scripts/vars/tests.yml#L3)
+  - [file extensions](https://github.com/BR0kEN-/cikit/tree/master/cmf/wordpress/all/scripts/vars/tests.yml#L4)
+  - [directories](https://github.com/BR0kEN-/cikit/tree/master/cmf/wordpress/all/scripts/vars/tests.yml#L17)
 
 According to above list it means, that listed standards will be applied for files, having listed extensions, in specified directories.
 
@@ -87,14 +87,14 @@ htmlcs https://google.com WCAG2AAA
 
 Configuration:
 
-- [Drupal](../../../../cmf/drupal/all/scripts/vars/tests.yml#L11)
-- [WordPress](../../../../cmf/wordpress/all/scripts/vars/tests.yml#L11)
+- [Drupal](https://github.com/BR0kEN-/cikit/tree/master/cmf/drupal/all/scripts/vars/tests.yml#L11)
+- [WordPress](https://github.com/BR0kEN-/cikit/tree/master/cmf/wordpress/all/scripts/vars/tests.yml#L11)
 
 As many as needed pages could be listed in that file. Also, each page can be checked for compliance of the specific standard.
 
 ### SCSS
 
-For analyzing SCSS the `scss-lint` command line utility is used. [Validation rules](../../../../cmf/all/scripts/configs/scss-lint.yml) are fully configurable and the same for all CMFs.
+For analyzing SCSS the `scss-lint` command line utility is used. [Validation rules](https://github.com/BR0kEN-/cikit/tree/master/cmf/all/scripts/configs/scss-lint.yml) are fully configurable and the same for all CMFs.
 
 Example command for manual execution:
 
@@ -106,10 +106,10 @@ scss-lint -c /var/www/scripts/configs/scss-lint.yml profiles/pp/*/custom
 
 For analyzing JS the `eslint` command line utility is used. Validation rules are fully configurable but differs for each CMF.
 
-- [Drupal](../../../../cmf/drupal/all/scripts/configs/.eslintrc)
-- [WordPress](../../../../cmf/wordpress/all/scripts/configs/.eslintrc)
+- [Drupal](https://github.com/BR0kEN-/cikit/tree/master/cmf/drupal/all/scripts/configs/.eslintrc)
+- [WordPress](https://github.com/BR0kEN-/cikit/tree/master/cmf/wordpress/all/scripts/configs/.eslintrc)
 
-Moreover, there is a possibility to exclude some files from verification using the [.eslintignore](../../../../cmf/all/scripts/configs/.eslintignore).
+Moreover, there is a possibility to exclude some files from verification using the [.eslintignore](https://github.com/BR0kEN-/cikit/tree/master/cmf/all/scripts/configs/.eslintignore).
 
 Example command for manual execution:
 
@@ -119,7 +119,7 @@ eslint -c /var/www/scripts/configs/.eslintrc --ignore-path /var/www/scripts/conf
 
 ### Code Spell
 
-For fixing common misspellings in text files the `codespell.py` command line utility is used. Use [.codespellignore](../../../../cmf/all/scripts/configs/.codespellignore) to exclude files from processing.
+For fixing common misspellings in text files the `codespell.py` command line utility is used. Use [.codespellignore](https://github.com/BR0kEN-/cikit/tree/master/cmf/all/scripts/configs/.codespellignore) to exclude files from processing.
 
 Example command for manual execution:
 

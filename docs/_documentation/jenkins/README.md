@@ -52,7 +52,4 @@ Nginx is a global web server. It serves all connections and proxies requests to 
 
 ### Technical notes
 
-The [cikit-jenkins](../../../scripts/roles/cikit-jenkins) Ansible role was designed for Jenkins installation. There are all related information:
-
-- [Jenkins version](../../../scripts/roles/cikit-jenkins/vars/main.yml#L5)
-- [List of plugins](../../../scripts/roles/cikit-jenkins/defaults/main.yml#L29)
+The [cikit-jenkins](https://github.com/BR0kEN-/cikit/tree/master/scripts/roles/cikit-jenkins) Ansible role was designed for Jenkins installation.
