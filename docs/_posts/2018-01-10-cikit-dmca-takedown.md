@@ -65,7 +65,7 @@ Officially, on [September 3, 2014](https://github.com/cibox/cibox/commit/00d602b
 
 ### When was CIKit born?
 
-Officially, on [November 9, 2015](https://github.com/BR0kEN-/cikit/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab). But until December 24, 2016, it was named **BR0kEN-/cibox** under the original license, belonging to Andrii Podanenko.
+Officially, on [November 9, 2015](https://github.com/BR0kEN-/cibox/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab). But until December 24, 2016, it was named **BR0kEN-/cibox** under the original license, belonging to Andrii Podanenko.
 
 ### When I made the first contribution to CIBox?
 
@@ -167,15 +167,15 @@ Other moments:
 
 - Numerous shell scripts are nowhere gone.
 - The CIBox-related stuff is still within your `docroot`.
-- Ansible scripts still do not compatible with 2.x, while [CIKit has dropped off support of versions lower than 2.4](https://github.com/BR0kEN-/cibox/commit/c6448439ba1b289af54f126fc166e3cd96738818).
+- Ansible scripts still do not compatible with 2.x, while [CIKit has dropped off support of versions lower than 2.4](https://github.com/BR0kEN-/cikit/commit/c6448439ba1b289af54f126fc166e3cd96738818).
 - CIBox still on [Jenkins 1.6](https://github.com/cibox/cibox/blob/f21dffb49fdf52711b02ff13d962a20db8fdc7f4/core/cibox-jenkins/defaults/main.yml#L43) when **BR0kEN-/cibox** got [migrated to 2.x](https://github.com/BR0kEN-/cibox/commit/b596bd97db2476410e179f9a31597cac61f90130) on December 24, 2016, and now uses latest available version.
 - Provisioning of VM and CI still quite different and this reduces the interoperability of environments replication. CIKit does not have this problem an enduring portion of the time.
 - CIBox never had a tool for creating a matrix of CI servers when **BR0kEN-/cibox** got it on [March 4, 2016](https://github.com/BR0kEN-/cibox/commit/f16f349bbbbdeb1a74f73194cedd545dc96099e7).
-- [CIBox supports a Drupal only](https://github.com/cibox/cibox/blob/f21dffb49fdf52711b02ff13d962a20db8fdc7f4/core/cibox-project-builder/tasks/main.yml#L3), while CIKit has predefined [CI scripts for WordPress](https://github.com/BR0kEN-/cikit/commit/775863771ed15aed10774877615f6fa6e8ca63b5), presented on November 17, 2015, and an API for integrating any framework or CMS.
+- [CIBox supports a Drupal only](https://github.com/cibox/cibox/blob/f21dffb49fdf52711b02ff13d962a20db8fdc7f4/core/cibox-project-builder/tasks/main.yml#L3), while CIKit has predefined [CI scripts for WordPress](https://github.com/BR0kEN-/cibox/commit/775863771ed15aed10774877615f6fa6e8ca63b5), presented on November 17, 2015, and an API for integrating any framework or CMS.
 - CIBox never had the [Vagrant provisioner](https://github.com/BR0kEN-/cibox/commit/e2524f3ce701e745ed726bcd7eaadafc02ee00d6) for controlling VM preparation process and providing operability on Windows hosts. It was introduced in **BR0kEN-/cibox** on November 23, 2015.
 - CIBox has never used [Nginx on CI servers](https://github.com/BR0kEN-/cibox/commit/442050d5bf8ab784a4a27ed1616bf87ddcb86083) while **BR0kEN-/cibox** got it on March 1, 2016.
 
-The [change of license and the copyright owner](https://github.com/BR0kEN-/cibox/commit/6245de17ae533294b24bdacab54493c32cb54fb3) of **BR0kEN-/cibox**, alongside with [renaming project to CIKit](https://github.com/BR0kEN-/cibox/commit/85545e5d2488e048dfac8c6bb5d1f6f60821ea1a) and detaching it from CIBox on Github has happened on **December 24, 2016**.
+The [change of license and the copyright owner](https://github.com/BR0kEN-/cikit/commit/6245de17ae533294b24bdacab54493c32cb54fb3) of **BR0kEN-/cibox**, alongside with [renaming project to CIKit](https://github.com/BR0kEN-/cikit/commit/85545e5d2488e048dfac8c6bb5d1f6f60821ea1a) and detaching it from CIBox on Github has happened on **December 24, 2016**.
 {: .notice--warning}
 
 ### What are the distinguishing features of CIKit nowadays?
@@ -218,7 +218,7 @@ The [Ansible role for Jenkins installation](https://github.com/cibox/cibox/blob/
 
 #### Case three
 
-The codebase for building CIBox-structured repositories came in sight on [February 1, 2016](https://github.com/cibox/cibox/commit/4751a7e3b8c27aa249859d3ba27935b92641b5b5). In **BR0kEN-/cibox** it was introduced on [November 9, 2015](https://github.com/BR0kEN-/cikit/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab/scripts/drupal.yml). Nobody knows how this idea came to CIBox team. Perhaps they themselves came up with this or borrowed from **BR0kEN-/cibox** - I don't know and I don't care.
+The codebase for building CIBox-structured repositories came in sight on [February 1, 2016](https://github.com/cibox/cibox/commit/4751a7e3b8c27aa249859d3ba27935b92641b5b5). In **BR0kEN-/cibox** it was introduced on [November 9, 2015](https://github.com/BR0kEN-/cibox/commit/c4f4dd8b86e27c068a94b7022b7910b235c9e9ab/scripts/drupal.yml). Nobody knows how this idea came to CIBox team. Perhaps they themselves came up with this or borrowed from **BR0kEN-/cibox** - I don't know and I don't care.
 
 The world of open source is wonderful and exists, assuming I'll be made a dough and you'll come and bake a bread.
 {: .notice--info}
@@ -257,3 +257,12 @@ I do appreciate everyone who took part in CIBox until the day I made the fork. W
 As a final chord of this article, I want to say **thank you** to everyone who was supporting me these no-easy days. Without you, guys, I would be feeling *BR0kEN*.
 
 Respect everyone!
+
+## Updates
+
+### January 12, 2018, 8 PM
+
+- All commits before December 24, 2016, have been wiped out from the [https://github.com/BR0kEN-/cikit](https://github.com/BR0kEN-/cikit). I decided to eliminate any future requests from possible copyright owners by just removing CIBox from the history of CIKit entirely.
+- [https://github.com/BR0kEN-/cibox](https://github.com/BR0kEN-/cibox) is again a fork for the [https://github.com/cibox/cibox](https://github.com/cibox/cibox) and contains all the modifications until December 24, 2016, with original license and copyright.
+
+Hope everyone will feel better since now.
