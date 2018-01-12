@@ -22,7 +22,7 @@ That's all! And it's cool! Each virtual server may be additionally provisioned b
 
 Remember that host machine must be publicly accessible via internet. Otherwise you will be required to manually configure forwarding to the following ports: `22<NN>`, `80<NN>` and `443<NN>`.
 
-Host server must be provisioned with a superuser which has no-password access for `sudo` (e.g. `your_user ALL=(ALL) NOPASSWD:ALL` entry in `/etc/sudoers`). So, make sure the user is properly configured if you have set value for `ansible_user`, different from `root`, in your [inventory](../ansible/inventory).
+Host server must be provisioned with a superuser which should have no-password access to `sudo` (e.g. `your_user ALL=(ALL) NOPASSWD:ALL` entry in `/etc/sudoers`). So, make sure the user is properly configured if you have set a value for the `--ssh-user`, different from `root`, when defining a [host](../host).
 
 The recommendation is to run the provisioning using `root` user. But you may choose. Beside of that, please make sure you took care about security!
 
@@ -36,7 +36,7 @@ Not recommended (general credentials - not good for each virtual machine):
 
 ## Usage
 
-Add your own host inside the `inventory` file and run the following command:
+[Define a new host](../host) and run the next command:
 
 ```shell
 cikit matrix/provision --limit=<HOSTNAME>
