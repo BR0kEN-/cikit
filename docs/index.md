@@ -8,6 +8,7 @@ header:
   overlay_image: /assets/home/bg.jpg
   cta_label: '<i class="fa fa-code-fork" aria-hidden="true"></i> Source code'
   cta_url: 'https://github.com/BR0kEN-/cikit'
+  og_image: /assets/site-logo.png
 feature_row:
   - title: "Hosts manager"
     excerpt: "A command line tool for collecting and managing SSH credentials of various hosts."
