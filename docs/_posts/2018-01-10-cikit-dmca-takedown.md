@@ -4,6 +4,8 @@ title: "DMCA notice for taking down the CIKit"
 excerpt: "Legal litigation instead of New Year's mood."
 toc_label: "Paragraphs"
 toc: true
+header:
+  teaser: /assets/posts/2018-01-08-cikit-dmca-takedown/dmca-copyright.png
 tags:
   - open source
   - cikit
