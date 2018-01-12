@@ -32,7 +32,7 @@ Read [the provisioning script](wsl-provision.sh) first and then execute it on WS
 A possible argument for the script is a Vagrant version. Defaults to `2.0.1` and must not be lower than `1.9.5` due to CIKit requirements.
 
 ```bash
-curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_docs/install-on-wsl/wsl-provision.sh | bash -s -- "2.0.1"
+curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_documentation/install-on-wsl/wsl-provision.sh | bash -s -- "2.0.1"
 ```
 
 **Notes**:

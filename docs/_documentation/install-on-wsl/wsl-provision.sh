@@ -141,7 +141,7 @@ cd "${VAGRANT_INSTALL_DIR}"
 
 # Proceed only if we don't have the patch.
 if [ ! -f "${VAGRANT_PATCH_NAME}" ]; then
-  VAGRANT_PATCH_URL="https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_docs/install-on-wsl/patches/${VAGRANT_PATCH_NAME}"
+  VAGRANT_PATCH_URL="https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_documentation/install-on-wsl/patches/${VAGRANT_PATCH_NAME}"
 
   # Check whether the patch can be downloaded.
   if wget -q --spider "${VAGRANT_PATCH_URL}"; then
