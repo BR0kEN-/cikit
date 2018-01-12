@@ -12,7 +12,7 @@
     install: no
 
   pre_tasks:
-    - include: tasks/project-variable.yml
+    - import_tasks: tasks/project-variable.yml
 
     - include_vars: "{{ item }}"
       with_fileglob: "{{ __targetdir__ }}/.cikit/vars/*.yml"

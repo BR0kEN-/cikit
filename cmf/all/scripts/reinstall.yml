@@ -12,7 +12,7 @@
     actions: []
 
   tasks:
-    - include: tasks/environment/initialize.yml
+    - import_tasks: tasks/environment/initialize.yml
 
     - name: Check existence of installation mode
       stat:
@@ -61,6 +61,6 @@
 
     - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
 
-    - include: "tasks/reinstall/pre-actions.yml"
-    - include: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"
-    - include: "tasks/reinstall/post-actions.yml"
+    - import_tasks: "tasks/reinstall/pre-actions.yml"
+    - include_tasks: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"
+    - import_tasks: "tasks/reinstall/post-actions.yml"

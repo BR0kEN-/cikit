@@ -4,7 +4,7 @@
     path: "{{ cikit_mysql.daemon }}"
   register: cikit_mysql_installed
 
-- include: setup.yml
+- import_tasks: setup.yml
   when: not cikit_mysql_installed.stat.exists
 
 - name: Stop MySQL service
@@ -13,7 +13,7 @@
     state: stopped
 
 # Temporary directory is configured to be in shared memory (RAM).
-- include: shm-tempdir.yml
+- import_tasks: shm-tempdir.yml
   when: "'shm' in cikit_mysql.dirs.tmp"
 
 - name: Disable AppArmor

@@ -42,7 +42,7 @@
     update: yes
     version: 7.x-1.x
 
-- include: core.yml
+- import_tasks: core.yml
   with_items: "{{ solr_cores }}"
   loop_control:
     loop_var: solr_core

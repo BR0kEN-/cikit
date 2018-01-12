@@ -1,6 +1,6 @@
 ---
-- include: setup.yml
-- include: configure.yml
+- import_tasks: setup.yml
+- import_tasks: configure.yml
 
 - name: Ensure Apache is started and enabled on boot
   service:

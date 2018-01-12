@@ -19,4 +19,4 @@
     state: installed
   with_items: "{{ selenium_packages }}"
 
-- include: dependencies.yml
+- import_tasks: dependencies.yml

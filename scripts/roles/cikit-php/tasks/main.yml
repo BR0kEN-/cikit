@@ -26,8 +26,8 @@
   shell: "ln -fs /usr/bin/{{ item }}{{ php_version }} /etc/alternatives/{{ item }}"
   with_items: ["php", "phpize", "php-config"]
 
-- include: xdebug.yml
-- include: configure.yml
+- import_tasks: xdebug.yml
+- import_tasks: configure.yml
 
 - name: Enalbe PHP for Apache
   shell: "a2dismod php* && a2enmod php{{ php_version }}"

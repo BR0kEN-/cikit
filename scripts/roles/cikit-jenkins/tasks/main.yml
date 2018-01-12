@@ -4,10 +4,10 @@
     jenkins_job: "{{ jenkins_job | upper }}"
     jenkins_host: "http://127.0.0.1:{{ jenkins_port }}/{{ jenkins_prefix }}"
 
-- include: install.yml
+- import_tasks: install.yml
   when: jenkins_install and not jenkins_reinstall_deb
 
-- include: jobs.yml
+- import_tasks: jobs.yml
 
-- include: install-deb.yml
+- import_tasks: install-deb.yml
   when: jenkins_reinstall_deb

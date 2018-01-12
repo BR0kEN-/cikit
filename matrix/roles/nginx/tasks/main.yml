@@ -1,0 +1,34 @@
+---
+- name: Create config
+  template:
+    src: "{{ item }}"
+    dest: "/etc/nginx/{{ item | basename | replace('.j2', '') }}"
+  with_fileglob: "templates/configs/*.j2"
+
+- name: Create .htpasswd
+  htpasswd:
+    path: "{{ nginx.htpasswd.path }}"
+    name: "{{ nginx.htpasswd.user }}"
+    password: "{{ nginx.htpasswd.pass }}"
+    crypt_scheme: apr_md5_crypt
+
+# rm -rf /etc/nginx/sites-[enabled|available]/
+- import_tasks: vhost/disable.yml
+  args:
+    arg: "{{ item }}"
+  with_items:
+    - state: absent
+      recurse: no
+    - state: directory
+      recurse: yes
+
+- import_tasks: vhost/enable.yml
+  args:
+    host: "{{ item }}"
+  with_fileglob: "{{ playbook_dir }}/templates/nginx/vhosts/*.j2"
+
+- name: Restart NGINX
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

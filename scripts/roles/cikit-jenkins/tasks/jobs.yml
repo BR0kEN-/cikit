@@ -27,4 +27,4 @@
     group: "{{ jenkins_data.group }}"
   with_items: "{{ jenkins_data.jobs }}"
 
-- include: restart-service.yml
+- import_tasks: restart-service.yml

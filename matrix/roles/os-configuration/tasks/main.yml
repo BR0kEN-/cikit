@@ -6,5 +6,5 @@
     mode: 0755
   with_fileglob: templates/motd/*.j2
 
-- include: tasks/tasks/sshd.yml
-- include: tasks/tasks/hosts.yml
+- import_tasks: tasks/tasks/sshd.yml
+- import_tasks: tasks/tasks/hosts.yml

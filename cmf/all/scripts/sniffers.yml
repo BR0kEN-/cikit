@@ -10,7 +10,7 @@
     - vars/tests.yml
 
   tasks:
-    - include: tasks/environment/initialize.yml
+    - import_tasks: tasks/environment/initialize.yml
 
     - name: Create directory for reports
       file:
@@ -60,7 +60,7 @@
         path: tasks/sniffers/main.yml
       register: is_custom_sniffers
 
-    - include: "{{ is_custom_sniffers.stat.path }}"
+    - include_tasks: "{{ is_custom_sniffers.stat.path }}"
       when: is_custom_sniffers.stat.exists
 
     - name: Look for available reports

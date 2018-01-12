@@ -1,8 +1,8 @@
 ---
-- include: repo.yml
-- include: install-deb.yml
-- include: restart-service.yml
-- include: cli.yml
+- import_tasks: repo.yml
+- import_tasks: install-deb.yml
+- import_tasks: restart-service.yml
+- import_tasks: cli.yml
 
 - name: Copy configs
   template:
@@ -20,7 +20,7 @@
     owner: "{{ jenkins_data.user }}"
     group: "{{ jenkins_data.group }}"
 
-- include: restart-service.yml
+- import_tasks: restart-service.yml
 
 - name: Install/update plugins
   # Firstly: plugin downloading.

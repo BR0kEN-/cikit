@@ -13,7 +13,7 @@
 # during execution of this script.
 #
 # Based on above explanations you can do the following here:
-# - include: tasks/actions/composer-install.yml
+# - import_tasks: tasks/actions/composer-install.yml
 #   when: "'composer install' in actions"
 #
 # Want to run it locally? Not a big deal!
@@ -26,7 +26,7 @@
   }
   with_items: ["composer", "npm"]
 
-- include: actions/packages-install.yml
+- import_tasks: actions/packages-install.yml
   args:
     manager: "Composer"
     command: "composer install"

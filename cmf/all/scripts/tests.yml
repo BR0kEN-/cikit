@@ -22,7 +22,7 @@
     headless: no
 
   tasks:
-    - include: tasks/environment/initialize.yml
+    - import_tasks: tasks/environment/initialize.yml
 
     - name: Ensure Selenium started
       service:

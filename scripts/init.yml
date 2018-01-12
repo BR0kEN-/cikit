@@ -19,7 +19,7 @@
         default_version: "4.8.1"
 
   tasks:
-    - include: tasks/project-variable.yml
+    - import_tasks: tasks/project-variable.yml
 
     - name: Set default version of CMF
       set_fact:
