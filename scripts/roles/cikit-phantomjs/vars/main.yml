@@ -1,0 +1,3 @@
+cikit_phantomjs:
+  dest: /usr/share/phantomjs
+  bin: /usr/local/bin

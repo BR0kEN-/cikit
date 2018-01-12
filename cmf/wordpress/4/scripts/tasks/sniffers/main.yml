@@ -1,0 +1,2 @@
+# A custom set of operations could be here. They are will be executed in scope of "sniffers.yml" playbook.
+---

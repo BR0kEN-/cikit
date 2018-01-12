@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: cikit-nodejs
+    when: cikit_nodejs_role_executed is not defined

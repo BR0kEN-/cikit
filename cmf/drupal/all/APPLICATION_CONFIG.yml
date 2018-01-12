@@ -1,0 +1,6 @@
+profile: pp
+settings: sites/default/settings.php
+filesystem: sites/default/files
+composer_packages:
+  drush/drush: 8.*
+  squizlabs/php_codesniffer: 2.*

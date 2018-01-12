@@ -1,0 +1,23 @@
+---
+- name: Disable NGINX hosts
+  file:
+    path: /etc/nginx/sites-enabled
+    state: "{{ arg.state }}"
+    force: yes
+    recurse: "{{ arg.recurse }}"
+
+- name: Disable NGINX hosts
+  file:
+    path: /etc/nginx/sites-available
+    state: "{{ arg.state }}"
+    force: yes
+    recurse: "{{ arg.recurse }}"
+
+# @todo Remove code above and uncomment below when an issue will be fixed: https://github.com/ansible/ansible/issues/14146
+#- name: Disable NGINX hosts
+#  file:
+#    path: "/etc/nginx/sites-{{ item }}"
+#    state: "{{ arg.state }}"
+#    force: yes
+#    recurse: "{{ arg.recurse }}"
+#  with_items: ["enabled", "available"]

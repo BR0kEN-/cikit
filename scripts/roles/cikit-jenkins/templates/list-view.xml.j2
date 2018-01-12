@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hudson.model.ListView>
+  <name>{{ jenkins_job }}</name>
+  <filterExecutors>false</filterExecutors>
+  <filterQueue>false</filterQueue>
+  <properties class="hudson.model.View$PropertyList"/>
+  <jobNames>
+    <comparator class="hudson.util.CaseInsensitiveComparator"/>
+    <string>{{ jenkins_job }}_BUILDER</string>
+    <string>{{ jenkins_job }}_PR_BUILDER</string>
+  </jobNames>
+  <jobFilters/>
+  <columns>
+    <hudson.views.StatusColumn/>
+    <hudson.views.WeatherColumn/>
+    <hudson.views.JobColumn/>
+    <hudson.views.LastSuccessColumn/>
+    <hudson.views.LastFailureColumn/>
+    <hudson.views.LastDurationColumn/>
+    <hudson.views.BuildButtonColumn/>
+  </columns>
+  <includeRegex>/^{{ jenkins_job | lower }}_.*$/i</includeRegex>
+  <recurse>false</recurse>
+</hudson.model.ListView>

@@ -1,0 +1,17 @@
+---
+- name: Enable NGINX host
+  template:
+    src: "{{ host }}"
+    dest: "/etc/nginx/sites-enabled/{{ host | basename | replace('.j2', '') }}"
+
+- name: Enable NGINX host
+  template:
+    src: "{{ host }}"
+    dest: "/etc/nginx/sites-available/{{ host | basename | replace('.j2', '') }}"
+
+# @todo Remove code above and uncomment below when an issue will be fixed: https://github.com/ansible/ansible/issues/14146
+#- name: Enable NGINX host
+#  template:
+#    src: "{{ host }}"
+#    dest: "/etc/nginx/sites-{{ item }}/{{ host | basename | replace('.j2', '') }}"
+#  with_items: ["enabled", "available"]
