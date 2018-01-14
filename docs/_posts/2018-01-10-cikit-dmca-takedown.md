@@ -195,6 +195,7 @@ The [change of license and the copyright owner](https://github.com/BR0kEN-/cikit
 - Newer versions of the software: Java, Solr, Selenium, MySQL.
 - Microsoft SQL Server, Nginx, Ruby - never been a part of CIBox.
 - [Ansible inventory](http://docs.ansible.com/ansible/latest/intro_inventory.html) that is forming automatically for droplets and manually via [hosts manager](/documentation/hosts-manager/).
+- [Automatic IP allocation](https://github.com/BR0kEN-/cikit/commit/d7eea48079db6f02b21f35c27fad89ee3ccefef0#diff-5608504864f9f1cbd909a4312090866aR35) for virtual machines to create their VPN networks. You don't need to invent and manually input the IP for every single project while [CIBox requires you to do so](https://github.com/cibox/cibox/blob/f21dffb49fdf52711b02ff13d962a20db8fdc7f4/core/cibox-project-builder/files/vagrant/box/provisioning/config.yaml#L6).
 
 ![X-Men as CIBox and CIKit](/assets/posts/2018-01-08-cikit-dmca-takedown/x-men-cibox-cikit.jpg)
 
