@@ -6,7 +6,7 @@ excerpt: "Ansible-based system for building environments for local development a
 header:
   overlay_color: "#5e616c"
   overlay_image: /assets/home/bg.jpg
-  cta_label: '<i class="fa fa-code-fork" aria-hidden="true"></i> Source code'
+  cta_label: '<i class="fa fa-code" aria-hidden="true"></i> Source code'
   cta_url: 'https://github.com/BR0kEN-/cikit'
   og_image: /assets/site-logo.png
 feature_row:
