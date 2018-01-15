@@ -47,16 +47,44 @@ if '__main__' == __name__:
                 matrix_name: matrices[matrix_name],
             }
 
-        for matrix_name, data in matrices.iteritems():
-            for directory in [variables.dirs['cikit'], variables.dirs['self']]:
-                MATRIX_CREDENTIALS_DIR = '%s/credentials/%s' % (directory, matrix_name)
+        # Walk through the global and project credentials.
+        for directory in [variables.dirs['cikit'], variables.dirs['self']]:
+            credentials_dir = '%s/credentials' % directory
 
-                if os.path.isdir(MATRIX_CREDENTIALS_DIR):
-                    for private_key_file in glob.glob('%s/%s%s' % (MATRIX_CREDENTIALS_DIR, WILDCARD, EXTENSION)):
+            # Can't move on without the necessary directory.
+            if not os.path.isdir(credentials_dir):
+                continue
+
+            for matrix_name in os.listdir(credentials_dir):
+                matrix_credentials_dir = '%s/%s' % (credentials_dir, matrix_name)
+                matrix_hostname_file = '%s/.hostname' % matrix_credentials_dir
+
+                # When the matrix's host is explicitly defined we're gonna use it and dump
+                # its hostname to the file. It's ok that we will create/overwrite the value
+                # in a global storage (second iteration of the parent loop).
+                if matrix_name in matrices:
+                    matrix_hostname = matrices[matrix_name]['hosts'][0]
+
+                    with open(matrix_hostname_file, 'w') as matrix_hostname_file:
+                        matrix_hostname_file.write(matrix_hostname)
+                        matrix_hostname_file.close()
+                # The matrix's host is not defined on someone's computer. It's not required,
+                # so we're just gonna read its hostname from the file.
+                elif os.path.isfile(matrix_hostname_file):
+                    with open(matrix_hostname_file, 'r') as matrix_hostname_file:
+                        matrix_hostname = matrix_hostname_file.readline().strip()
+                        matrix_hostname_file.close()
+                # The matrix's hostname cannot be determined nor by the stored hostname
+                # neither by the explicit definition of itself.
+                else:
+                    continue
+
+                if os.path.isdir(matrix_credentials_dir):
+                    for private_key_file in glob.glob('%s/%s%s' % (matrix_credentials_dir, WILDCARD, EXTENSION)):
                         droplet_name = os.path.basename(private_key_file).rstrip(EXTENSION)
 
                         INVENTORY['%s.%s' % (matrix_name, droplet_name)] = {
-                            'hosts': ['%s.%s' % (droplet_name, data['hosts'][0])],
+                            'hosts': ['%s.%s' % (droplet_name, matrix_hostname)],
                             'vars': {
                                 'ansible_user': 'root',
                                 'ansible_port': '22%s' % re.sub('[^\d+]', '', droplet_name),

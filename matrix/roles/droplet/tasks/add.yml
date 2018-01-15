@@ -17,24 +17,6 @@
     ports: "{{ ports + [ '-p ' + ('127.0.0.1:' if item.value.vhost else '') + item.key | string + number | string + ':' + item.key | string ] }}"
   with_dict: "{{ nginx.port_forwarding }}"
 
-- name: Create the droplet
-  # Run unprivileged container.
-  # - https://developers.redhat.com/blog/2016/09/13/running-systemd-in-a-non-privileged-container/
-  # - https://github.com/solita/docker-systemd
-  # Problems with privileged container:
-  # - https://github.com/moby/moby/issues/7512
-  shell: |-
-    docker run \
-      -d \
-      -h "{{ droplet }}.{{ domain }}" \
-      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-      --name "{{ droplet }}" \
-      --tmpfs /run \
-      --tmpfs /run/lock \
-      --security-opt seccomp=unconfined \
-      {{ ports | join(' ') }} \
-      solita/ubuntu-systemd
-
 - name: Compute directory for SSH key-pair
   set_fact:
     ssh_data:
@@ -53,6 +35,31 @@
     state: directory
   delegate_to: localhost
   become: no
+
+- name: Store the hostname of a matrix
+  copy:
+    dest: "{{ __credentialsdir__ }}/.hostname"
+    content: "{{ inventory_hostname }}"
+  delegate_to: localhost
+  become: no
+
+- name: Create the droplet
+  # Run unprivileged container.
+  # - https://developers.redhat.com/blog/2016/09/13/running-systemd-in-a-non-privileged-container/
+  # - https://github.com/solita/docker-systemd
+  # Problems with privileged container:
+  # - https://github.com/moby/moby/issues/7512
+  shell: |-
+    docker run \
+      -d \
+      -h "{{ droplet }}.{{ domain }}" \
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      --name "{{ droplet }}" \
+      --tmpfs /run \
+      --tmpfs /run/lock \
+      --security-opt seccomp=unconfined \
+      {{ ports | join(' ') }} \
+      solita/ubuntu-systemd
 
 - name: Generate SSH key-pair for droplet
   shell: |-
