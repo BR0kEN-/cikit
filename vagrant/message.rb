@@ -6,9 +6,9 @@ def cikit_message(ip, host, is_wsl)
   reset = "\033[0m#{green}"
 
   message = <<-END
-    |#{green}Releases changelog: #{yellow}https://cikit.slack.com/messages/general#{reset}
-    |#{green}Technical support: #{yellow}https://cikit.slack.com/messages/support#{reset}
-    |#{green}Documentation: #{yellow}https://github.com/BR0kEN-/cikit#{reset}
+    |#{green}Documentation: #{yellow}https://cikit.tools/documentation#{reset}
+    |#{green}Changelog: #{yellow}https://cikit.tools/changelog#{reset}
+    |#{green}Support: #{yellow}https://cikit.slack.com/messages/support#{reset}
     |
     |#{blue} ██████╗ ██╗    ██╗  ██╗ ██╗ ████████╗#{reset}
     |#{blue}██╔════╝ ██║    ██║ ██╔╝ ██║ ╚══██╔══╝#{reset}
