@@ -39,6 +39,8 @@
 - name: Store the hostname of a matrix
   copy:
     dest: "{{ __credentialsdir__ }}/.hostname"
+    # Ensure value's freshness.
+    force: yes
     content: "{{ inventory_hostname }}"
   delegate_to: localhost
   become: no
