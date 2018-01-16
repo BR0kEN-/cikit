@@ -17,6 +17,8 @@ documentation:
     children:
       - title: How to define, check or delete server credentials
         url: /documentation/hosts-manager/
+      - title: Components infrastructure
+        url: /documentation/hosts-manager/infrastructure/
 
   - title: Matrix of CI servers
     url: /documentation/matrix/
