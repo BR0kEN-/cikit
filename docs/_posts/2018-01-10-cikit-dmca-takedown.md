@@ -250,7 +250,7 @@ On January 9, 2018, I had a legal consultation (the first time in a life) with [
 
 It was not easy to stay calm, passing through the streams of mud, but thank you - this made me stronger.
 
-I never actively advertised the CIKit because had an oral agreement with Andrii Podanenko but now I can no longer consider its validity.
+I never actively advertised the CIKit because had an verbal agreement with Andrii Podanenko but now I can no longer consider its validity.
 {: .notice--info}
 
 I do appreciate everyone who took part in CIBox until the day I made the fork. Without your hard work I would not be able to create the CIKit. Precisely for this reason I did not initiate a new repository, perpetuating everyone involved [in a history](/about/#contributors).
