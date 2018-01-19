@@ -44,9 +44,6 @@ author:
 remote_theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "default"
 
-footer_scripts:
-  - /assets/js/custom.js
-
 # Reading Files
 include:
   - .htaccess
