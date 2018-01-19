@@ -26,6 +26,9 @@ social:
     - "https://twitter.com/brO_0keN"
     - "https://facebook.com/alwayswannarock"
 
+patreon:
+  donate_link: https://www.patreon.com/bePatron?u=9296027
+
 author:
   # *name is a YAML reference pointing to the &anchor earlier.
   name: *name

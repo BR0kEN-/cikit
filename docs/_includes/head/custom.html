@@ -1,1 +1,26 @@
 <link rel="stylesheet" href="{{ '/assets/css/custom.css' | absolute_url }}" />
+
+<link rel="apple-touch-icon" href="{{ '/assets/tiles/ios/52x52.png' | absolute_url }}" />
+<link rel="apple-touch-icon" sizes="76x76" href="{{ '/assets/tiles/ios/76x76.png' | absolute_url }}" />
+<link rel="apple-touch-icon" sizes="120x120" href="{{ '/assets/tiles/ios/120x120.png' | absolute_url }}" />
+<link rel="apple-touch-icon" sizes="152x152" href="{{ '/assets/tiles/ios/152x152.png' | absolute_url }}" />
+
+<meta name="format-detection" content="address=no" />
+<meta name="format-detection" content="telephone=no" />
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="application-name" content="{{ site.title }}" />
+<meta name="msapplication-tooltip" content="Start the {{ site.title }} application" />
+<meta name="msapplication-starturl" content="/" />
+<meta name="msapplication-navbutton-color" content="#182038" />
+<meta name="msapplication-TileColor" content="#182038" />
+<meta name="msapplication-TileImage" content="{{ '/assets/tiles/windows/144x144.png' | absolute_url }}" />
+
+{% for link in site.data.navigation.main %}
+  {% capture icon %}/assets/navigation/main/{{ link.id }}.ico{% endcapture %}
+  <meta name="msapplication-task" content="name={{ link.title }}; action-uri=.{{ link.url | absolute_url }}; icon-uri=.{{ icon | absolute_url }}" />
+{% endfor %}
+
+<meta name="msapplication-task" content="name=Donate; action-uri=.{{ site.patreon.donate_link }}; icon-uri=.{{ '/assets/navigation/main/donate.ico' | absolute_url }}" />

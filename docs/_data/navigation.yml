@@ -1,15 +1,20 @@
 main:
   - title: Documentation
     url: /documentation/
+    id: documentation
   - title: Changelog
     url: /changelog/
+    id: changelog
   - title: Blog
     url: /blog/
+    id: blog
   - title: Support
     url: https://cikit.slack.com/messages/support
+    id: support
     description: In the public Slack channel.
   - title: About
     url: /about/
+    id: about
 
 documentation:
   - title: Hosts manager
