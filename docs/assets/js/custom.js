@@ -5,9 +5,11 @@
   if (/iphone|ipod|ipad/i.test(window.navigator.userAgent)) {
     document.querySelectorAll('a[href]').forEach(function (link) {
       link.addEventListener('click', function (event) {
-        event.preventDefault();
+        if (this.host === window.location.host) {
+          event.preventDefault();
 
-        location.href = this.href;
+          window.location.href = this.href;
+        }
       });
     });
   }
