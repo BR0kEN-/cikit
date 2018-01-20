@@ -1,10 +1,5 @@
-%flex-list {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-  list-style: none;
-}
+@import "../mixins";
+
 .contributors {
   @extend %flex-list;
 }
@@ -28,7 +23,4 @@ ul.page__meta {
   li {
     margin-right: 10px;
   }
-}
-.fa-credit-card {
-  color: #f96854;
 }
