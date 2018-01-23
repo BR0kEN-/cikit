@@ -1,0 +1,7 @@
+---
+- name: "Link extension configuration for {{ type | upper }}"
+  file:
+    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
+    dest: "/etc/php/{{ php_version }}/{{ type }}/conf.d/20-{{ item.key }}.ini"
+    state: link
+  with_dict: "{{ php_extensions }}"

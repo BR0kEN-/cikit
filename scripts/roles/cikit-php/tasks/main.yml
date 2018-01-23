@@ -17,11 +17,6 @@
   args:
     warn: no
 
-- name: Install Apache module for PHP
-  apt:
-    name: "libapache2-mod-php{{ php_version }}"
-    state: latest
-
 - name: Set interpreter version as system default
   shell: "ln -fs /usr/bin/{{ item }}{{ php_version }} /etc/alternatives/{{ item }}"
   args:
@@ -42,6 +37,4 @@
 
 - import_tasks: configure.yml
 
-- name: Enalbe PHP for Apache
-  shell: "a2dismod php* && a2enmod php{{ php_version }}"
-  ignore_errors: yes
+- include_tasks: "{{ web_server }}/{{ web_server_operation_place }}.yml"

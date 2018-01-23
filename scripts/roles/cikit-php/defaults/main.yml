@@ -64,3 +64,4 @@ php:
     - sybase
     - xmlrpc
     - memcached
+    - fpm
