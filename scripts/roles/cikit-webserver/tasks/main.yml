@@ -1,0 +1,6 @@
+---
+- name: Define place of operation for the web server
+  set_fact:
+    web_server_operation_place: "{{ 'local' if localhost else 'remote' }}"
+
+- include_tasks: "{{ web_server_operation_place }}.yml"

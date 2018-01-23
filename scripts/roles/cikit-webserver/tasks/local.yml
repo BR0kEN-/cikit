@@ -1,0 +1,14 @@
+---
+- name: Eliminate web servers conflicts
+  service:
+    name: "{{ item }}"
+    # Stop conflicting web server.
+    state: stopped
+    # Prevent conflicting web server to be started on boot.
+    enabled: no
+  # Apply the rule for any web server, except currently selected.
+  when: web_server != item
+  with_items: "{{ cikit_webserver.servers }}"
+
+- include_role:
+    name: "cikit-{{ web_server }}"

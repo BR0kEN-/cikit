@@ -1,0 +1,8 @@
+---
+# @todo Complete the remote installation.
+# Droplets use Nginx anyway.
+- include_role:
+    name: cikit-nginx
+
+- include_role:
+    name: cikit-apache2

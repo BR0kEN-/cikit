@@ -12,6 +12,12 @@
     - "{{ __targetdir__ }}/.cikit/config.yml"
 
   vars_prompt:
+    - name: web_server
+      prompt: Which web server you want to use? (apache2/nginx)
+      default: apache2
+      private: no
+      tags: ["php", "php-stack", "security", "web-server"]
+
     - name: php_version
       prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1)
       default: 7.1
@@ -100,6 +106,12 @@
         msg: "Continuation is possible only with Ansible 2.2.x on host machine."
       when: "ansible_version.major < 2 and ansible_version.minor < 2"
       tags: ["always"]
+
+    - name: Check whether preselected web server is available
+      fail:
+        msg: "The '{{ web_server }}' web server is unknown and cannot be used."
+      when: "web_server not in cikit_webserver.servers"
+      tags: ["php", "php-stack", "security", "web-server"]
 
     - include_vars: "{{ item }}"
       with_fileglob: "{{ __targetdir__ }}/.cikit/vars/*.yml"
@@ -253,13 +265,6 @@
       when: not localhost
       tags: ["dns"]
 
-    - role: cikit-nginx
-      when: not localhost
-      tags: ["nginx", "php-stack", "security"]
-
-    - role: cikit-apache
-      tags: ["apache", "php-stack", "security"]
-
     # Should be before installing/configuring PHP since it may
     # install the "sqlsrv" extension which is based on "mssql".
     - role: cikit-mssql
@@ -267,7 +272,10 @@
       tags: ["mssql"]
 
     - role: cikit-php
-      tags: ["php", "php-stack"]
+      tags: ["php", "php-stack", "web-server"]
+
+    - role: cikit-webserver
+      tags: ["php", "php-stack", "security", "web-server"]
 
     - role: cikit-nodejs
       tags: ["nodejs"]
@@ -318,5 +326,6 @@
         name: "{{ item }}"
         state: restarted
       ignore_errors: yes
-      with_items: ["apache2", "nginx"]
+      # Restart only current web server locally and both on droplet.
+      with_items: "{{ [web_server] if localhost else ['apache2', 'nginx'] }}"
       tags: ["always"]
