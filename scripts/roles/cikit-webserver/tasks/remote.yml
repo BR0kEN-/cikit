@@ -6,3 +6,4 @@
 
 - include_role:
     name: cikit-apache2
+  when: "'apache2' == web_server"
