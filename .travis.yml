@@ -1,0 +1,11 @@
+sudo: required
+dist: trusty
+
+python:
+  - "2.7"
+
+install:
+  - sudo bash ./install.sh --no-requirements-check
+
+script:
+  - time bash ./tests/travis/inventory.sh

@@ -36,6 +36,7 @@ matrix/*
 !.version
 !.codespellignore
 !.rubocop.yml
+!.travis.yml
 
 # File extensions.
 *.retry

@@ -15,6 +15,7 @@
 - name: Check host's SSH accessibility
   shell: >
     ssh -p {{ ssh_port }} -i '{{ ssh_key }}' -o ConnectTimeout=10 -o ConnectionAttempts=1 {{ ssh_user }}@{{ domain }}
+  when: not ignore_invalid
 
 - name: Append host definition
   set_fact:
