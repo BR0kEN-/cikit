@@ -265,6 +265,9 @@
       when: not localhost
       tags: ["dns"]
 
+    - role: cikit-webserver
+      tags: ["php", "php-stack", "security", "web-server"]
+
     # Should be before installing/configuring PHP since it may
     # install the "sqlsrv" extension which is based on "mssql".
     - role: cikit-mssql
@@ -273,9 +276,6 @@
 
     - role: cikit-php
       tags: ["php", "php-stack", "web-server"]
-
-    - role: cikit-webserver
-      tags: ["php", "php-stack", "security", "web-server"]
 
     - role: cikit-nodejs
       tags: ["nodejs"]
