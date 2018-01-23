@@ -1,0 +1,31 @@
+#jinja2: trim_blocks: True
+#jinja2: lstrip_blocks: True
+{{ ansible_managed | comment }}
+DirectoryIndex index.php index.html
+
+{% set root_type = "DocumentRoot" if localhost else "VirtualDocumentRoot" %}
+
+{% for vhost in web_server_vhosts %}
+    {# Re-save the value to the variable which might be used in included templates. #}
+    {% set directory = vhost.root %}
+    {% set server_name = vhost.name %}
+
+    {% set basic_definition %}
+        ServerName {{ server_name }}
+        {{ root_type }} {{ directory }}
+    {% endset %}
+
+    <VirtualHost *:{{ web_port }}>
+        {{ basic_definition }}
+        {% include "parts/directory.j2" with context %}
+
+    </VirtualHost>
+
+    <VirtualHost *:{{ web_port_ssl }}>
+        {{ basic_definition }}
+        {% include "parts/ssl.j2" with context %}
+
+        {% include "parts/directory.j2" with context %}
+
+    </VirtualHost>
+{% endfor %}

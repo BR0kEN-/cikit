@@ -30,4 +30,4 @@
 
 - name: Ensure that necessary ports free and processes stopped
   shell: "lsof -ti:{{ item }} | xargs --no-run-if-empty kill"
-  with_items: ["{{ apache_port }}", "{{ apache_port_ssl }}"]
+  with_items: ["{{ web_port }}", "{{ web_port_ssl }}"]

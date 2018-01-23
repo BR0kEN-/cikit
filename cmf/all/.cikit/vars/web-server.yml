@@ -1,0 +1,4 @@
+---
+web_server_vhosts:
+  - name: "{{ (site_url.split('//') | last) if site_url is defined and localhost else 'JenkinsCI' }}"
+    root: "{{ webroot }}/{{ '' if site_url is defined and localhost else '%1/' }}docroot"
