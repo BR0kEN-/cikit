@@ -7,6 +7,9 @@ python:
 install:
   - sudo pip install ansible
   - sudo bash ./install.sh --no-requirements-check
+  - cd /usr/local/share/cikit
+  - sudo git fetch origin ${TRAVIS_BRANCH}
+  - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
   - sudo bash ./tests/travis/inventory.sh
