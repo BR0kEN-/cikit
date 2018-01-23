@@ -1,0 +1,41 @@
+{{ ansible_managed | comment }}
+
+{# Re-save the value to the variable which might be used in included templates. #}
+{% set server_name = ansible_host %}
+
+{% for listened_port in ["80", "443 ssl"] %}
+    {# Do not use integer here! #}
+    {% set http = "80" == listened_port %}
+
+    server {
+        listen                          {{ listened_port }};
+        server_name                     {{ server_name }};
+
+        satisfy                         any;
+        {% for allowed_ip in allowed_ips %}
+            allow                           {{ allowed_ip }};
+        {% endfor %}
+        deny                            all;
+
+        auth_basic                      "Restricted area";
+        auth_basic_user_file            /var/www/.htpasswd;
+
+        {% if not http %}
+            {% include "parts/ssl.j2" with context %}
+        {% endif %}
+
+        {% include "parts/logs.j2" with context %}
+
+        {% for location, spec in nginx_proxies.items() %}
+            {% set proxy_pass = "http://127.0.0.1:" + spec.port %}
+
+            {% if http and not spec.http %}
+                location {{ location }} {
+                    return 301 https://{{ ansible_host }}$request_uri;
+                }
+            {% else %}
+                {% include "parts/proxy-pass.j2" with context %}
+            {% endif %}
+        {% endfor %}
+    }
+{% endfor %}
