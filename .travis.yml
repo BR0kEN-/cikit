@@ -9,4 +9,4 @@ install:
   - sudo bash ./install.sh --no-requirements-check
 
 script:
-  - time bash ./tests/travis/inventory.sh
+  - sudo bash ./tests/travis/inventory.sh
