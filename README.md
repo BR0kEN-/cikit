@@ -1,4 +1,4 @@
-# Continuous Integration Kit
+# Continuous Integration Kit [![Build Status](https://img.shields.io/travis/BR0kEN-/cikit/master.svg?style=flat-square)](https://travis-ci.org/BR0kEN-/cikit)
 
 **CIKit** - Ansible-based system for building environments for local development and continuous integration.
 
