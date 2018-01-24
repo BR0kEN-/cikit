@@ -11,6 +11,8 @@
     ssh_port: 22
     ssh_user: root
     ssh_key: ~/.ssh/id_rsa
+    # Use with caution! Pass "--ignore-invalid" to not check the operability of the SSH connection.
+    ignore_invalid: no
     __delete: no
     __list: no
 
