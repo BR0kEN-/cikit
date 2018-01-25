@@ -276,6 +276,7 @@
       tags: ["mssql"]
 
     - role: cikit-php
+      # The "web-server" tag is needed in order to be sure PHP is installed as Apache2 mod.
       tags: ["php", "php-stack", "web-server"]
 
     - role: cikit-nodejs
@@ -320,13 +321,4 @@
     - name: Starting random rnd-tools service
       shell: rngd -r /dev/urandom
       when: not localhost and 'openvz' != ansible_virtualization_type
-      tags: ["always"]
-
-    - name: Restart service
-      service:
-        name: "{{ item }}"
-        state: restarted
-      ignore_errors: yes
-      # Restart only current web server locally and both on droplet.
-      with_items: "{{ [web_server] if localhost else ['apache2', 'nginx'] }}"
       tags: ["always"]
