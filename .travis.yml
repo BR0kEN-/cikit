@@ -12,4 +12,7 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - sudo bash ./tests/travis/inventory.sh
+#  - sudo bash ./tests/travis/inventory.sh
+  - cikit init --project=test_project
+  - cd test_project
+  - sudo ANSIBLE_INVENTORY="localhost," cikit provision --limit=localhost
