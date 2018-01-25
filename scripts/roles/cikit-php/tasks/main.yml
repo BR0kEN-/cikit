@@ -23,9 +23,10 @@
     warn: no
   with_items: ["php", "phpize", "php-config"]
 
-# Allow modifying this variable by included tasks.
 - set_fact:
+    # Allow modifying this variable by included tasks.
     php_extensions: "{{ php.extensions }}"
+    php_conf_dir: "/etc/php/{{ php_version }}"
 
 - import_tasks: xdebug.yml
 
@@ -35,6 +36,5 @@
   # The "install_mssql" variable is flowing from "provision.yml".
   when: "install_mssql is defined and install_mssql and '5.6' != php_version"
 
+- include_tasks: "{{ web_server }}/{{ operation_place }}.yml"
 - import_tasks: configure.yml
-
-- include_tasks: "{{ web_server }}/{{ web_server_operation_place }}.yml"

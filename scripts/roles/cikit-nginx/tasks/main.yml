@@ -6,6 +6,6 @@
 
 - name: Create virtual hosts
   template:
-    src: "{{ web_server_operation_place }}.j2"
+    src: "{{ operation_place }}.j2"
     dest: "/etc/nginx/sites-{{ item }}/cikit"
   with_items: ["enabled", "available"]

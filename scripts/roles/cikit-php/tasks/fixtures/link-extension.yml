@@ -1,7 +1,7 @@
 ---
-- name: "Link extension configuration for {{ type | upper }}"
+- name: "Link extension configuration for {{ type | replace('/', '') | upper }}"
   file:
-    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
-    dest: "/etc/php/{{ php_version }}/{{ type }}/conf.d/20-{{ item.key }}.ini"
+    src: "{{ php_conf_dir }}/mods-available/{{ item.key }}.ini"
+    dest: "{{ php_conf_dir }}/{{ type }}/conf.d/20-{{ item.key }}.ini"
     state: link
   with_dict: "{{ php_extensions }}"

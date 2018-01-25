@@ -1,8 +1,4 @@
 ---
-- name: Define place of operation for the web server
-  set_fact:
-    web_server_operation_place: "{{ 'local' if localhost else 'remote' }}"
-
 - name: Eliminate web servers conflicts
   service:
     name: "{{ item }}"
@@ -13,5 +9,7 @@
   # Apply the rule for any web server, except currently selected.
   when: web_server != item
   with_items: "{{ cikit_webserver.servers }}"
+  # If feasible conflicting server is not installed then the task will end up in error.
+  ignore_errors: yes
 
-- include_tasks: "{{ web_server_operation_place }}.yml"
+- include_tasks: "{{ operation_place }}.yml"
