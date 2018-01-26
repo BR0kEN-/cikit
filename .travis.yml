@@ -12,5 +12,5 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-#  - sudo bash ./tests/travis/inventory.sh
+  - sudo bash ./tests/travis/inventory.sh
   - sudo bash ./tests/travis/provision.sh
