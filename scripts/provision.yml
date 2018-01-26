@@ -184,7 +184,7 @@
     - name: Create CIKit command line utility
       file:
         # This directory is explicitly mounted in the Vagrantfile.
-        src: "/usr/local/share/cikit/{{ item.src }}"
+        src: "/usr/local/share/cikit/lib/{{ item.src }}"
         dest: "{{ item.dest }}/{{ item.src }}"
         state: link
       with_items:
