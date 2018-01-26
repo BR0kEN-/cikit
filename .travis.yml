@@ -13,6 +13,4 @@ install:
 
 script:
 #  - sudo bash ./tests/travis/inventory.sh
-  - sudo cikit init --project=test_project
-  - cd test_project
-  - sudo ANSIBLE_INVENTORY="localhost," cikit provision --limit=localhost
+  - sudo bash ./tests/travis/provision.sh
