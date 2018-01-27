@@ -28,6 +28,16 @@
         {% include "parts/logs.j2" with context %}
 
         {% for location, spec in nginx_proxies.items() %}
+            {#
+                The "/" means we want to serve the application. We cannot
+                simply pass the request to the "127.0.0.1:PORT" if Nginx was
+                chosen as default web server. A virtual host will be created
+                later on.
+            #}
+            {% if "/" == location and is_nginx %}
+                {% continue %}
+            {% endif %}
+
             {# This variable is used by the "proxy-pass.j2" template. #}
             {% set proxy_pass = "http://127.0.0.1:" + spec.port %}
 
@@ -36,17 +46,7 @@
                     return 301 https://{{ ansible_host }}$request_uri;
                 }
             {% else %}
-                {#
-                    The "/" means we want to serve the application. We cannot
-                    simply pass the request to the "127.0.0.1:PORT" if Nginx was
-                    chosen as default web server.
-                #}
-                {% if "/" == location and is_nginx %}
-                    {# A virtual host will be created later on. #}
-                    {% continue %}
-                {% else %}
-                    {% include "parts/proxy-pass.j2" with context %}
-                {% endif %}
+                {% include "parts/proxy-pass.j2" with context %}
             {% endif %}
         {% endfor %}
     }
