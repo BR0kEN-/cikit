@@ -1,0 +1,29 @@
+---
+- name: Define the path to file for storing chosen web server for a droplet
+  set_fact:
+    chosen_web_server_path: "{{ __selfdir__ }}/.web-server"
+
+- name: Lock a droplet to work only with initially chosen web server
+  copy:
+    dest: "{{ chosen_web_server_path }}"
+    # Store the value just initially, disallowing the overwrites.
+    force: no
+    content: "{{ web_server }}"
+
+- name: Read the name of a web server that is chosen for a droplet
+  slurp:
+    src: "{{ chosen_web_server_path }}"
+  register: chosen_web_server
+
+- name: Decode the name of a chosen web server
+  set_fact:
+    chosen_web_server: "{{ chosen_web_server.content | b64decode }}"
+
+- name: Disallow changing the web server
+  fail:
+    msg: >-
+      During the creation of this droplet the '{{ chosen_web_server }}' was chosen as the web server
+      and it cannot be changed in order to continue providing operability of already hosted projects.
+      It is recommended to host this project on a droplet that was built with the '{{ web_server }}'
+      as a web server.
+  when: chosen_web_server != web_server

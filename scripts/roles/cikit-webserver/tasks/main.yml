@@ -1,4 +1,7 @@
 ---
+- include_tasks: disallow-web-server-change.yml
+  when: not localhost
+
 - name: Eliminate web servers conflicts
   service:
     name: "{{ item }}"
