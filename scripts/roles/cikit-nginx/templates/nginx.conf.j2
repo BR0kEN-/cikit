@@ -34,6 +34,9 @@ http {
     ## Reset lingering timed out connections. Deflect DDoS.
     reset_timedout_connection on;
 
+    ## Allow long server names, like "webserver_build_1.cikit02.brbr.propeople.com.ua".
+    server_names_hash_bucket_size 128;
+
     gzip on;
     gzip_buffers 16 8k;
     gzip_comp_level 1;
@@ -45,10 +48,6 @@ http {
     ## No need for regexps. See
     ## http://wiki.nginx.org/NginxHttpGzipModule#gzip_disable
     gzip_disable msie6;
-
-    ## For the filefield_nginx_progress module to work. From the
-    ## README. Reserve 1MB under the name 'uploads' to track uploads.
-    upload_progress uploads 1m;
 
     ## Enable the builtin cross-site scripting (XSS) filter available
     ## in modern browsers.  Usually enabled by default we just

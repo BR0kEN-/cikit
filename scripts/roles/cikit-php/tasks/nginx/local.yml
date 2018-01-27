@@ -1,6 +1,1 @@
 ---
-- name: Start FPM and add it to boot
-  service:
-    name: "php{{ php_version }}-fpm"
-    state: started
-    enabled: yes

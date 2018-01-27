@@ -75,11 +75,13 @@ location ~ '\.php$|^/update.php' {
     fastcgi_param           REDIRECT_STATUS     200;
 }
 
-location ~ ^/sites/.*/files/styles/ { # For Drupal >= 7
+# For Drupal >= 7.
+location ~ ^/sites/.*/files/styles/ {
     try_files $uri @rewrite;
 }
 
-location ~ ^(/[a-z\-]+)?/system/files/ { # For Drupal >= 7
+# For Drupal >= 7.
+location ~ ^(/[a-z\-]+)?/system/files/ {
     try_files $uri /index.php?$query_string;
 }
 

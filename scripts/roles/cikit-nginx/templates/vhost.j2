@@ -5,17 +5,40 @@
 
 {% for vhost in web_server_vhosts -%}
     {# Re-save the value to the variable which might be used in included templates. #}
-    {% set directory = vhost.root -%}
     {% set server_name = vhost.name -%}
 
-    {% set basic_definition -%}
-        server_name     {{ server_name }} *.{{ server_name }};
-        root            {{ directory }};
-    {% endset %}
+    {% if localhost -%}
+        {% set basic_definition -%}
+            server_name     {{ vhost.name }} *.{{ vhost.name }};
+            root            {{ vhost.root }};
+        {% endset %}
+    {% else %}
+        {% set basic_definition -%}
+            server_name     "~^(?<build_id>.+?)\.{{ vhost.name | regex_replace }}$";
+            root            {{ vhost.root | replace('%1', '$build_id') }};
+        {% endset %}
+    {% endif %}
 
     server {
         {{ basic_definition }}
-        listen                          {{ web_port }};
+        {#
+            Nginx - is not default case but nevertheless, it's used on every droplet as
+            a proxy for various services like Jenkins, Solr etc. and reserves the "80"
+            and "443" ports for itself. To serve our application it also proxying requests
+            to Apache which however cannot use mentioned above ports due to their busyness.
+            To resolve this issue "ports.yml" configuration within every project has the
+            conditions:
+            - "web_port: "{{ 80 if localhost else 8080 }}"
+            - "web_port_ssl: "{{ 443 if localhost else 44344 }}"
+            That way Nginx, that operates on the standard ports, will redirect application's
+            requests to the Apache, to "8080" and "44344" accordingly and all be good.
+
+            The other scenario - Nginx as a web server for serving the application. We no
+            longer interested in proxying to Apache and ready to use standard ports, but
+            they were modified by the mentioned above conditions. Let's revert the changes
+            using regular expressions.
+        #}
+        listen                          {{ web_port | regex_replace('^(\d{2})\d{2}$', '\\g<1>') }};
 
         {% include "parts/logs.j2" with context %}
         {% include "parts/locations.j2" with context %}
@@ -23,7 +46,7 @@
 
     server {
         {{ basic_definition }}
-        listen                          {{ web_port_ssl }} ssl;
+        listen                          {{ web_port_ssl | regex_replace('^(\d{3})\d{2}$', '\\g<1>') }} ssl;
 
         {% include "parts/ssl.j2" with context %}
         {% include "parts/logs.j2" with context %}
