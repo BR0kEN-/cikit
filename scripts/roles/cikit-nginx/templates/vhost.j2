@@ -2,7 +2,6 @@
 
 {# http://nginx.org/ru/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass #}
 {% set proxy_pass = "unix://run/php/php" + php_version + "-fpm.sock" -%}
-{% set location = "/" -%}
 
 {% for vhost in web_server_vhosts -%}
     {# Re-save the value to the variable which might be used in included templates. #}
@@ -19,7 +18,7 @@
         listen                          {{ web_port }};
 
         {% include "parts/logs.j2" with context %}
-        {% include "parts/fastcgi-pass.j2" with context %}
+        {% include "parts/locations.j2" with context %}
     }
 
     server {
@@ -28,6 +27,6 @@
 
         {% include "parts/ssl.j2" with context %}
         {% include "parts/logs.j2" with context %}
-        {% include "parts/fastcgi-pass.j2" with context %}
+        {% include "parts/locations.j2" with context %}
     }
 {% endfor %}

@@ -1,9 +1,48 @@
 {#
     Used variables:
-    - location
     - proxy_pass
 #}
-location {{ location }} {
+location = /favicon.ico {
+    access_log off;
+    log_not_found off;
+}
+
+location = /robots.txt {
+    allow all;
+    access_log off;
+    log_not_found off;
+}
+
+location ~ \..*/.*\.php$ {
+    return 403;
+}
+
+location ~ ^/sites/.*/private/ {
+    return 403;
+}
+
+# Block access to "hidden" files and directories whose names begin with a
+# period. This includes directories used by version control systems such
+# as Subversion or Git to store control files.
+location ~ (^|/)\. {
+    return 403;
+}
+
+location / {
+    try_files $uri /index.php?$query_string;
+}
+
+location @rewrite {
+    rewrite ^/(.*)$ /index.php?q=$1;
+}
+
+# Don't allow direct access to PHP files in the vendor directory.
+location ~ /vendor/.*\.php$ {
+    deny all;
+    return 404;
+}
+
+location ~ '\.php$|^/update.php' {
     fastcgi_pass            {{ proxy_pass }};
     fastcgi_index           index.php;
     fastcgi_param           SCRIPT_FILENAME     $document_root$fastcgi_script_name;
@@ -12,6 +51,9 @@ location {{ location }} {
     fastcgi_param           CONTENT_TYPE        $content_type;
     fastcgi_param           CONTENT_LENGTH      $content_length;
 
+    # Block httpoxy attacks. See https://httpoxy.org.
+    fastcgi_param           HTTP_PROXY          "";
+    fastcgi_param           PATH_INFO           $fastcgi_path_info;
     fastcgi_param           SCRIPT_NAME         $fastcgi_script_name;
     fastcgi_param           REQUEST_URI         $request_uri;
     fastcgi_param           DOCUMENT_URI        $document_uri;
@@ -31,4 +73,18 @@ location {{ location }} {
 
     # PHP only, required if PHP was built with --enable-force-cgi-redirect
     fastcgi_param           REDIRECT_STATUS     200;
+}
+
+location ~ ^/sites/.*/files/styles/ { # For Drupal >= 7
+    try_files $uri @rewrite;
+}
+
+location ~ ^(/[a-z\-]+)?/system/files/ { # For Drupal >= 7
+    try_files $uri /index.php?$query_string;
+}
+
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+    try_files $uri @rewrite;
+    expires max;
+    log_not_found off;
 }
