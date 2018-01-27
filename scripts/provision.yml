@@ -276,7 +276,9 @@
       tags: ["mssql"]
 
     - role: cikit-php
-      # The "web-server" tag is needed in order to be sure PHP is installed as Apache2 mod.
+      # The "web-server" tag is needed in order to be sure necessary tweaks
+      # were done for a specific web server (PHP-FPM added to boot in case
+      # of Nginx, "libapache2-mod-php" installed for Apache2, etc.).
       tags: ["php", "php-stack", "web-server"]
 
     - role: cikit-nodejs
