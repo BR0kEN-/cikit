@@ -10,6 +10,8 @@ worker_rlimit_nofile {{ nginx_worker_rlimit_nofile }};
 
 events {
     worker_connections {{ nginx_max_clients if nginx_max_clients is defined else 512 }};
+    ## Accept as many connections as possible.
+    multi_accept on;
 }
 
 http {
@@ -28,6 +30,46 @@ http {
     error_log {{ nginx_log_dir }}/error.log {{ nginx_error_log_level }};
     server_tokens off;
     types_hash_max_size 2048;
+
+    ## Reset lingering timed out connections. Deflect DDoS.
+    reset_timedout_connection on;
+
+    gzip on;
+    gzip_buffers 16 8k;
+    gzip_comp_level 1;
+    gzip_http_version 1.1;
+    gzip_min_length 10;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf;
+    gzip_vary on;
+    gzip_proxied any; # Compression for all requests.
+    ## No need for regexps. See
+    ## http://wiki.nginx.org/NginxHttpGzipModule#gzip_disable
+    gzip_disable msie6;
+
+    ## For the filefield_nginx_progress module to work. From the
+    ## README. Reserve 1MB under the name 'uploads' to track uploads.
+    upload_progress uploads 1m;
+
+    ## Enable the builtin cross-site scripting (XSS) filter available
+    ## in modern browsers.  Usually enabled by default we just
+    ## reinstate in case it has been somehow disabled for this
+    ## particular server instance.
+    ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
+    add_header X-XSS-Protection '1; mode=block';
+
+    ## Enable this if using HTTPS. See sites-available/example.com.conf
+    ## for details.
+    #add_header Strict-Transport-Security "max-age=7200";
+
+    ## Block MIME type sniffing on IE.
+    add_header X-Content-Options nosniff;
+
+    ## Support the X-Forwarded-Proto header for fastcgi.
+    map $http_x_forwarded_proto $fastcgi_https {
+        default $https;
+        http '';
+        https on;
+    }
 
     include /etc/nginx/conf.d/*.conf;
     include /etc/nginx/sites-enabled/*;
