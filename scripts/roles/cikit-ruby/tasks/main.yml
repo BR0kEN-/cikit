@@ -37,7 +37,7 @@
   shell: |-
     {{ cikit_ruby_shell_path_export }}
     eval "$(rbenv init -)"
-    rbenv install {{ ruby_version }}
+    RUBY_CONFIGURE_OPTS="--disable-install-doc" rbenv install {{ ruby_version }}
     rbenv global {{ ruby_version }}
   args:
     executable: /bin/bash

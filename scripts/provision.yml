@@ -25,7 +25,7 @@
       tags: ["nodejs", "phantomjs"]
 
     - name: ruby_version
-      prompt: Which version of Ruby you'd want to install? (2.1.10/2.2.6/2.3.3/2.4.0)
+      prompt: Which version of Ruby you'd want to install? (2.1.10/2.2.6/2.3.3/2.4.0/2.5.0)
       default: 2.4.0
       private: no
       tags: ["sniffers", "ruby"]
