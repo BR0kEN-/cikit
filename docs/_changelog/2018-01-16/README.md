@@ -1,6 +1,6 @@
 ---
 title: January 16, 2018
-permalink: /changelog/2018-12-20/
+permalink: /changelog/2018-01-16/
 ---
 
 Was eliminated the security lack that required matrix owner/manager to share SSH credentials for a server with everyone who has wanted to access CI droplets on it.
