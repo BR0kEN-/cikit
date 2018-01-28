@@ -2,6 +2,7 @@
 cikit_ruby:
   # Values have to be of "string" type.
   versions:
+    - "2.5.0"
     - "2.4.0"
     - "2.3.3"
     - "2.2.6"
