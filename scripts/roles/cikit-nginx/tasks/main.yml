@@ -14,9 +14,9 @@
 - include_tasks: vhost.yml
   with_first_found:
     # Allow a project to overwrite the template for a virtual host.
-    - "{{ __targetdir__ }}/.cikit/templates/nginx/vhosts.j2"
+    - "{{ __targetdir__ }}/.cikit/templates/nginx/vhosts.conf.j2"
     # If a project didn't define the template we're falling back to the default one.
-    - "{{ role_path }}/templates/vhosts.j2"
+    - "{{ role_path }}/templates/vhosts.conf.j2"
   loop_control:
     loop_var: template
   when: "'nginx' == web_server"

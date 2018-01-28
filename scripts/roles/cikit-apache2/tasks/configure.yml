@@ -1,10 +1,20 @@
 ---
-- include_tasks: template.yml
-  with_items:
-    - conf
-    - sites
-  loop_control:
-    loop_var: type
+- name: Create configs
+  template:
+    src: "conf/{{ item | basename }}"
+    dest: '{{ cikit_apache.dest }}/conf-available/{{ item | basename | splitext | first }}'
+  with_fileglob: "../templates/conf/*.j2"
+
+- name: Create virtual hosts
+  template:
+    src: "{{ item }}"
+    # Do not add the config to "sites-enabled" since it'll be done later.
+    dest: "{{ cikit_apache.dest }}/sites-available/{{ item | basename | splitext | first }}"
+  with_first_found:
+    # Allow a project to overwrite the template for a virtual host.
+    - "{{ __targetdir__ }}/.cikit/templates/apache2/vhosts.conf.j2"
+    # If a project didn't define the template we're falling back to the default one.
+    - "{{ role_path }}/templates/vhosts.conf.j2"
 
 - name: Configure ports
   template:
