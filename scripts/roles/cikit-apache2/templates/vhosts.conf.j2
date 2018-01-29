@@ -7,8 +7,13 @@ DirectoryIndex index.php index.html
 
 {% for vhost in web_server_vhosts %}
     {# Re-save the value to the variable which might be used in included templates. #}
-    {% set directory = vhost.root %}
-    {% set server_name = vhost.name %}
+    {% if localhost %}
+        {% set directory = webroot + "/" + vhost.root %}
+        {% set server_name = vhost.name + ".loc" %}
+    {% else %}
+        {% set directory = webroot + "/%1/" + vhost.root %}
+        {% set server_name = "CIKit Droplet" | quote %}
+    {% endif %}
 
     {% set basic_definition %}
         ServerName {{ server_name }}

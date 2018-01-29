@@ -1,21 +1,23 @@
+#jinja2: trim_blocks: True
+#jinja2: lstrip_blocks: True
 {{ ansible_managed | comment }}
 
 {# http://nginx.org/ru/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass #}
-{% set proxy_pass = "unix://run/php/php" + php_version + "-fpm.sock" -%}
+{% set proxy_pass = "unix://run/php/php" + php_version + "-fpm.sock" %}
 
-{% for vhost in web_server_vhosts -%}
+{% for vhost in web_server_vhosts %}
     {# Re-save the value to the variable which might be used in included templates. #}
-    {% set server_name = vhost.name -%}
+    {% set server_name = vhost.name %}
 
-    {% if localhost -%}
-        {% set basic_definition -%}
-            server_name     {{ vhost.name }} *.{{ vhost.name }};
-            root            {{ vhost.root }};
+    {% if localhost %}
+        {% set basic_definition %}
+            server_name     {{ vhost.name }}.loc;
+            root            {{ webroot }}/{{ vhost.root }};
         {% endset %}
     {% else %}
-        {% set basic_definition -%}
-            server_name     "~^(?<build_id>.+?)\.{{ vhost.name | regex_replace }}$";
-            root            {{ vhost.root | replace('%1', '$build_id') }};
+        {% set basic_definition %}
+            server_name     "~^(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
+            root            {{ webroot }}/$build_id/{{ vhost.root }};
         {% endset %}
     {% endif %}
 
