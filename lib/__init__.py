@@ -100,13 +100,22 @@ else:
             #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
             # Just works.
             with open(ansible_executable) as ansible_executable:
-                for key, value in json.loads(
-                    functions.call(
-                        ansible_executable.readline().lstrip('#!').rstrip(),
+                python_ansible = ansible_executable.readline().lstrip('#!').strip()
+
+                # Do not apply the workaround if an exactly same interpreter is used for
+                # running CIKit and Ansible.
+                if functions.call('which', 'python').strip() == python_ansible:
+                    import yaml
+
+                    ENV_CONFIG = json.dumps(yaml.load(open(ENV_CONFIG)))
+                else:
+                    ENV_CONFIG = functions.call(
+                        python_ansible,
                         '-c',
                         'import yaml, json\nprint json.dumps(yaml.load(open(\'%s\')))' % ENV_CONFIG,
                     )
-                ).iteritems():
+
+                for key, value in json.loads(ENV_CONFIG).iteritems():
                     # Add the value from environment config only if it's not specified as
                     # an option to the command.
                     if key not in args.extra:
