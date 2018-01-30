@@ -100,7 +100,7 @@ else:
             #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
             # Just works.
             with open(ansible_executable) as ansible_executable:
-                python_ansible = ansible_executable.readline().lstrip('#!').rstrip()
+                python_ansible = ansible_executable.readline().lstrip('#!').strip()
 
                 # Do not apply the workaround if an exactly same interpreter is used for
                 # running CIKit and Ansible.
