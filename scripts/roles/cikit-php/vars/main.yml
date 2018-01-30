@@ -1,7 +1,14 @@
 ---
 cikit_php:
+  conf_dir: "/etc/php/{{ php_version }}"
   # Values have to be of "string" type.
   versions:
     - "5.6"
     - "7.0"
     - "7.1"
+    - "7.2"
+  # A list of packages that are not available for the specific PHP versions.
+  removed_packages:
+    "7.2":
+      # https://blog.remirepo.net/post/2015/07/07/About-libmcrypt-and-php-mcrypt
+      - mcrypt

@@ -19,7 +19,7 @@
       tags: ["php-stack", "security", "web-server"]
 
     - name: php_version
-      prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1)
+      prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1/7.2)
       default: 7.1
       private: no
       tags: ["php", "php-stack"]

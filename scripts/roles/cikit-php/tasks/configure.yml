@@ -1,7 +1,7 @@
 ---
 - name: Determine which use cases PHP should be configured
   stat:
-    path: "{{ php_conf_dir }}/{{ item.key }}"
+    path: "{{ cikit_php.conf_dir }}/{{ item.key }}"
   with_dict:
     # Path and type of configuration: "cli" or "global".
     /: global
@@ -17,13 +17,13 @@
 - name: Configure php.ini
   template:
     src: php.ini.j2
-    dest: "{{ php_conf_dir }}/{{ item.key }}php.ini"
+    dest: "{{ cikit_php.conf_dir }}/{{ item.key }}php.ini"
   with_items: "{{ php_configs }}"
 
 - name: Configure extension
   template:
     src: extension.ini.j2
-    dest: "{{ php_conf_dir }}/mods-available/{{ item.key }}.ini"
+    dest: "{{ cikit_php.conf_dir }}/mods-available/{{ item.key }}.ini"
   with_dict: "{{ php_extensions }}"
 
 - include_tasks: fixtures/link-extension.yml

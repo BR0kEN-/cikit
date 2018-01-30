@@ -250,7 +250,7 @@ On January 9, 2018, I had a legal consultation (the first time in a life) with [
 
 It was not easy to stay calm, passing through the streams of mud, but thank you - this made me stronger.
 
-I never actively advertised the CIKit because had an verbal agreement with Andrii Podanenko but now I can no longer consider its validity.
+I never actively advertised the CIKit because had a verbal agreement with Andrii Podanenko but now I can no longer consider its validity.
 {: .notice--info}
 
 I do appreciate everyone who took part in CIBox until the day I made the fork. Without your hard work I would not be able to create the CIKit. Precisely for this reason I did not initiate a new repository, perpetuating everyone involved [in a history](/about/#contributors).
@@ -264,6 +264,6 @@ Respect everyone!
 ### January 12, 2018, 8 PM
 
 - All commits before December 24, 2016, have been wiped out from the [https://github.com/BR0kEN-/cikit](https://github.com/BR0kEN-/cikit). I decided to eliminate any future requests from possible copyright owners by just removing CIBox from the history of CIKit entirely.
-- [https://github.com/BR0kEN-/cibox](https://github.com/BR0kEN-/cibox) is again a fork for the [https://github.com/cibox/cibox](https://github.com/cibox/cibox) and contains all the modifications until December 24, 2016, with original license and copyright.
+- [https://github.com/BR0kEN-/cibox](https://github.com/BR0kEN-/cibox) is again a fork of the [https://github.com/cibox/cibox](https://github.com/cibox/cibox) and contains all the modifications until December 24, 2016, with original license and copyright.
 
 Hope everyone will feel better since now.
