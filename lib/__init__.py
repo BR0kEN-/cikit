@@ -104,7 +104,7 @@ else:
 
                 # Do not apply the workaround if an exactly same interpreter is used for
                 # running CIKit and Ansible.
-                if functions.call('which', 'python') == python_ansible:
+                if functions.call('which', 'python').strip() == python_ansible:
                     import yaml
 
                     ENV_CONFIG = json.dumps(yaml.load(open(ENV_CONFIG)))
