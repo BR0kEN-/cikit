@@ -12,8 +12,19 @@
   apt:
     update_cache: yes
 
+# Allow modifying these variables in included tasks.
+- set_fact:
+    php_extensions: "{{ php.extensions }}"
+    php_packages: "{{ php.packages }}"
+
+- name: Avoid installation of deprecated packages
+  set_fact:
+    # Remove the packages for the specific version of PHP.
+    php_packages: "{{ php.packages | difference(cikit_php.removed_packages[php_version]) }}"
+  when: php_version in cikit_php.removed_packages
+
 - name: Install PHP packages
-  shell: "apt-get install php{{ php_version }}-{{ php.packages | join(' php' + php_version + '-') }} -y"
+  shell: "apt-get install php{{ php_version }}-{{ php_packages | join(' php' + php_version + '-') }} -y"
   args:
     warn: no
 
@@ -27,10 +38,6 @@
   args:
     warn: no
   with_items: ["php", "phpize", "php-config"]
-
-# Allow modifying this variable by included tasks.
-- set_fact:
-    php_extensions: "{{ php.extensions }}"
 
 - import_tasks: xdebug.yml
 
