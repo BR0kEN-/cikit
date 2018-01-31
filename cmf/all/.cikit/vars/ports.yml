@@ -4,7 +4,7 @@ web_port_ssl: "{{ 443 if localhost else 44344 }}"
 jenkins_port: 8079
 solr_port: 8078
 
-# See "cikit-nginx/templates/remote.j2".
+# See "cikit-nginx/templates/cikit.j2".
 nginx_proxies:
   # Proxy map:
   # - NGINX: http://example.com:80
