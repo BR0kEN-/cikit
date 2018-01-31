@@ -10,14 +10,14 @@
 
 ## Features
 
-- [Install CIKit package](https://cikit.tools/documentation#installation) just once. This guarantees your minimal involvement in keeping the codebase up to date. [Run `cikit self-update` to get the latest fixes/features](https://cikit.tools/documentation#update) and do not care about running thru all your projects - they'll be picked up by every single project you have based on CIKit.
+- [Install CIKit package](https://cikit.tools/documentation#installation) just once. This guarantees your minimal involvement in keeping the codebase up to date. [Run `cikit self-update`](https://cikit.tools/documentation#update) and enjoy latest fixes/features that are picked up by every project.
 - Build the project by the scenario you want via [Pull Requests on Github/Gitlab (Jenkins CI)](https://cikit.tools/documentation/jenkins/github-bot).
 - [Create and maintain a hosting of continuous integration servers](https://cikit.tools/documentation/matrix) (Docker) via command line tool.
-- Deploy a local environment for development on [Windows 10](https://cikit.tools/documentation/install-on-wsl), Linux and macOS with automatic IP allocation for local VPN and smart provisioner that [remembers the configuration of the environment](https://cikit.tools/documentation/project/env-config) you've build and will allow to share it with others.
-- Deploy CI server at whatever cloud hosting you prefer.
-- [Base any framework or CMS you want on CIKit](https://cikit.tools/documentation#create-a-project) and build your own CI workflow if necessary.
-- Choose the software and versions of it that are needed for you. Nginx or Apache, various PHP/Solr/Ruby/Node.js versions, MySQL as a standard server and [Microsoft SQL](https://cikit.tools/documentation/project/mssql) by desire, Phantom.js, Selenium and a lot of tools for providing the code quality - all these stuff just out of the box.
-- [Extend the software base of your project](https://cikit.tools/documentation/workflow/pantheon#install-terminus) by writing your own Ansible roles for controlling the process.
+- Deploy a local environment for development on [Windows 10](https://cikit.tools/documentation/install-on-wsl), Linux or macOS with automatic IP allocation for local VPN and smart provisioner that [remembers the configuration of an environment](https://cikit.tools/documentation/project/env-config) you've built and allows sharing it with others.
+- Deploy CI server to whatever cloud hosting you prefer.
+- [Base any framework or CMS on CIKit](https://cikit.tools/documentation#create-a-project) and build your own CI workflow if necessary.
+- Choose the software and versions that are needed for you. [Nginx or Apache](https://cikit.tools/documentation/project/web-server/), various PHP/Solr/Ruby/Node.js versions, MySQL as a standard server and [Microsoft SQL](https://cikit.tools/documentation/project/mssql) by desire, Phantom.js, Selenium and a lot of tools for providing code quality - all these stuff just out of the box.
+- [Extend the software base of a project](https://cikit.tools/documentation/workflow/pantheon#install-terminus) by writing own Ansible roles for controlling the process.
 
 ### Components
 
