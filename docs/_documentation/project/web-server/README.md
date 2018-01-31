@@ -4,7 +4,7 @@ excerpt: Choose and configure a web server to serve your application.
 permalink: /documentation/project/web-server/
 ---
 
-Choose the `apache2` or `nginx` as a web server for serving an application.
+Choose `apache2` or `nginx` as a web server for serving an application.
 
 ## Select web server for a project
 
@@ -29,24 +29,24 @@ cikit matrix/droplet --limit=HOSTNAME --droplet-add
 cikit provision --limit=HOSTNAME.DROPLET
 ```
 
-That way you'll get a chosen web server on CI droplet automatically.
+That way you're getting chosen web server on CI droplet automatically.
 
 ### Change web server on demand
 
-**Warning!** A project, VM for which was created to serve the application using one of the web servers, cannot be hosted on CI droplet that was provisioned for another web server.
+**Warning!** A project, VM for which was created to serve an application using one of web servers, cannot be hosted on CI droplet that was provisioned for another web server.
 {: .notice--warning}
 
-You’re able to discard the idea of using a chosen web server in favor of another one. Do so for existing VM:
+You can discard the idea of using chosen web server in favor of another one. Do so for existing VM:
 
 ```bash
 CIKIT_TAGS="web-server" vagrant provision
 ```
 
-Type the name when you'll be prompted and go. **Remember**, that right after the action is done the web server inside of VM will be changed and this won't affect the droplet where a project is hosted. If you are okay having different web servers locally and on a droplet - do nothing, otherwise remove a project from an existing droplet and add it to the one with an appropriate web server or create a new droplet and provision it from scratch.
+Type the name when being prompted and go. **Remember**, that right after the action is done a web server inside of VM will be changed and this won't affect a droplet where a project is hosted. If it's okay to have different web servers locally and on a droplet - do nothing, otherwise remove a project from an existing droplet and add it to the one with an appropriate web server or create a new droplet and provision it from scratch.
 
 ## Modify project virtual hosts
 
-Open the [/path/to/project/.cikit/vars/web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml) and modify it as needed. Bear in mind, the logic within variables must remain unchanged.
+Open the [/path/to/project/.cikit/vars/web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml) and modify it as needed.
 
 ## Override virtual hosts template
 
@@ -71,7 +71,7 @@ There is a difference for operability in VM and on CI droplet: `nginx` is not ne
 
 ![The map of a request for Apache 2](images/cikit-apache2.png)
 
-Why can't we exclude `nginx` from a chain on CI droplet in a case if `apache2` is chosen? Well, `nginx` is not only proxying a request to `apache2` but serves the other tools like Jenkins, Solr and provides the general [basic HTTP authentication for services and builds](../../matrix/droplet-http-auth/#proxy-structure).
+**Why can't we exclude `nginx` from a chain on CI droplet in a case if `apache2` is chosen?** Well, `nginx` is not only proxying a request to `apache2` but serves the other tools like Jenkins, Solr and provides the general [basic HTTP authentication for services and builds](../../matrix/droplet-http-auth/#proxy-structure).
 {: .notice--info}
 
 ### Nginx

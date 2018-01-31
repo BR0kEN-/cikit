@@ -18,7 +18,8 @@ Right after updating the package via `cikit self-update` please make sure all th
 ## References
 
 - [https://github.com/BR0kEN-/cikit/issues/49](https://github.com/BR0kEN-/cikit/issues/49)
+- [Tests that were run for checking the operability](https://github.com/BR0kEN-/cikit/pull/90#issuecomment-361190266)
 
 ## Documentation
 
-- [Choose and configure a web server you want](/documentation/project/web-server/)
+- [Choose and configure a web server for a project](/documentation/project/web-server/)
