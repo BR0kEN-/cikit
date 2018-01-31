@@ -7,8 +7,3 @@
 - name: Enalbe PHP for Apache
   shell: "a2dismod php* && a2enmod php{{ php_version }}"
   ignore_errors: yes
-
-- name: Restart Apache web server
-  service:
-    name: apache2
-    state: restarted

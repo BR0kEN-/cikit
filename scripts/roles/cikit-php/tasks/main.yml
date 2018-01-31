@@ -42,5 +42,6 @@
   # The "install_mssql" variable is flowing from "provision.yml".
   when: "install_mssql is defined and install_mssql and '5.6' != php_version"
 
-- include_tasks: "{{ web_server }}/main.yml"
+- include_tasks: "{{ web_server }}/pre-configure.yml"
 - import_tasks: configure.yml
+- include_tasks: "{{ web_server }}/post-configure.yml"
