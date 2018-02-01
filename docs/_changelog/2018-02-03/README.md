@@ -14,6 +14,7 @@ Right after updating the package via `cikit self-update` please make sure all th
   - `apache_port` by `web_port`
 - Remove the `/path/to/project/.cikit/vars/apache.yml`.
 - Create the [/path/to/project/.cikit/vars/web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml).
+- Login to every existing VM via `vagrant ssh` and run `sudo ln -fs /usr/local/share/cikit/lib/cikit /usr/bin/cikit`.
 
 ## References
 
