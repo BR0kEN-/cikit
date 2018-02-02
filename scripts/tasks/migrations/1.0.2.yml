@@ -15,7 +15,7 @@
       - '| properly. Please refer the changelog record and take needed actions before   |'
       - '| continuing use of your projects.                                             |'
       - '================================================================================'
-      - '| https://cikit.tools/changelog/2018-02-03/#required-manual-actions            |'
+      - '| https://cikit.tools/changelog/2018-02-04/#required-manual-actions            |'
       - '================================================================================'
       - '{{ cikit_projects_list.stdout_lines }}'
   when: cikit_projects_list.stdout_lines | count

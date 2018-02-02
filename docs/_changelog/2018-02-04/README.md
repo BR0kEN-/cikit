@@ -1,6 +1,6 @@
 ---
-title: February 3, 2018
-permalink: /changelog/2018-02-03/
+title: February 4, 2018
+permalink: /changelog/2018-02-04/
 ---
 
 The ability to choose `nginx` or `apache2` as a web server for a project has been introduced! Refer the documentation to get acquainted with the configuration and technical aspects.
@@ -13,8 +13,8 @@ Right after updating the package via `cikit self-update` please make sure all th
   - `apache_port_ssl` by `web_port_ssl`
   - `apache_port` by `web_port`
 - Remove the `/path/to/project/.cikit/vars/apache.yml`.
-- Create the [/path/to/project/.cikit/vars/web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml).
-- Login to every existing VM via `vagrant ssh` and run `sudo ln -fs /usr/local/share/cikit/lib/cikit /usr/bin/cikit`.
+- Create the [/path/to/project/.cikit/vars/web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml) (the contents is by the link).
+- Login to every existing VM via `vagrant ssh` and run `sudo ln -fs /usr/local/share/cikit/lib/cikit /usr/bin/cikit` or run `vagrant provision` instead (if you want to).
 
 ## References
 
