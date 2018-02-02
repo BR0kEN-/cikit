@@ -9,6 +9,11 @@ The ability to choose `nginx` or `apache2` as a web server for a project has bee
 
 Right after updating the package via `cikit self-update` please make sure all the projects you have based on CIKit will receive the following modifications.
 
+![CIKit 1.0.2 migration notes](images/cikit-1.0.2-migration-note.png)
+
+*The message will be shown after fetching the updates.*
+{: .notice--warning}
+
 - Open the `/path/to/project/.cikit/vars/ports.yml` and replace the following:
   - `apache_port_ssl` by `web_port_ssl`
   - `apache_port` by `web_port`
