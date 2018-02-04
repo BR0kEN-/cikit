@@ -62,6 +62,8 @@ documentation:
         url: /documentation/project/sniffers/
       - title: Vagrant box
         url: /documentation/project/vagrant-box/
+      - title: Web server
+        url: /documentation/project/web-server/
 
   - title: Workflow
     url: /documentation/workflow/

@@ -1,0 +1,9 @@
+---
+- name: Install Apache module for PHP
+  apt:
+    name: "libapache2-mod-php{{ php_version }}"
+    state: latest
+
+- name: Enalbe PHP for Apache
+  shell: "a2dismod php* && a2enmod php{{ php_version }}"
+  ignore_errors: yes

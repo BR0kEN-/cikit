@@ -1,57 +1,55 @@
 {{ ansible_managed | comment }}
 
-{% for listenedPort in ["80", "443 ssl"] %}
-{# Do not use integer here! #}
-{% set http = "80" == listenedPort %}
-server {
-    listen                          {{ listenedPort }};
-    server_name                     {{ ansible_host }};
+{# Re-save the value to the variable which might be used in included templates. #}
+{% set server_name = ansible_host %}
+{% set is_nginx = "nginx" == web_server %}
 
-    satisfy                         any;
-    {% for allowed_ip in allowed_ips %}
-    allow                           {{ allowed_ip }};
-    {% endfor %}
-    deny                            all;
+{% for listened_port in ["80", "443 ssl"] %}
+    {# Do not use integer here! #}
+    {% set http = "80" == listened_port %}
 
-    auth_basic                      "Restricted area";
-    auth_basic_user_file            /var/www/.htpasswd;
+    server {
+        listen                          {{ listened_port }};
+        server_name                     {{ server_name }};
 
-    {% if not http %}
-        ssl                             on;
-        ssl_ciphers                     HIGH:!aNULL:!MD5:!kEDH;
-        ssl_session_cache               shared:SSL:10m;
-        ssl_prefer_server_ciphers       on;
-        ssl_session_timeout             5m;
-        ssl_protocols                   TLSv1 TLSv1.1 TLSv1.2;
-        add_header                      Strict-Transport-Security 'max-age=31536000';
+        satisfy                         any;
+        {% for allowed_ip in allowed_ips %}
+            allow                           {{ allowed_ip }};
+        {% endfor %}
+        deny                            all;
 
-        ssl_certificate                 {{ ssl_folder }}/ssl.crt;
-        ssl_certificate_key             {{ ssl_folder }}/ssl.key;
-    {% endif %}
+        auth_basic                      "Restricted area";
+        auth_basic_user_file            /var/www/.htpasswd;
 
-    {% for logType in ["access", "error"] %}
-        {{ logType }}_log /var/log/nginx/{{ inventory_hostname.split('.') | first }}.{{ logType }}.log;
-    {% endfor %}
-
-    {% for location, spec in nginx_proxies.items() %}
-        {% if http and not spec.http %}
-        location {{ location }} {
-            return 301 https://{{ ansible_host }}$request_uri;
-        }
-        {% else %}
-        location {{ location }} {
-            proxy_pass              http://127.0.0.1:{{ spec.port }};
-            proxy_redirect          off;
-            proxy_http_version      1.1;
-            # HTTP proxy (https://httpoxy.org).
-            proxy_set_header        Proxy "";
-            proxy_set_header        Host $host;
-            proxy_set_header        X-Real-IP $remote_addr;
-            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header        X-Forwarded-Proto $scheme;
-            proxy_read_timeout      90;
-        }
+        {% if not http %}
+            {% include "parts/ssl.j2" with context %}
         {% endif %}
-    {% endfor %}
-}
+
+        {% include "parts/logs.j2" with context %}
+
+        {% for location, spec in nginx_proxies.items() %}
+            {% if "/" == location and is_nginx %}
+                {#
+                    The "/" means we want to serve the application. We cannot
+                    simply pass the request to the "127.0.0.1:PORT" if Nginx was
+                    chosen as default web server. A virtual host will be created
+                    later on.
+                    The "continue" cannot be used since "jinja2.ext.loopcontrols"
+                    is not included in Ansible by default so we'll do just nothing
+                    here (https://github.com/ansible/ansible/issues/10187).
+                #}
+            {% else %}
+                {# This variable is used by the "proxy-pass.j2" template. #}
+                {% set proxy_pass = "http://127.0.0.1:" + spec.port | string %}
+
+                {% if http and not spec.http %}
+                    location {{ location }} {
+                        return 301 https://{{ ansible_host }}$request_uri;
+                    }
+                {% else %}
+                    {% include "parts/proxy-pass.j2" with context %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    }
 {% endfor %}

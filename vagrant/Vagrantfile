@@ -140,7 +140,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # Mount the directory containing CIKit scripts additionally.
   (config_values['vm']['folders'] ||= []).push(
     'source' => "#{cikit_package_dir}/lib",
-    'target' => '/var/lib/cikit',
+    'target' => '/usr/local/share/cikit/lib',
     # This directory is not available for mounting since CIKit is installed
     # within the WSL on Windows. Only simple copy and paste. NFSd can't work
     # there since "systemd" is not available. The "vboxsf" will be ended up

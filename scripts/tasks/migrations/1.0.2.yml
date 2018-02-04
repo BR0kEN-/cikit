@@ -1,0 +1,21 @@
+---
+- name: Seeking CIKit projects
+  shell: |-
+    vagrant global-status | awk '{print $5}' | while read -r PROJECT_PATH; do
+      if [[ "${PROJECT_PATH}" == /* && -f "${PROJECT_PATH}/.cikit/vars/apache.yml" ]]; then
+        echo ${PROJECT_PATH}
+      fi
+    done
+  register: cikit_projects_list
+
+- debug:
+    msg:
+      - '================================================================================'
+      - '| The following projects require manual modifications in order to update CIKit |'
+      - '| properly. Please refer the changelog record and take needed actions before   |'
+      - '| continuing use of your projects.                                             |'
+      - '================================================================================'
+      - '| https://cikit.tools/changelog/2018-02-04/#required-manual-actions            |'
+      - '================================================================================'
+      - '{{ cikit_projects_list.stdout_lines }}'
+  when: cikit_projects_list.stdout_lines | count

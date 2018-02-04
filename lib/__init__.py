@@ -136,13 +136,14 @@ else:
 if 'self-update' == args.playbook:
     PARAMS.append('--ask-become-pass')
 
-if args.limit:
+if args.limit and 'localhost' != args.limit:
     PARAMS.append("-l '%s'" % args.limit)
     # When the "--limit" has value in "a.b" form then it means the "a"
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
 else:
+    PARAMS.append("-c 'local'")
     PARAMS.append("-i 'localhost,'")
 
 if args.extra:
@@ -155,7 +156,7 @@ PARAMS.append("-e __credentialsdir__='%s'" % variables.dirs['credentials'])
 
 # https://github.com/sclorg/s2i-python-container/pull/169
 os.environ['PYTHONUNBUFFERED'] = '1'
-# https://github.com/ansible/ansible/blob/devel/lib/ansible/config/data/config.yml
+# https://github.com/ansible/ansible/blob/devel/lib/ansible/config/base.yml
 os.environ['ANSIBLE_ROLES_PATH'] = variables.dirs['cikit'] + '/roles'
 os.environ['ANSIBLE_PIPELINING'] = '1'
 os.environ['ANSIBLE_FORCE_COLOR'] = '1'

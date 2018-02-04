@@ -1,5 +1,6 @@
 ---
 cikit_php:
+  conf_dir: "/etc/php/{{ php_version }}"
   # Values have to be of "string" type.
   versions:
     - "5.6"

@@ -1,29 +1,33 @@
 ---
+- name: Determine which use cases PHP should be configured
+  stat:
+    path: "{{ cikit_php.conf_dir }}/{{ item.key }}"
+  with_dict:
+    # Path and type of configuration: "cli" or "global".
+    /: global
+    cli/: cli
+    fpm/: global
+    apache2/: global
+  register: php_configs
+
+- name: Define the list of items to configure
+  set_fact:
+    php_configs: "{{ php_configs.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+
 - name: Configure php.ini
   template:
     src: php.ini.j2
-    dest: "/etc/php/{{ php_version }}/{{ item.key }}php.ini"
-  with_dict:
-    /: global
-    cli/: cli
-    apache2/: global
+    dest: "{{ cikit_php.conf_dir }}/{{ item.key }}php.ini"
+  with_items: "{{ php_configs }}"
 
 - name: Configure extension
   template:
     src: extension.ini.j2
-    dest: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
+    dest: "{{ cikit_php.conf_dir }}/mods-available/{{ item.key }}.ini"
   with_dict: "{{ php_extensions }}"
 
-- name: Link extension configuration for Apache2
-  file:
-    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
-    dest: "/etc/php/{{ php_version }}/apache2/conf.d/20-{{ item.key }}.ini"
-    state: link
-  with_dict: "{{ php_extensions }}"
-
-- name: Link extension configuration for CLI
-  file:
-    src: "/etc/php/{{ php_version }}/mods-available/{{ item.key }}.ini"
-    dest: "/etc/php/{{ php_version }}/cli/conf.d/20-{{ item.key }}.ini"
-    state: link
-  with_dict: "{{ php_extensions }}"
+- include_tasks: fixtures/link-extension.yml
+  with_items: "{{ php_configs | map(attribute='key') | list }}"
+  loop_control:
+    loop_var: type
+  when: "'/' != type"

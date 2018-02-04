@@ -1,0 +1,5 @@
+---
+web_server_vhosts:
+  # Serve "project.loc" in the "docroot".
+  - name: "{{ project }}"
+    root: "docroot"

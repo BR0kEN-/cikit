@@ -1,0 +1,8 @@
+---
+# Droplets use Nginx anyway.
+- include_role:
+    name: cikit-nginx
+
+- include_role:
+    name: cikit-apache2
+  when: "'apache2' == web_server"

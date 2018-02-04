@@ -1,0 +1,17 @@
+---
+apache_data:
+  conf:
+    en:
+      - fqdn.conf
+    dis: []
+  mods:
+    en:
+      - rewrite.load
+      - ssl.load
+      - vhost_alias.load
+    dis: []
+  sites:
+    en:
+      - vhosts
+    dis:
+      - 000-default.conf

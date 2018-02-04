@@ -12,7 +12,7 @@
   apt:
     update_cache: yes
 
-# Allow modifying these variables in included tasks.
+# Allow modifying these variables by tasks.
 - set_fact:
     php_extensions: "{{ php.extensions }}"
     php_packages: "{{ php.packages }}"
@@ -28,11 +28,6 @@
   args:
     warn: no
 
-- name: Install Apache module for PHP
-  apt:
-    name: "libapache2-mod-php{{ php_version }}"
-    state: latest
-
 - name: Set interpreter version as system default
   shell: "ln -fs /usr/bin/{{ item }}{{ php_version }} /etc/alternatives/{{ item }}"
   args:
@@ -47,8 +42,6 @@
   # The "install_mssql" variable is flowing from "provision.yml".
   when: "install_mssql is defined and install_mssql and '5.6' != php_version"
 
+- include_tasks: "{{ web_server }}/pre-configure.yml"
 - import_tasks: configure.yml
-
-- name: Enalbe PHP for Apache
-  shell: "a2dismod php* && a2enmod php{{ php_version }}"
-  ignore_errors: yes
+- include_tasks: "{{ web_server }}/post-configure.yml"

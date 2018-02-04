@@ -1,8 +1,8 @@
 {{ ansible_managed | comment }}
-Listen {{ apache_port }}
+Listen {{ web_port }}
 
 {% for module in ["ssl_module", "mod_gnutls.c"] %}
   <IfModule {{ module }}>
-      Listen {{ apache_port_ssl }}
+      Listen {{ web_port_ssl }}
   </IfModule>
 {% endfor %}

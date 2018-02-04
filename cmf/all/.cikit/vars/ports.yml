@@ -1,6 +1,6 @@
 ---
-apache_port: "{{ 80 if localhost else 8080 }}"
-apache_port_ssl: "{{ 443 if localhost else 44344 }}"
+web_port: "{{ 80 if localhost else 8080 }}"
+web_port_ssl: "{{ 443 if localhost else 44344 }}"
 jenkins_port: 8079
 solr_port: 8078
 
@@ -11,7 +11,7 @@ nginx_proxies:
   # - NGINX: https://example.com:443
   # - <TOOL>: https://127.0.0.1:<PORT>
   /:
-    port: "{{ apache_port }}"
+    port: "{{ web_port }}"
     http: yes
   /solr:
     port: "{{ solr_port }}"

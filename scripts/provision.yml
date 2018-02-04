@@ -12,6 +12,12 @@
     - "{{ __targetdir__ }}/.cikit/config.yml"
 
   vars_prompt:
+    - name: web_server
+      prompt: Which web server you want to use? (apache2/nginx)
+      default: apache2
+      private: no
+      tags: ["php-stack", "security", "web-server"]
+
     - name: php_version
       prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1/7.2)
       default: 7.1
@@ -101,13 +107,19 @@
       when: "ansible_version.major < 2 and ansible_version.minor < 2"
       tags: ["always"]
 
+    - name: Check whether preselected web server is available
+      fail:
+        msg: "The '{{ web_server }}' web server is unknown and cannot be used."
+      when: "web_server not in cikit_webserver.servers"
+      tags: ["php-stack", "security", "web-server"]
+
     - include_vars: "{{ item }}"
       with_fileglob: "{{ __targetdir__ }}/.cikit/vars/*.yml"
       tags: ["always"]
 
     - name: Check whether provision running for local environment
       set_fact:
-        localhost: "{{ ansible_host is defined and '127.0.0.1' == ansible_host }}"
+        localhost: "{{ ansible_host in ['127.0.0.1', 'localhost'] }}"
       tags: ["always"]
 
     - include_tasks: tasks/password.yml
@@ -131,9 +143,10 @@
       setup: ~
       tags: ["always"]
 
-    - name: Check whether provision running for Docker container
+    - name: Set up variables
       set_fact:
         docker: "{{ 'docker' == ansible_virtualization_type }}"
+        operation_place: "{{ 'local' if localhost else 'remote' }}"
       tags: ["always"]
 
     - name: Obtain home directory of "{{ ansible_user }}" user
@@ -171,7 +184,7 @@
     - name: Create CIKit command line utility
       file:
         # This directory is explicitly mounted in the Vagrantfile.
-        src: "/var/lib/cikit/{{ item.src }}"
+        src: "/usr/local/share/cikit/lib/{{ item.src }}"
         dest: "{{ item.dest }}/{{ item.src }}"
         state: link
       with_items:
@@ -253,12 +266,8 @@
       when: not localhost
       tags: ["dns"]
 
-    - role: cikit-nginx
-      when: not localhost
-      tags: ["nginx", "php-stack", "security"]
-
-    - role: cikit-apache
-      tags: ["apache", "php-stack", "security"]
+    - role: cikit-webserver
+      tags: ["php", "php-stack", "security", "web-server"]
 
     # Should be before installing/configuring PHP since it may
     # install the "sqlsrv" extension which is based on "mssql".
@@ -267,7 +276,10 @@
       tags: ["mssql"]
 
     - role: cikit-php
-      tags: ["php", "php-stack"]
+      # The "web-server" tag is needed in order to be sure necessary tweaks
+      # were done for a specific web server (PHP-FPM added to boot in case
+      # of Nginx, "libapache2-mod-php" installed for Apache2, etc.).
+      tags: ["php", "php-stack", "web-server"]
 
     - role: cikit-nodejs
       tags: ["nodejs"]
@@ -311,12 +323,4 @@
     - name: Starting random rnd-tools service
       shell: rngd -r /dev/urandom
       when: not localhost and 'openvz' != ansible_virtualization_type
-      tags: ["always"]
-
-    - name: Restart service
-      service:
-        name: "{{ item }}"
-        state: restarted
-      ignore_errors: yes
-      with_items: ["apache2", "nginx"]
       tags: ["always"]

@@ -13,3 +13,5 @@ install:
 
 script:
   - sudo bash ./tests/travis/inventory.sh
+  # @todo Uncomment once "xenial" dist become available.
+  #- sudo bash ./tests/travis/provision.sh
