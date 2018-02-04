@@ -7,7 +7,7 @@ The ability to choose `nginx` or `apache2` as a web server for a project has bee
 
 ## Required manual actions
 
-Right after updating the package via `cikit self-update` please make sure all the projects you have based on CIKit will receive the following modifications.
+Right after updating the package via `cikit self-update` please make sure all the projects you have based on CIKit will receive the following modifications:
 
 ![CIKit 1.0.2 migration notes](images/cikit-1.0.2-migration-note.png)
 
