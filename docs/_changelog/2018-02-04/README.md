@@ -1,6 +1,7 @@
 ---
 title: February 4, 2018
 permalink: /changelog/2018-02-04/
+redirect_from: /changelog/2018-02-03/
 ---
 
 The ability to choose `nginx` or `apache2` as a web server for a project has been introduced! Refer the documentation to get acquainted with the configuration and technical aspects.
