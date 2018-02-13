@@ -1,5 +1,11 @@
 ---
+# WARNING! Do not use any variables or logic within the "web_server_vhosts"
+# variable. It must be plain since used as a source for creating aliases
+# for VM's VPN.
 web_server_vhosts:
-  # Serve "project.loc" in the "docroot".
-  - name: "{{ project }}"
-    root: "docroot"
+  # Serve "project.loc" from the "/var/www/docroot".
+  - name: ~
+    root: docroot
+  ## Serve "subdomain.project.loc" from the "/var/www/subdomain-docroot".
+  #- name: subdomain
+  #  root: subdomain-docroot

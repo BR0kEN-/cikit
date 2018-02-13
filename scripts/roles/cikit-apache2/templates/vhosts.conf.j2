@@ -9,7 +9,11 @@ DirectoryIndex index.php index.html
     {# Re-save the value to the variable which might be used in included templates. #}
     {% if localhost %}
         {% set directory = webroot + "/" + vhost.root %}
-        {% set server_name = vhost.name + ".loc" %}
+        {% set server_name = project + ".loc" %}
+
+        {% if vhost.name %}
+            {% set server_name = vhost.name + "." + server_name %}
+        {% endif %}
     {% else %}
         {% set directory = webroot + "/%1/" + vhost.root %}
         {% set server_name = "CIKit Droplet" | quote %}

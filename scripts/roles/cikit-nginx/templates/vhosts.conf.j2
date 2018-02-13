@@ -10,9 +10,16 @@
     {% set server_name = vhost.name %}
 
     {% if localhost %}
+        {% set directory = webroot + "/" + vhost.root %}
+        {% set server_name = project + ".loc" %}
+
+        {% if vhost.name %}
+            {% set server_name = vhost.name + "." + server_name %}
+        {% endif %}
+
         {% set basic_definition %}
-            server_name     {{ vhost.name }}.loc;
-            root            {{ webroot }}/{{ vhost.root }};
+            server_name     {{ server_name }};
+            root            {{ directory }};
         {% endset %}
     {% else %}
         {% set basic_definition %}
