@@ -13,6 +13,7 @@ Needed documentation is written directly inside of the playbook, so let's take a
 
 - Create `scripts/tasks/composer-update.yml`:
 
+  {% raw %}
   ```yaml
   ---
   - name: Update Composer packages
@@ -20,6 +21,7 @@ Needed documentation is written directly inside of the playbook, so let's take a
     args:
       chdir: "{{ project_workspace }}"
   ```
+  {% endraw %}
 
 - Modify `scripts/tasks/reinstall/pre-actions.yml` or `scripts/tasks/reinstall/post-actions.yml`:
 
