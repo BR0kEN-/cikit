@@ -34,7 +34,7 @@ end
 # Ensure that configured IP ain't owned by other VM.
 # This should be executed even when machine state is already "running" to always
 # keep "hostsupdater" plugin updated. Otherwise it'll propose you to setup wrong IP.
-if %w[up resume reload].include?(ARGV[0])
+if %w[up resume reload provision].include?(ARGV[0])
   virtualbox = VagrantPlugins::ProviderVirtualBox::Driver::Meta.new
 
   # The output looks like:
