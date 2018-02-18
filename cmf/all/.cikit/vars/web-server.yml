@@ -1,11 +1,15 @@
 ---
 # WARNING! Do not use any variables or logic within the "web_server_vhosts"
-# variable. It must be plain since used as a source for creating aliases
-# for VM's VPN.
+# variable. It must be plain as used as a source for creating aliases for
+# VM's VPN by just reading the YAML structure of this file without any
+# Ansbile/Jinja2 evaluation.
+#
+# NOTE! Subdomains must be defined below the main domain to provide a
+# correct serving.
 web_server_vhosts:
-  # Serve "project.loc" from the "/var/www/docroot".
+  # Serve "{{ project }}.loc" from the "/var/www/docroot".
   - name: ~
     root: docroot
-  ## Serve "subdomain.project.loc" from the "/var/www/subdomain-docroot".
+  ## Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain-docroot".
   #- name: subdomain
   #  root: subdomain-docroot
