@@ -1,6 +1,6 @@
 {#
     Used variables:
-    - proxy_pass
+    - php_version
 #}
 location = /favicon.ico {
     access_log off;
@@ -43,7 +43,8 @@ location ~ /vendor/.*\.php$ {
 }
 
 location ~ '\.php$|^/update.php' {
-    fastcgi_pass            {{ proxy_pass }};
+    {# http://nginx.org/ru/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass #}
+    fastcgi_pass            unix://run/php/php{{ php_version }}-fpm.sock;
     fastcgi_index           index.php;
     fastcgi_param           SCRIPT_FILENAME     $document_root$fastcgi_script_name;
     fastcgi_param           QUERY_STRING        $query_string;

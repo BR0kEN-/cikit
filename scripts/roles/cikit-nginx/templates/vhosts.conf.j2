@@ -2,28 +2,26 @@
 #jinja2: lstrip_blocks: True
 {{ ansible_managed | comment }}
 
-{# http://nginx.org/ru/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass #}
-{% set proxy_pass = "unix://run/php/php" + php_version + "-fpm.sock" %}
-
-{% for vhost in web_server_vhosts %}
+{% for vhost in web_server_vhosts | reverse | list %}
     {# Re-save the value to the variable which might be used in included templates. #}
-    {% set server_name = vhost.name %}
+    {% if vhost.name %}
+        {% set server_name = vhost.name + "." + project %}
+        {% set subdomain = vhost.name + "\." %}
+    {% else %}
+        {% set server_name = project %}
+        {% set subdomain = "" %}
+    {% endif %}
 
     {% if localhost %}
         {% set directory = webroot + "/" + vhost.root %}
-        {% set server_name = project + ".loc" %}
-
-        {% if vhost.name %}
-            {% set server_name = vhost.name + "." + server_name %}
-        {% endif %}
 
         {% set basic_definition %}
-            server_name     {{ server_name }};
+            server_name     {{ server_name }}.loc;
             root            {{ directory }};
         {% endset %}
     {% else %}
         {% set basic_definition %}
-            server_name     "~^(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
+            server_name     "~^{{ subdomain }}(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
             root            {{ webroot }}/$build_id/{{ vhost.root }};
         {% endset %}
     {% endif %}
@@ -49,16 +47,16 @@
         #}
         listen                          {{ web_port | regex_replace('^(\d{2})\d{2}$', '\\g<1>') }};
 
+        include                         {{ nginx_conf_dir }}/snippets/site-locations.conf;
         {% include "parts/logs.j2" with context %}
-        {% include "parts/locations.j2" with context %}
     }
 
     server {
         {{ basic_definition }}
         listen                          {{ web_port_ssl | regex_replace('^(\d{3})\d{2}$', '\\g<1>') }} ssl;
 
-        {% include "parts/ssl.j2" with context %}
+        include                         {{ nginx_conf_dir }}/snippets/ssl.conf;
+        include                         {{ nginx_conf_dir }}/snippets/site-locations.conf;
         {% include "parts/logs.j2" with context %}
-        {% include "parts/locations.j2" with context %}
     }
 {% endfor %}

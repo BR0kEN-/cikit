@@ -22,7 +22,7 @@
         auth_basic_user_file            /var/www/.htpasswd;
 
         {% if not http %}
-            {% include "parts/ssl.j2" with context %}
+            include {{ nginx_conf_dir }}/snippets/ssl.conf;
         {% endif %}
 
         {% include "parts/logs.j2" with context %}
@@ -39,15 +39,15 @@
                     here (https://github.com/ansible/ansible/issues/10187).
                 #}
             {% else %}
-                {# This variable is used by the "proxy-pass.j2" template. #}
-                {% set proxy_pass = "http://127.0.0.1:" + spec.port | string %}
-
                 {% if http and not spec.http %}
                     location {{ location }} {
                         return 301 https://{{ ansible_host }}$request_uri;
                     }
                 {% else %}
-                    {% include "parts/proxy-pass.j2" with context %}
+                    location {{ location }} {
+                        proxy_pass              http://127.0.0.1:{{ spec.port | string }};
+                        include                 {{ nginx_conf_dir }}/snippets/proxy-pass.conf;
+                    }
                 {% endif %}
             {% endif %}
         {% endfor %}

@@ -45,5 +45,5 @@ $connection = sqlsrv_connect('localhost', [
   'Database' => 'parline', 
   'UID' => 'sa', 
   'PWD' => 'secur1tY',
-]));
+]);
 ```

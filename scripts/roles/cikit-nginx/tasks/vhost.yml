@@ -2,5 +2,5 @@
 - name: Create virtual hosts
   template:
     src: "{{ template }}"
-    dest: "/etc/nginx/sites-{{ item }}/{{ template | basename | splitext | first }}"
+    dest: "{{ nginx_conf_dir }}/sites-{{ item }}/{{ template | basename | splitext | first }}"
   with_items: ["enabled", "available"]
