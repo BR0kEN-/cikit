@@ -16,7 +16,7 @@ DirectoryIndex index.php index.html
         {% endif %}
     {% else %}
         {% set directory = webroot + "/%1/" + vhost.root %}
-        {% set server_name = "CIKit Droplet" | quote %}
+        {% set server_name = ansible_host %}
     {% endif %}
 
     {% set basic_definition %}
