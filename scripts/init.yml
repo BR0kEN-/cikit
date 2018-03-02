@@ -82,7 +82,7 @@
       replace:
         dest: "{{ project_directory }}/.cikit/config.yml"
         regexp: "APPLICATION_CONFIG: ~"
-        replace: "{{ lookup('file', project_directory + '/APPLICATION_CONFIG.yml') }}"
+        replace: "{{ lookup('file', project_directory + '/APPLICATION_CONFIG.yml') | regex_replace('^---', '') }}"
 
     - include_vars: "{{ project_directory }}/REPLACEMENTS.yml"
 

@@ -50,6 +50,8 @@ documentation:
   - title: Project
     url: /documentation/project/
     children:
+      - title: Integrate CMS or framework
+        url: /documentation/project/cmf-integration/
       - title: Environment configuration
         url: /documentation/project/env-config/
       - title: MySQL import strategies
