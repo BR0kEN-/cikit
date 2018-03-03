@@ -125,3 +125,19 @@ replacements:
   THEME_PATH_COMMAND: "echo 'templates/'"
 EOF
 ```
+
+## Wrap up
+
+Despite on missing logic for many of things the creation and usage of a Symfony-based project can be achieved using the above example. Any other content management system or framework could be integrated in the same way.
+
+To ensure the validity of the example, let's create a project, provision a VM for it and run the `reinstall`.
+
+```bash
+cikit init --project=test_project --cmf=symfony
+cd test_project
+vagrant up
+vagrant ssh
+cikit reinstall
+```
+
+The tricky point is that `reinstall` actually do nothing and an integrator needs to decide how it should behave by implementing this stuff. Good luck!
