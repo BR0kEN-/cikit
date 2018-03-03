@@ -16,8 +16,12 @@
 
     - name: Load available systems
       set_fact:
-        cmfs: "{{ cmfs | combine({item | dirname | basename: lookup('file', playbook_dir | dirname + '/' + item) | from_yaml}) }}"
-      with_items: "{{ 'cmf/*/main.yml' | fileglob }}"
+        cmfs: "{{ cmfs | combine({item | dirname | basename: lookup('file', item) | from_yaml}) }}"
+      # @todo Unfortunately "fileglob" and "with_fileglob" cannot be used here.
+      # https://github.com/ansible/ansible/issues/17136
+      # with_fileglob: "{{ playbook_dir | dirname }}/cmf/*/main.yml"
+      with_lines:
+        - "find {{ playbook_dir | dirname }}/cmf -maxdepth 2 -type f -name main.yml"
 
     - name: Set default version of CMF
       set_fact:
@@ -92,7 +96,7 @@
 
     - name: Seeking for the placeholders
       shell: >
-        find {{ project_directory }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \;
+        find {{ project_directory }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} "s/<{{ item.key }}>/{{ item.value | regex_escape }}/g" {} \;
       environment:
         LC_ALL: C
       with_dict: "{{ replacements }}"
