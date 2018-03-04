@@ -25,5 +25,5 @@ cikit_sniffers:
         version: master
         repo: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git
       HTML:
-        version: 2.0.7
+        version: 2.1.1
         repo: https://github.com/squizlabs/HTML_CodeSniffer.git
