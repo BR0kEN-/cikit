@@ -20,11 +20,11 @@ CIKit is good because doesn't limit the development using Drupal or Wordpress on
     - The file must be a TAR archive and contain a directory inside since will be processed using `tar` command with the `--strip-components=1` option.
     {: .notice--info}
 - Create the `all` directory inside of previously created (`cmf/symfony`). There will live common configurations for a CMF.
-  - Add the `APPLICATION_CONFIG.yml` inside. It must contain the path to a settings (i.e. `settings: app/config/config.yml`) file and everything else you want to put into the main [config.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/config.yml#L5).
+  - Add the `APPLICATION_CONFIG.yml` inside. It must contain the path to a settings file (i.e. `settings: app/config/config.yml`) and everything else you want to put into the main [config.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/config.yml#L5).
   - Add the `index.php` inside with just an include of the application, `<?php require_once 'web/app.php';`.
   - Add the `tasks/reinstall/modes/full.yml` inside and describe the logic for reinstalling your application.
   - Add the `tasks/sniffers/main.yml` inside and describe the logic for additional code sniffs.
-  - Add the `vars/environments/default.yml` inside and put there all the variables for local/development environment of your application. You may also create as much as needed files for different environments (i.e. `demo.yml`) and build those using `cikit reinstall --env=demo` or something like that.
+  - Add the `vars/environments/default.yml` inside and put there all the variables for local/development environment of your application. You may also create as much as needed files for different environments (i.e. `demo.yml`) and build those using `cikit reinstall --env=demo`.
   - Add the `vars/tests.yml` inside.
     ```yaml
     ---
@@ -125,6 +125,24 @@ replacements:
   THEME_PATH_COMMAND: "echo 'templates/'"
 EOF
 ```
+
+### How the project initializer works?
+
+Let's try to explain this as declarative as possible.
+
+- Scan for available CMS/CMF integrations and load their `main.yml`.
+- Fail if the `--cmf=` option has a name of a system that is undefined, or download and unarchive its codebase to `/path/to/test_project/docroot`.
+- Copy `cmf/all`, `cmf/symfony/all` and `cmf/symfony/3` (an order preserved) to `/path/to/test_project/docroot`.
+- Recursively set `755` permission for all directories and `644` for all the files.
+- Add the following to the top of the `/path/to/test_project/.cikit/config.yml`.
+  ```yaml
+  cmf: symfony
+  core: 3
+  project: test_project
+  site_url: https://test-project.loc
+  ```
+- Replace the `APPLICATION_CONFIG: ~` in `/path/to/test_project/.cikit/config.yml` by the contents of `cmf/symfony/all/APPLICATION_CONFIG.yml`.
+- Recursively replace all the keys of `replacements` dictionary from `cmf/symfony/3/REPLACEMENTS.yml` by assigned values in the every file within `/path/to/test_project/scripts` (placeholders should be wrapped in `<>` (like `<PLACEHOLDER>`) at places where should be replaced, however keys in the `replacements` dictionary must be without angle brackets).
 
 ## Wrap up
 
