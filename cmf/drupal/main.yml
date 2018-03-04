@@ -1,0 +1,6 @@
+---
+# The "VERSION" will be replaced by the "--version" option from CLI or fallen back to the "default_version".
+# The file must be ".tar.gz" and contain a directory inside since will be processed using "tar" command with
+# the "--strip-components=1" option.
+download_url: "https://www.drupal.org/files/projects/drupal-VERSION.tar.gz"
+default_version: "8.4.5"

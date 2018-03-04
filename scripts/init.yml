@@ -6,20 +6,22 @@
 
   vars:
     box: http://propeople.com.ua/pub/CIKit_Ubuntu_16.04_LTS_package.box
-    # As name of folder inside of "cmf/".
-    cmf: "drupal"
+    # The name of a folder inside of the "cmf/".
+    cmf: drupal
+    cmfs: {}
     without_sources: no
-    # Every "download_url" will be prefixed with "https://" and ended by "-{{ version }}.tar.gz".
-    cmfs:
-      drupal:
-        download_url: "www.drupal.org/files/projects/drupal"
-        default_version: "7.56"
-      wordpress:
-        download_url: "wordpress.org/wordpress"
-        default_version: "4.9.1"
 
   tasks:
     - import_tasks: tasks/project-variable.yml
+
+    - name: Load available systems
+      set_fact:
+        cmfs: "{{ cmfs | combine({item | dirname | basename: lookup('file', item) | from_yaml}) }}"
+      # @todo Unfortunately "fileglob" and "with_fileglob" cannot be used here.
+      # https://github.com/ansible/ansible/issues/17136
+      # with_fileglob: "{{ playbook_dir | dirname }}/cmf/*/main.yml"
+      with_lines:
+        - "find {{ playbook_dir | dirname }}/cmf -maxdepth 2 -type f -name main.yml"
 
     - name: Set default version of CMF
       set_fact:
@@ -46,10 +48,9 @@
         state: directory
       register: project_docroot
 
-    # Still not possible to use the "unarchive" module with "extra_opts".
-    # It will fail with "Command could not handle archive."
+    # @todo Still not possible to use the "unarchive" module with "extra_opts". It will fail with "Command could not handle archive."
     - name: Download CMF
-      shell: "curl -s https://{{ cmfs[cmf].download_url }}-{{ version }}.tar.gz | tar --strip-components=1 -xzC ./"
+      shell: "curl -s {{ cmfs[cmf].download_url | replace('VERSION', version) }} | tar --strip-components=1 -xzC ./"
       args:
         warn: no
         chdir: "{{ project_docroot.path }}"
@@ -85,7 +86,7 @@
       replace:
         dest: "{{ project_directory }}/.cikit/config.yml"
         regexp: "APPLICATION_CONFIG: ~"
-        replace: "{{ lookup('file', project_directory + '/APPLICATION_CONFIG.yml') }}"
+        replace: "{{ lookup('file', project_directory + '/APPLICATION_CONFIG.yml') | regex_replace('^---', '') }}"
 
     - include_vars: "{{ project_directory }}/REPLACEMENTS.yml"
 
@@ -95,7 +96,7 @@
 
     - name: Seeking for the placeholders
       shell: >
-        find {{ project_directory }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} 's/<{{ item.key }}>/{{ item.value | regex_escape }}/g' {} \;
+        find {{ project_directory }}/scripts/ -type f -exec sed -i {{ "''" if uname.stdout == 'Darwin' else '' }} "s/<{{ item.key }}>/{{ item.value | regex_escape }}/g" {} \;
       environment:
         LC_ALL: C
       with_dict: "{{ replacements }}"

@@ -4,14 +4,20 @@ dist: trusty
 python:
   - "2.7"
 
+env:
+  VAGRANT_VERSION: 2.0.2
+
 install:
   - sudo pip install ansible
   - sudo bash ./install.sh --no-requirements-check
+  - sudo wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
+  - sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
   - cd /usr/local/share/cikit
   - sudo git fetch origin ${TRAVIS_BRANCH}
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
+  - sudo bash ./tests/travis/init.sh
   - sudo bash ./tests/travis/inventory.sh
   # @todo Uncomment once "xenial" dist become available.
   #- sudo bash ./tests/travis/provision.sh
