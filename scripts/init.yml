@@ -71,7 +71,7 @@
         - "{{ cmf_configs.stat.path }}/"
 
     - name: Setting permissions for project tree
-      shell: "find {{ project_directory }}/ -type {{ item.key }} -print0 | xargs -0 chmod {{ item.value }}"
+      shell: "find {{ project_directory }}/ -type {{ item.key }} -not -name '*.private.key' -print0 | xargs -0 chmod {{ item.value }}"
       with_dict:
         d: 755
         f: 664
