@@ -9,7 +9,14 @@ permalink: /changelog/2018-03-06/
 
 ## Required manual actions
 
-Make sure that your `/path/to/project/.cikit/vars/web-server.yml` has the same structure as an original [web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml).
+Right after updating the package via `cikit self-update` please make sure all the projects you have based on CIKit will receive the following modifications:
+
+![CIKit 1.0.2 migration notes](images/cikit-1.0.3-migration-note.png)
+
+*The message will be shown after fetching the updates.*
+{: .notice--warning}
+
+- Make sure that your `/path/to/project/.cikit/vars/web-server.yml` has the same structure as an original [web-server.yml](https://github.com/BR0kEN-/cikit/blob/master/cmf/all/.cikit/vars/web-server.yml).
 
 ## References
 
