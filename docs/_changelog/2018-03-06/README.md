@@ -3,6 +3,7 @@ title: March 6, 2018
 permalink: /changelog/2018-03-06/
 ---
 
+**Manual actions are required! Read full changelog record for a proper upgrade.**
 - Simplified a procedure of defining virtual hosts.
 - Added reflection of defined virtual hosts in `/etc/hosts` for local environments.
 - Added an ability to define application subdomains that work both on CI droplet and locally.
