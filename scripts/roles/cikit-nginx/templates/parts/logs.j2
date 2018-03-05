@@ -1,7 +1,7 @@
 {#
     Used variables:
-    - server_name
+    - log_name
 #}
 {% for log_type in ["access", "error"] %}
-    {{ log_type }}_log /var/log/nginx/{{ server_name }}.{{ log_type }}.log;
+    {{ log_type }}_log /var/log/nginx/{{ log_name }}.{{ log_type }}.log;
 {% endfor %}

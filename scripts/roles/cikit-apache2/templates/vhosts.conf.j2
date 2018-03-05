@@ -3,17 +3,17 @@ DirectoryIndex index.php index.html
 
 {% if localhost -%}
     {% set root_type = "DocumentRoot" %}
-    {% set directory = webroot + "/docroot" %}
+    {% set directory = "docroot" %}
     {% set server_name = project + ".loc" %}
 {% else -%}
     {% set root_type = "VirtualDocumentRoot" %}
-    {% set directory = webroot + "/%1/docroot" %}
+    {% set directory = "%1/docroot" %}
     {% set server_name = ansible_host %}
 {% endif -%}
 
 {% set basic_definition -%}
     ServerName {{ server_name }}
-    {{ root_type }} {{ directory }}
+    {{ root_type }} {{ webroot }}/{{ directory }}
 {% endset -%}
 
 <Directory "{{ webroot }}/*/*">
@@ -32,31 +32,29 @@ DirectoryIndex index.php index.html
 </VirtualHost>
 
 {% for vhost in web_server_vhosts -%}
-    {% if vhost.name -%}
-        {% if localhost -%}
-            {# Serve the "subdomain.project.loc" from "/var/www/subdomain". #}
-            {% set directory = vhost.name %}
-            {% set server_alias = "" %}
-        {% else -%}
-            {# Serve the "subdomain.project_build_1.cikit02.example.com" from "/var/www/project_build_1/subdomain". #}
-            {# The "%2" is a placeholder for the "project_build_1" #}
-            {% set directory = "%2/" + vhost.name %}
-            {% set server_alias = "*." %}
-        {% endif -%}
+    {% if localhost -%}
+        {# Serve the "subdomain.project.loc" from "/var/www/subdomain". #}
+        {% set directory = vhost.name %}
+        {% set server_alias = "" %}
+    {% else -%}
+        {# Serve the "subdomain.project_build_1.cikit02.example.com" from "/var/www/project_build_1/subdomain". #}
+        {# The "%2" is a placeholder for the "project_build_1" #}
+        {% set directory = "%2/" + vhost.name %}
+        {% set server_alias = "*." %}
+    {% endif -%}
 
-        {% set basic_definition -%}
-            ServerName {{ server_name }}
-            ServerAlias {{ vhost.name }}.{{ server_alias }}{{ server_name }}
-            {{ root_type }} {{ webroot }}/{{ directory }}
-        {% endset -%}
+    {% set basic_definition -%}
+        ServerName {{ server_name }}
+        ServerAlias {{ vhost.name }}.{{ server_alias }}{{ server_name }}
+        {{ root_type }} {{ webroot }}/{{ directory }}
+    {% endset -%}
 
-        <VirtualHost *:{{ web_port }}>
-            {{ basic_definition }}
-        </VirtualHost>
+    <VirtualHost *:{{ web_port }}>
+        {{ basic_definition }}
+    </VirtualHost>
 
-        <VirtualHost *:{{ web_port_ssl }}>
-            {{ basic_definition }}
-            Include ssl.conf
-        </VirtualHost>
-    {% endif %}
+    <VirtualHost *:{{ web_port_ssl }}>
+        {{ basic_definition }}
+        Include ssl.conf
+    </VirtualHost>
 {% endfor %}

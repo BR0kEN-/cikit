@@ -1,30 +1,23 @@
 #jinja2: trim_blocks: True
-#jinja2: lstrip_blocks: True
 {{ ansible_managed | comment }}
 
-{% for vhost in web_server_vhosts | reverse | list %}
-    {# Re-save the value to the variable which might be used in included templates. #}
-    {% if vhost.name %}
-        {% set server_name = vhost.name + "." + project %}
-        {% set subdomain = vhost.name + "\." %}
-    {% else %}
-        {% set server_name = project %}
-        {% set subdomain = "" %}
-    {% endif %}
+{# Non-subdomain "docroot" must be defined at last. #}
+{% for vhost in web_server_vhosts | union([{"name": "docroot"}]) %}
+    {% set subdomain = "" if "docroot" == vhost.name else vhost.name + "." -%}
+    {# The variable is used by the "parts/logs.j2" template. #}
+    {% set log_name = subdomain + project -%}
 
-    {% if localhost %}
-        {% set directory = webroot + "/" + vhost.name %}
-
+    {% if localhost -%}
         {% set basic_definition %}
-            server_name     {{ server_name }}.loc;
-            root            {{ directory }};
+            server_name {{ subdomain }}{{ project }}.loc;
+            root {{ webroot }}/{{ vhost.name }};
         {% endset %}
-    {% else %}
+    {% else -%}
         {% set basic_definition %}
-            server_name     "~^{{ subdomain }}(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
-            root            {{ webroot }}/$build_id/{{ vhost.name }};
+            server_name "~^{{ subdomain | regex_replace }}(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
+            root {{ webroot }}/$build_id/{{ vhost.name }};
         {% endset %}
-    {% endif %}
+    {% endif -%}
 
     server {
         {{ basic_definition }}
@@ -45,18 +38,17 @@
             they were modified by the mentioned above conditions. Let's revert the changes
             using regular expressions.
         #}
-        listen                          {{ web_port | regex_replace('^(\d{2})\d{2}$', '\\g<1>') }};
+        listen {{ web_port | regex_replace('^(\d{2})\d{2}$', '\\g<1>') }};
 
-        include                         {{ nginx_conf_dir }}/snippets/site-locations.conf;
+        include {{ nginx_conf_dir }}/snippets/site-locations.conf;
         {% include "parts/logs.j2" with context %}
     }
 
     server {
         {{ basic_definition }}
-        listen                          {{ web_port_ssl | regex_replace('^(\d{3})\d{2}$', '\\g<1>') }} ssl;
-
-        include                         {{ nginx_conf_dir }}/snippets/ssl.conf;
-        include                         {{ nginx_conf_dir }}/snippets/site-locations.conf;
+        listen {{ web_port_ssl | regex_replace('^(\d{3})\d{2}$', '\\g<1>') }} ssl;
+        include {{ nginx_conf_dir }}/snippets/ssl.conf;
+        include {{ nginx_conf_dir }}/snippets/site-locations.conf;
         {% include "parts/logs.j2" with context %}
     }
 {% endfor %}
