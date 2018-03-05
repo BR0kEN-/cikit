@@ -66,6 +66,8 @@ documentation:
         url: /documentation/project/vagrant-box/
       - title: Web server
         url: /documentation/project/web-server/
+      - title: Custom virtual hosts
+        url: /documentation/project/custom-vhosts/
 
   - title: Workflow
     url: /documentation/workflow/
