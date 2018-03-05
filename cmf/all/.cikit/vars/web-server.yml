@@ -7,6 +7,7 @@
 # The "{{ project }}.loc" will be served from the "/var/www/docroot" without
 # any configuration here.
 #
-# Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain".
-# - name: subdomain
+# web_server_vhosts: []
+#   # Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain".
+#   - name: subdomain
 web_server_vhosts: []
