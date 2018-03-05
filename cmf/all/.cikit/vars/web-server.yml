@@ -9,5 +9,5 @@
 #
 # web_server_vhosts: []
 #   # Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain".
-#   - name: subdomain
+#   - dir: subdomain
 web_server_vhosts: []

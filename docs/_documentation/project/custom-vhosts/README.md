@@ -8,7 +8,7 @@ With zero-configuration CIKit creates you a single virtual host that serves an a
 
 ## Create a configuration
 
-Open `/path/to/project/.cikit/vars/web-server.yml` and find the `web_server_vhosts` variable inside. By default it's empty (has `[]` value). Add the `- name: dirname` to the list where `dirname` is the name of a directory that must be at the same level as `docroot`. Put your codebase in that directory and enjoy.
+Open `/path/to/project/.cikit/vars/web-server.yml` and find the `web_server_vhosts` variable inside. By default it's empty (has `[]` value). Add the `- dir: dirname` to the list where `dirname` is the name of a directory that must be at the same level as `docroot`. Put your codebase in that directory and enjoy.
 
 ### Simple example
 
@@ -16,7 +16,7 @@ As much as needed extra virtual hosts can be added in a similar way.
 
 ```yaml
 web_server_vhosts:
-  - name: dirname
+  - dir: dirname
 ```
 
 ### Real-life example
@@ -27,7 +27,7 @@ For instance, you may consider having [Adminer](https://www.adminer.org) databas
 
   ```yaml
   web_server_vhosts:
-    - name: adminer
+    - dir: adminer
   ```
 
 - Download the script.

@@ -34,18 +34,18 @@ DirectoryIndex index.php index.html
 {% for vhost in web_server_vhosts -%}
     {% if localhost -%}
         {# Serve the "subdomain.project.loc" from "/var/www/subdomain". #}
-        {% set directory = vhost.name %}
+        {% set directory = vhost.dir %}
         {% set server_alias = "" %}
     {% else -%}
         {# Serve the "subdomain.project_build_1.cikit02.example.com" from "/var/www/project_build_1/subdomain". #}
         {# The "%2" is a placeholder for the "project_build_1" #}
-        {% set directory = "%2/" + vhost.name %}
+        {% set directory = "%2/" + vhost.dir %}
         {% set server_alias = "*." %}
     {% endif -%}
 
     {% set basic_definition -%}
         ServerName {{ server_name }}
-        ServerAlias {{ vhost.name }}.{{ server_alias }}{{ server_name }}
+        ServerAlias {{ vhost.dir }}.{{ server_alias }}{{ server_name }}
         {{ root_type }} {{ webroot }}/{{ directory }}
     {% endset -%}
 

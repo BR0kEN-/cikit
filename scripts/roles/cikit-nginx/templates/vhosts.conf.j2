@@ -2,20 +2,20 @@
 {{ ansible_managed | comment }}
 
 {# Non-subdomain "docroot" must be defined at last. #}
-{% for vhost in web_server_vhosts | union([{"name": "docroot"}]) %}
-    {% set subdomain = "" if "docroot" == vhost.name else vhost.name + "." -%}
+{% for vhost in web_server_vhosts | union([{"dir": "docroot"}]) %}
+    {% set subdomain = "" if "docroot" == vhost.dir else vhost.dir + "." -%}
     {# The variable is used by the "parts/logs.j2" template. #}
     {% set log_name = subdomain + project -%}
 
     {% if localhost -%}
         {% set basic_definition %}
             server_name {{ subdomain }}{{ project }}.loc;
-            root {{ webroot }}/{{ vhost.name }};
+            root {{ webroot }}/{{ vhost.dir }};
         {% endset %}
     {% else -%}
         {% set basic_definition %}
             server_name "~^{{ subdomain | regex_replace }}(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
-            root {{ webroot }}/$build_id/{{ vhost.name }};
+            root {{ webroot }}/$build_id/{{ vhost.dir }};
         {% endset %}
     {% endif -%}
 

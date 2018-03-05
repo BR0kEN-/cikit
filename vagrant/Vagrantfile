@@ -105,7 +105,9 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
       project_aliases = []
 
       web_server_config['web_server_vhosts'].each do |vhost|
-        project_aliases << vhost['name'] + '.' + project_hostname
+        if vhost.has_key?('dir') && !vhost['dir'].empty?
+          project_aliases << vhost['dir'] + '.' + project_hostname
+        end
       end
 
       config.hostsupdater.aliases = project_aliases
