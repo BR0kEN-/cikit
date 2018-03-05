@@ -1,15 +1,10 @@
 ---
-- name: Create configs
-  template:
-    src: "conf/{{ item | basename }}"
-    dest: "{{ cikit_apache.dest }}/conf-available/{{ item | basename | splitext | first }}"
-  with_fileglob: "../templates/conf/*.j2"
-
-- name: Create common includes
-  template:
-    src: "common/{{ item | basename }}"
-    dest: "{{ cikit_apache.dest }}/{{ item | basename | splitext | first }}"
-  with_fileglob: "../templates/common/*.j2"
+- include_tasks: create-configs.yml
+  with_dict:
+    conf: "conf-available/"
+    common: ""
+  loop_control:
+    loop_var: dir
 
 - name: Create virtual hosts
   template:

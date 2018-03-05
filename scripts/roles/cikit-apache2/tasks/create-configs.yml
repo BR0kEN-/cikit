@@ -1,0 +1,6 @@
+---
+- name: Create configs
+  template:
+    src: "{{ dir.key }}/{{ item | basename }}"
+    dest: "{{ cikit_apache.dest }}/{{ dir.value }}{{ item | basename | splitext | first }}"
+  with_fileglob: "../templates/{{ dir.key }}/*.j2"
