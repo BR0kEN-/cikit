@@ -2,8 +2,14 @@
 - name: Create configs
   template:
     src: "conf/{{ item | basename }}"
-    dest: '{{ cikit_apache.dest }}/conf-available/{{ item | basename | splitext | first }}'
+    dest: "{{ cikit_apache.dest }}/conf-available/{{ item | basename | splitext | first }}"
   with_fileglob: "../templates/conf/*.j2"
+
+- name: Create common includes
+  template:
+    src: "common/{{ item | basename }}"
+    dest: "{{ cikit_apache.dest }}/{{ item | basename | splitext | first }}"
+  with_fileglob: "../templates/common/*.j2"
 
 - name: Create virtual hosts
   template:
@@ -15,11 +21,6 @@
     - "{{ __targetdir__ }}/.cikit/templates/apache2/vhosts.conf.j2"
     # If a project didn't define the template we're falling back to the default one.
     - "{{ role_path }}/templates/vhosts.conf.j2"
-
-- name: Configure ports
-  template:
-    src: "ports.conf.j2"
-    dest: "{{ cikit_apache.dest }}/ports.conf"
 
 - include_tasks: a2.yml
   with_dict: "{{ apache_data }}"

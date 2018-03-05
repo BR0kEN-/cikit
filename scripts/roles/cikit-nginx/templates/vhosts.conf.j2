@@ -13,7 +13,7 @@
     {% endif %}
 
     {% if localhost %}
-        {% set directory = webroot + "/" + vhost.root %}
+        {% set directory = webroot + "/" + vhost.name %}
 
         {% set basic_definition %}
             server_name     {{ server_name }}.loc;
@@ -22,7 +22,7 @@
     {% else %}
         {% set basic_definition %}
             server_name     "~^{{ subdomain }}(?<build_id>.+?)\.{{ ansible_host | regex_replace }}$";
-            root            {{ webroot }}/$build_id/{{ vhost.root }};
+            root            {{ webroot }}/$build_id/{{ vhost.name }};
         {% endset %}
     {% endif %}
 

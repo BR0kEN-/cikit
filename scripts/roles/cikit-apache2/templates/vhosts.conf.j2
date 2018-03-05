@@ -1,40 +1,62 @@
-#jinja2: trim_blocks: True
-#jinja2: lstrip_blocks: True
 {{ ansible_managed | comment }}
 DirectoryIndex index.php index.html
 
-{% set root_type = "DocumentRoot" if localhost else "VirtualDocumentRoot" %}
+{% if localhost -%}
+    {% set root_type = "DocumentRoot" %}
+    {% set directory = webroot + "/docroot" %}
+    {% set server_name = project + ".loc" %}
+{% else -%}
+    {% set root_type = "VirtualDocumentRoot" %}
+    {% set directory = webroot + "/%1/docroot" %}
+    {% set server_name = ansible_host %}
+{% endif -%}
 
-{% for vhost in web_server_vhosts %}
-    {# Re-save the value to the variable which might be used in included templates. #}
-    {% if localhost %}
-        {% set directory = webroot + "/" + vhost.root %}
-        {% set server_name = project + ".loc" %}
+{% set basic_definition -%}
+    ServerName {{ server_name }}
+    {{ root_type }} {{ directory }}
+{% endset -%}
 
-        {% if vhost.name %}
-            {% set server_name = vhost.name + "." + server_name %}
-        {% endif %}
-    {% else %}
-        {% set directory = webroot + "/%1/" + vhost.root %}
-        {% set server_name = ansible_host %}
+<Directory "{{ webroot }}/*/*">
+    AllowOverride All
+    Options -Indexes +FollowSymLinks
+    Require all granted
+</Directory>
+
+<VirtualHost *:{{ web_port }}>
+    {{ basic_definition }}
+</VirtualHost>
+
+<VirtualHost *:{{ web_port_ssl }}>
+    {{ basic_definition }}
+    Include ssl.conf
+</VirtualHost>
+
+{% for vhost in web_server_vhosts -%}
+    {% if vhost.name -%}
+        {% if localhost -%}
+            {# Serve the "subdomain.project.loc" from "/var/www/subdomain". #}
+            {% set directory = vhost.name %}
+            {% set server_alias = "" %}
+        {% else -%}
+            {# Serve the "subdomain.project_build_1.cikit02.example.com" from "/var/www/project_build_1/subdomain". #}
+            {# The "%2" is a placeholder for the "project_build_1" #}
+            {% set directory = "%2/" + vhost.name %}
+            {% set server_alias = "*." %}
+        {% endif -%}
+
+        {% set basic_definition -%}
+            ServerName {{ server_name }}
+            ServerAlias {{ vhost.name }}.{{ server_alias }}{{ server_name }}
+            {{ root_type }} {{ webroot }}/{{ directory }}
+        {% endset -%}
+
+        <VirtualHost *:{{ web_port }}>
+            {{ basic_definition }}
+        </VirtualHost>
+
+        <VirtualHost *:{{ web_port_ssl }}>
+            {{ basic_definition }}
+            Include ssl.conf
+        </VirtualHost>
     {% endif %}
-
-    {% set basic_definition %}
-        ServerName {{ server_name }}
-        {{ root_type }} {{ directory }}
-    {% endset %}
-
-    <VirtualHost *:{{ web_port }}>
-        {{ basic_definition }}
-        {% include "parts/directory.j2" with context %}
-
-    </VirtualHost>
-
-    <VirtualHost *:{{ web_port_ssl }}>
-        {{ basic_definition }}
-        {% include "parts/ssl.j2" with context %}
-
-        {% include "parts/directory.j2" with context %}
-
-    </VirtualHost>
 {% endfor %}

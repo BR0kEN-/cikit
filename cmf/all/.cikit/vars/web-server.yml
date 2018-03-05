@@ -4,12 +4,9 @@
 # VM's VPN by just reading the YAML structure of this file without any
 # Ansbile/Jinja2 evaluation.
 #
-# NOTE! Subdomains must be defined below the main domain to provide a
-# correct serving.
-web_server_vhosts:
-  # Serve "{{ project }}.loc" from the "/var/www/docroot".
-  - name: ~
-    root: docroot
-  ## Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain-docroot".
-  #- name: subdomain
-  #  root: subdomain-docroot
+# The "{{ project }}.loc" will be served from the "/var/www/docroot" without
+# any configuration here.
+#
+# Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain".
+# - name: subdomain
+web_server_vhosts: []
