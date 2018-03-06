@@ -2,4 +2,3 @@
 cikit_platformsh_cli:
   bin: ~/.platformsh/bin/platform
   url: https://platform.sh/cli/installer
-  name: platform
