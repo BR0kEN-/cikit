@@ -1,0 +1,12 @@
+---
+- name: Download
+  get_url:
+    url: "{{ cikit_platformsh_cli.url }}"
+    dest: "/usr/share/platformsh-installer"
+  register: installer
+
+- name: Install
+  become_user: "{{ ansible_user }}"
+  shell: "php {{ installer.dest }}"
+  args:
+    creates: "{{ cikit_platformsh_cli.bin }}"
