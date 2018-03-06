@@ -26,14 +26,14 @@
 
 - name: Create .config directory
   file:
-    path: "{{ user_home.stdout }}/.config/composer"
+    path: "{{ user_home }}/.config/composer"
     state: directory
     recurse: yes
 
 - name: Create Composer config
   template:
     src: config.json.j2
-    dest: "{{ user_home.stdout }}/.config/composer/config.json"
+    dest: "{{ user_home }}/.config/composer/config.json"
 
 - include_tasks: packages.yml
 

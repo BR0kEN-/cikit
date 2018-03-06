@@ -7,7 +7,7 @@
 - name: Update repositories
   git:
     repo: "{{ item.repo }}"
-    dest: "{{ item.dest | replace('~', user_home.stdout) }}"
+    dest: "{{ item.dest | replace('~', user_home) }}"
     update: yes
   with_items: "{{ cikit_ruby.repositories }}"
 
@@ -20,14 +20,14 @@
   lineinfile:
     line: "{{ item }}"
     regexp: "^{{ item | regex_escape }}$"
-    dest: "{{ user_home.stdout }}/.profile"
+    dest: "{{ user_home }}/.profile"
   with_items:
     - '{{ cikit_ruby_shell_path_export }}'
     - 'eval "$(rbenv init -)"'
 
 - name: Ensure filesystem
   file:
-    path: "{{ cikit_ruby.repositories[0].dest | replace('~', user_home.stdout) }}"
+    path: "{{ cikit_ruby.repositories[0].dest | replace('~', user_home) }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     recurse: yes

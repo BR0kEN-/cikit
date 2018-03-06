@@ -41,6 +41,6 @@
   lineinfile:
     line: "{{ item }}"
     regexp: "^{{ item | regex_escape }}$"
-    dest: "{{ user_home.stdout }}/.profile"
+    dest: "{{ user_home }}/.profile"
   with_items:
     - 'export PATH="$PATH:/opt/mssql-tools/bin"'
