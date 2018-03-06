@@ -103,8 +103,8 @@
   pre_tasks:
     - name: Check Ansible compatibility
       fail:
-        msg: "Continuation is possible only with Ansible 2.2.x on host machine."
-      when: "ansible_version.major < 2 and ansible_version.minor < 2"
+        msg: "Continuation is possible only with Ansible 2.4.x on host machine."
+      when: "ansible_version.major < 2 and ansible_version.minor < 4"
       tags: ["always"]
 
     - name: Check whether preselected web server is available
