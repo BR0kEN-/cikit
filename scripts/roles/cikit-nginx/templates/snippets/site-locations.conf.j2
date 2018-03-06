@@ -1,0 +1,67 @@
+{#
+    Used variables:
+    - php_version
+#}
+location = /favicon.ico {
+    access_log off;
+    log_not_found off;
+}
+
+location = /robots.txt {
+    allow all;
+    access_log off;
+    log_not_found off;
+}
+
+location ~ \..*/.*\.php$ {
+    return 403;
+}
+
+location ~ ^/sites/.*/private/ {
+    return 403;
+}
+
+# Block access to "hidden" files and directories whose names begin with a
+# period. This includes directories used by version control systems such
+# as Subversion or Git to store control files.
+location ~ (^|/)\. {
+    return 403;
+}
+
+location / {
+    try_files $uri /index.php?$query_string;
+}
+
+location @rewrite {
+    rewrite ^/(.*)$ /index.php?q=$1;
+}
+
+# Don't allow direct access to PHP files in the vendor directory.
+location ~ /vendor/.*\.php$ {
+    deny all;
+    return 404;
+}
+
+location ~ '\.php$|^/update.php' {
+    {# http://nginx.org/ru/docs/http/ngx_http_fastcgi_module.html#fastcgi_pass #}
+    fastcgi_pass            unix://run/php/php{{ php_version }}-fpm.sock;
+    # Block httpoxy attacks. See https://httpoxy.org.
+    fastcgi_param           HTTP_PROXY          "";
+    include                 {{ nginx_conf_dir }}/snippets/fastcgi-php.conf;
+}
+
+# For Drupal >= 7.
+location ~ ^/sites/.*/files/styles/ {
+    try_files $uri @rewrite;
+}
+
+# For Drupal >= 7.
+location ~ ^(/[a-z\-]+)?/system/files/ {
+    try_files $uri /index.php?$query_string;
+}
+
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+    try_files $uri @rewrite;
+    expires max;
+    log_not_found off;
+}

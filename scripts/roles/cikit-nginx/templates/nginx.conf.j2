@@ -15,7 +15,7 @@ events {
 }
 
 http {
-    include /etc/nginx/mime.types;
+    include {{ nginx_conf_dir }}/mime.types;
     default_type application/octet-stream;
 
     {% if ansible_default_ipv4 is defined and 'gateway' in ansible_default_ipv4 %}
@@ -70,6 +70,6 @@ http {
         https on;
     }
 
-    include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;
+    include {{ nginx_conf_dir }}/conf.d/*.conf;
+    include {{ nginx_conf_dir }}/sites-enabled/*;
 }

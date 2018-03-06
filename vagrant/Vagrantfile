@@ -14,6 +14,9 @@ arguments = ARGV.join(' ')
 config_values = YAML.load_file('.cikit/config.yml')
 vagrantfile_dir = File.dirname(__FILE__)
 cikit_package_dir = File.realdirpath(vagrantfile_dir + '/..')
+# The "site_url" will appear in "config.yml" via repository builder.
+# See "scripts/init.yml".
+project_hostname = config_values['site_url'].split('//').last
 
 # Check whether CIKit cannot be bootstrapped properly.
 if (arguments.include?('up') || arguments.include?('provision')) && !arguments.include?('no-provision')
@@ -33,7 +36,7 @@ end
 # Ensure that configured IP ain't owned by other VM.
 # This should be executed even when machine state is already "running" to always
 # keep "hostsupdater" plugin updated. Otherwise it'll propose you to setup wrong IP.
-if %w[up resume reload].include?(ARGV[0])
+if %w[up resume reload provision].include?(ARGV[0])
   virtualbox = VagrantPlugins::ProviderVirtualBox::Driver::Meta.new
 
   # The output looks like:
@@ -50,7 +53,7 @@ if %w[up resume reload].include?(ARGV[0])
       .gsub(/.*value:\s+(.+?),.*/, '\1')
       .chomp
 
-    if !vm_ip.empty? && vm_ip == config_values['vm']['ip'] && vm_name != config_values['project']
+    if !vm_ip.empty? && vm_ip == config_values['vm']['ip'] && ![project_hostname, config_values['project']].include?(vm_name)
       ip_sections = vm_ip.split('.')
       # Increase last number of IP by 1.
       ip_sections[-1] = ip_sections.last.to_i + 1
@@ -93,12 +96,34 @@ Dir["#{vagrantfile_dir}/provisioners/*"].each do |file|
 end
 
 Vagrant.configure(VAGRANT_API_VERSION) do |config|
-  # The "hostsupdater" plugin insert this value to "hosts".
-  # The "site_url" will appear in "config.yml" via repository builder.
-  # See "scripts/repository.yml".
-  config.vm.hostname = config_values['site_url'].split('//').last
+  project_aliases = []
+
+  if config.hostsupdater && File.exist?('.cikit/vars/web-server.yml')
+    web_server_config = YAML.load_file('.cikit/vars/web-server.yml')
+
+    if web_server_config.key?('web_server_vhosts')
+      project_aliases = []
+
+      web_server_config['web_server_vhosts'].each do |vhost|
+        if vhost.has_key?('dir') && !vhost['dir'].empty?
+          project_aliases << vhost['dir'] + '.' + project_hostname
+        end
+      end
+
+      config.hostsupdater.aliases = project_aliases
+    end
+  end
+
   # Add an informative message about CIKit.
-  config.vm.post_up_message = cikit_message(config_values['vm']['ip'], config.vm.hostname, is_wsl)
+  config.vm.post_up_message = cikit_message(
+    config_values['vm']['ip'],
+    project_hostname,
+    project_aliases,
+    is_wsl
+  )
+
+  # The "hostsupdater" plugin insert this value to the "hosts".
+  config.vm.hostname = project_hostname
   # Handle port collisions.
   config.vm.usable_port_range = (10200..10500)
 

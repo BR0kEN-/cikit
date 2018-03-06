@@ -1,5 +1,13 @@
 ---
-web_server_vhosts:
-  # Serve "project.loc" in the "docroot".
-  - name: "{{ project }}"
-    root: "docroot"
+# WARNING! Do not use any variables or logic within the "web_server_vhosts"
+# variable. It must be plain as used as a source for creating aliases for
+# VM's VPN by just reading the YAML structure of this file without any
+# Ansbile/Jinja2 evaluation.
+#
+# The "{{ project }}.loc" will be served from the "/var/www/docroot" without
+# any configuration here.
+#
+# web_server_vhosts: []
+#   # Serve "subdomain.{{ project }}.loc" from the "/var/www/subdomain".
+#   - dir: subdomain
+web_server_vhosts: []

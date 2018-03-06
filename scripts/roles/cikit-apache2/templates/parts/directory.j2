@@ -1,9 +1,0 @@
-{#
-    Used variables:
-    - directory
-#}
-<Directory "{{ directory | regex_replace('%\d', '*') }}">
-    AllowOverride All
-    Options -Indexes +FollowSymLinks
-    Require all granted
-</Directory>
