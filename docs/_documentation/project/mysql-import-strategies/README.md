@@ -46,7 +46,7 @@ Also, you can use host aliases, defined by the [host manager](../../hosts-manage
 
 ### Pantheon
 
-Create and fetch database snapshots from Pantheon.
+Create and fetch database snapshots from [Pantheon](https://pantheon.io).
 
 {% raw %}
 ```yaml
@@ -67,6 +67,30 @@ databases:
 The configuration for the `pantheon` strategy is a bit simpler. Just add the `strategy` property having the `pantheon` as a value and specify the `db` key under the `source` dictionary.
 
 Refer to the documentation of the [Pantheon](../../workflow/pantheon) workflow to read more about the `pantheon` variable.
+
+### Platform.sh
+
+Create and fetch database snapshots from [Platform.sh](https://platform.sh).
+
+The configuration of the strategy for this hosting platform is similar to [Pantheon](#pantheon) except value for `strategy` key that must be `platformsh` and `pantheon` variable that must not be existent in favor of `platformsh`.
+
+{% raw %}
+```yaml
+platformsh: "{{ lookup('file', '../.platform.app.json') | from_json }}"
+
+databases:
+  default:
+    # Form an unique name of the database (e.g. "wordpress_PROJECT_NAME_default").
+    name: "{{ cmf }}_{{ project | replace('-', '_') }}_{{ build_id | default(env) }}"
+    # The import strategy.
+    strategy: platformsh
+    source:
+      # In this case it's an environment (not exact DB name) to take DB from.
+      db: "{{ 'dev' if 'default' == env else env }}"
+```
+{% endraw %}
+
+Refer to the documentation of the [Platform.sh](../../workflow/platformsh) workflow to read more about the `platformsh` variable.
 
 ### Custom
 

@@ -26,16 +26,17 @@ behat.yml
 commentinfo.md
 
 !.htaccess
-# Helper file that afect to "synchronize" task of Ansible.
+# Helper file that might be created by the "synchronize" Ansible's module.
 !.rsync-filter
 !.git*
 !.eslint*
 !.codespellignore
 !.hostname
+# Platform.sh local config. Keep private!
+!.platform.app.json
 
 # CIKit stuff.
 !.cikit/
 
 !LICENSE
 !composer.*
-!Vagrantfile

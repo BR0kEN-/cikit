@@ -1,0 +1,10 @@
+# Used variables:
+# - platformsh.id: an ID of a site on the Platform.sh.
+# - platformsh.token: a machine token of a user to authenticate.
+---
+- name: Create snapshot
+  become_user: "{{ become_name }}"
+  shell: |-
+    platform db:dump -p {{ platformsh.id }} -e {{ item.value.source.db }} --gzip -f '{{ dump_local_path }}'
+  environment:
+    PLATFORMSH_CLI_TOKEN: "{{ platformsh.token }}"

@@ -74,3 +74,5 @@ documentation:
     children:
       - title: Pantheon
         url: /documentation/workflow/pantheon/
+      - title: Platform.sh
+        url: /documentation/workflow/platformsh/
