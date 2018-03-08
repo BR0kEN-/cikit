@@ -67,3 +67,5 @@ php:
     - xmlrpc
     - memcached
     - fpm
+cikit_php_extra:
+  packages: []

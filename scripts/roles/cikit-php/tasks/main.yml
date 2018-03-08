@@ -28,6 +28,12 @@
   args:
     warn: no
 
+- name: Install uncommon PHP packages
+  shell: "apt-get install -y {{ cikit_php_extra.packages | join(' ') }}"
+  when: cikit_php_extra.packages|length > 0
+  args:
+    warn: no
+
 - name: Set interpreter version as system default
   shell: "ln -fs /usr/bin/{{ item }}{{ php_version }} /etc/alternatives/{{ item }}"
   args:
