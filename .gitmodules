@@ -10,3 +10,6 @@
 [submodule "scripts/roles/ansible-role-memcached"]
 	path = scripts/roles/ansible-role-memcached
 	url = https://github.com/geerlingguy/ansible-role-memcached.git
+[submodule "scripts/roles/ansible-role-mongodb"]
+	path = scripts/roles/ansible-role-mongodb
+	url = https://github.com/UnderGreen/ansible-role-mongodb.git
