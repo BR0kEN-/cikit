@@ -1,7 +1,7 @@
 module.exports = app => {
   const mongoose = app.get('mongoose');
 
-  mongoose.model('Client', new mongoose.Schema({
+  return mongoose.model('Client', new mongoose.Schema({
     name: {
       type: String,
       unique: true,
