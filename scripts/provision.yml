@@ -48,6 +48,12 @@
       private: no
       tags: ["mssql"]
 
+    - name: mongodb_install
+      prompt: Do you want to install MongoDB NoSQL Server? (yes/no)
+      default: "no"
+      private: no
+      tags: ["mongodb"]
+
   vars:
     basic_packages:
       apt:
@@ -204,6 +210,7 @@
       with_dict:
         install_solr: "{{ solr_version }}"
         install_mssql: "{{ mssql_install }}"
+        install_mongodb: "{{ mongodb_install }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -269,6 +276,10 @@
 
     - role: cikit-nodejs
       tags: ["nodejs"]
+
+    - role: ansible-role-mongodb
+      when: install_mongodb
+      tags: ["mongodb"]
 
     - role: cikit-phantomjs
       tags: ["phantomjs"]

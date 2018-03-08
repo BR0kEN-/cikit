@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "node ./index.js",
+    "create-test-user": "node ./testUser.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.x",
+    "express": "^4.16.x",
+    "faker": "^4.1.x",
+    "mongoose": "^5.0.x",
+    "nconf": "^0.10.x",
+    "oauth2orize": "^1.11.x",
+    "passport": "^0.4.x",
+    "passport-http": "^0.3.x",
+    "passport-http-bearer": "^1.0.x",
+    "passport-oauth2-client-password": "^0.1.x",
+    "winston": "^2.4.x",
+    "jsonpath": "^1.0.0",
+    "node-cache": "^4.1.1"
+  },
+  "devDependencies": {
+    "superagent": "^3.8.x",
+    "tape": "^4.9.x"
+  },
+  "jshintConfig": {
+    "browser": true,
+    "node": true,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": false,
+    "newcap": false,
+    "noarg": true,
+    "sub": true,
+    "undef": true,
+    "boss": true,
+    "eqnull": true,
+    "strict": false,
+    "scripturl": true,
+    "evil": true,
+    "globals": {
+      "location": true,
+      "printStackTrace": false
+    }
+  }
+}

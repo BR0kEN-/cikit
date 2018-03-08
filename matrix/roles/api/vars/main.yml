@@ -1,0 +1,5 @@
+api:
+  pip:
+    - ansible
+  nodejs_version: "9"
+  mongodb_version: "3.6"
