@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "node ./index.js",
-    "create-test-user": "node ./testUser.js"
+    "create-test-user": "node ./create-test-user.js"
   },
   "dependencies": {
     "body-parser": "^1.18.x",
@@ -16,8 +16,7 @@
     "passport-http-bearer": "^1.0.x",
     "passport-oauth2-client-password": "^0.1.x",
     "winston": "^2.4.x",
-    "jsonpath": "^1.0.0",
-    "node-cache": "^4.1.1"
+    "jsonpath": "^1.0.0"
   },
   "devDependencies": {
     "superagent": "^3.8.x",
