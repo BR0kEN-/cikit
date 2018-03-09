@@ -18,10 +18,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(passport.initialize());
 
-[
-  'oauth/token',
-  'droplet/list',
-].forEach(path => app.use('/api/v1/' + path, require('./routes/' + path)(app)));
+for (const [type, routes] of Object.entries(config.get('routes'))) {
+  routes.forEach(path => app[type]('/api/v1/' + path, require('./routes/' + path.replace(/\/:\w+/g, ''))(app)));
+}
 
 // Catch 404 and forward to an error handler.
 app.use((request, response, next) => {

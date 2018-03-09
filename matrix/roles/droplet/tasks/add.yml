@@ -101,5 +101,6 @@
     docker stop '{{ droplet }}'
     docker start '{{ droplet }}'
 
+# This name is also used to match the command result in REST.
 - name: Print the name of newly created droplet
   debug: msg="The '{{ droplet }}' just have been created."

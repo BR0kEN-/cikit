@@ -1,7 +1,7 @@
 {
   "port": 1337,
   "security": {
-    "tokenLife" : 3600
+    "tokenLife" : 7200
   },
   "mongoose": {
     "uri": "mongodb://127.0.0.1/cikit-rest-api"
@@ -16,5 +16,22 @@
       "clientId": "android",
       "clientSecret": "SomeRandomCharsAndNumbers"
     }
+  },
+  "routes": {
+    "use": [
+      "oauth/token",
+      "droplet/list"
+    ],
+    "post": [
+      "droplet/add"
+    ],
+    "delete": [
+      "droplet/delete/:droplet"
+    ],
+    "patch": [
+      "droplet/stop/:droplet",
+      "droplet/start/:droplet",
+      "droplet/restart/:droplet"
+    ]
   }
 }
