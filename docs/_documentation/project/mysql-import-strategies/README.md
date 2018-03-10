@@ -64,7 +64,7 @@ databases:
 ```
 {% endraw %}
 
-The configuration for the `pantheon` strategy is a bit simpler. Just add the `strategy` property having the `pantheon` as a value and specify the `db` key under the `source` dictionary.
+The configuration for `pantheon` strategy is a bit simpler. Just add the `strategy` property having the `pantheon` as a value and specify the `db` key under the `source` dictionary.
 
 Refer to the documentation of the [Pantheon](../../workflow/pantheon) workflow to read more about the `pantheon` variable.
 
@@ -72,7 +72,7 @@ Refer to the documentation of the [Pantheon](../../workflow/pantheon) workflow t
 
 Create and fetch database snapshots from [Platform.sh](https://platform.sh).
 
-The configuration of the strategy for this hosting platform is similar to [Pantheon](#pantheon) except value for `strategy` key that must be `platformsh` and `pantheon` variable that must not be existent in favor of `platformsh`.
+The configuration of a strategy for this hosting platform is similar to [Pantheon](#pantheon) except value for the `strategy` key, that must be `platformsh`, and `pantheon` variable, that must not be existent in favor of `platformsh`.
 
 {% raw %}
 ```yaml
@@ -90,7 +90,7 @@ databases:
 ```
 {% endraw %}
 
-Refer to the documentation of the [Platform.sh](../../workflow/platformsh) workflow to read more about the `platformsh` variable.
+Refer to the documentation of [Platform.sh](../../workflow/platformsh) workflow to read more about `platformsh` variable.
 
 ### Custom
 

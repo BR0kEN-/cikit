@@ -3,7 +3,7 @@ title: March 10, 2018
 permalink: /changelog/2018-03-10/
 ---
 
-- Added the [documentation](/documentation/workflow/platformsh/) for preparing a project for hosting on Platform.sh.
+- Added the [documentation](/documentation/workflow/platformsh/) for creating a project that hosted on Platform.sh.
 - Added the [platformsh](/documentation/project/mysql-import-strategies#platformsh) MySQL import strategy for SQL workflow.
 - Added `cikit-platformsh-cli` role which can be optionally used for installing the Platform.sh CLI.
 
