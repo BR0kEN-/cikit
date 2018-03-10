@@ -143,15 +143,16 @@
       setup: ~
       tags: ["always"]
 
-    - name: Set up variables
-      set_fact:
-        docker: "{{ 'docker' == ansible_virtualization_type }}"
-        operation_place: "{{ 'local' if localhost else 'remote' }}"
-      tags: ["always"]
-
     - name: Obtain home directory of "{{ ansible_user }}" user
       shell: "eval echo ~{{ ansible_user }}"
       register: user_home
+      tags: ["always"]
+
+    - name: Set up variables
+      set_fact:
+        docker: "{{ 'docker' == ansible_virtualization_type }}"
+        user_home: "{{ user_home.stdout }}"
+        operation_place: "{{ 'local' if localhost else 'remote' }}"
       tags: ["always"]
 
     - include_tasks: tasks/project-variable.yml
