@@ -8,6 +8,13 @@ module.exports = (app, endpoint, handler) => {
 
   return (request, response) => {
     const callback = handler(request, response);
+
+    if (!(callback instanceof Function)) {
+      log.debug('The "%s" endpoint made an early return (probably from cache).', endpoint);
+
+      return null;
+    }
+
     const command = `ANSIBLE_STDOUT_CALLBACK=json cikit matrix/droplet --droplet-${endpoint}${request.params.droplet ? '=' + request.params.droplet : ''} --limit=${hostname}`;
     const jsonPath = `$.plays[0].tasks[?(@.task.name == '${request.params.taskName}')].hosts.${hostname}`;
 
@@ -21,6 +28,12 @@ module.exports = (app, endpoint, handler) => {
 
         return callback(jsonpath.query(output, jsonPath)[0], output, !stats.failures && !stats.unreachable, stats);
       })
-      .catch(error => log.error(error));
+      .catch(error => {
+        log.error(error);
+
+        response.json({
+          error: error.toString ? error.toString() : error,
+        });
+      });
   };
 };

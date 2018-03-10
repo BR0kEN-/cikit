@@ -1,3 +1,5 @@
+'use strict';
+
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const app = require('express')();
@@ -10,7 +12,7 @@ app.set('isDev', Boolean(process.env.DEV));
 app.set('crypto', require('crypto'));
 app.set('config', config);
 app.set('passport', passport);
-app.set('mongoose', require('./db/mongoose')(app));
+app.set('mongoose', require('./mongoose')(app));
 
 require('./auth')(app);
 

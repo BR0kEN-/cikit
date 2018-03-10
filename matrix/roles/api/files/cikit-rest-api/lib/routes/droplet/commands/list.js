@@ -1,13 +1,20 @@
-// @todo Add cache to not execute Ansible command multiple times.
-module.exports = app => require('./_command')(app, 'list', (request, response) => {
+const Cache = require('sync-disk-cache');
+const cache = new Cache('droplet');
+
+module.exports = (app, useCache = false) => require('./_command')(app, 'list', (request, response) => {
   request.params.taskName = 'Store the list of all droplets';
+
+  // Cache is used only if exist and "list" resource has been queried explicitly.
+  if (useCache && cache.has('list')) {
+    return response.json(JSON.parse(cache.get('list').value));
+  }
 
   return (result, output, status) => {
     if (!status) {
       return response.json({output});
     }
 
-    return response.json(result.msg.map(value => {
+    const list = result.msg.map(value => {
       let ports = {};
       // @example
       // @code
@@ -60,6 +67,10 @@ module.exports = app => require('./_command')(app, 'list', (request, response) =
         status: value[4],
         ports: ports,
       };
-    }));
+    });
+
+    cache.set('list', JSON.stringify(list));
+
+    return response.json(list);
   };
 });
