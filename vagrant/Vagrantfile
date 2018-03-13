@@ -70,7 +70,7 @@ if %w[up resume reload provision].include?(ARGV[0])
 elsif %w[destroy suspend reload halt].include?(ARGV[0])
 end
 
-ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
 if is_wsl
   # Make sure that mounted shares will be within DrvFS.
@@ -137,13 +137,16 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   # config.vm.define(config.vm.hostname)
   # Leaving the above line here for documentation purposes only.
 
-  config.vm.provider(:virtualbox) do |vb|
-    vb.name = config.vm.hostname
-
-    config_values['vm']['virtualbox']['modifyvm'].each do |key, value|
-      vb.customize(['modifyvm', :id, "--#{key}", value.to_s])
-    end
+  config.vm.provider(:docker) do |provider|
+    provider.image = 'solita/ubuntu-systemd'
   end
+#   config.vm.provider(:virtualbox) do |vb|
+#     vb.name = config.vm.hostname
+#
+#     config_values['vm']['virtualbox']['modifyvm'].each do |key, value|
+#       vb.customize(['modifyvm', :id, "--#{key}", value.to_s])
+#     end
+#   end
 
   config.vm.network(
     :private_network,

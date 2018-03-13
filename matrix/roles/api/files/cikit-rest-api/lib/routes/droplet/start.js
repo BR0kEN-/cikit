@@ -1,1 +1,1 @@
-module.exports = require('./_link')('start');
+module.exports = require('../_resource')('manager', 'droplet/commands/start');

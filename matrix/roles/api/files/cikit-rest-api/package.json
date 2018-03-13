@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "node ./index.js",
-    "create-test-user": "node ./create-test-user.js"
+    "create-user": "node ./create-user.js"
   },
   "dependencies": {
     "body-parser": "^1.18.x",
@@ -18,7 +18,10 @@
     "winston": "^2.4.x",
     "jsonpath": "^1.0.0",
     "argparse": "^1.0.10",
-    "sync-disk-cache": "^1.3.2"
+    "sync-disk-cache": "^1.3.2",
+    "passport-local": "^1.0.0",
+    "speakeasy": "^2.0.0",
+    "qrcode": "^1.2.0"
   },
   "devDependencies": {
     "superagent": "^3.8.x",

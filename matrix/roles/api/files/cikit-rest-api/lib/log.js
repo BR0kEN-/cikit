@@ -1,8 +1,7 @@
 const winston = require('winston');
+const ResponseError = require('./error/ResponseError');
 
-winston.emitErrs = true;
-
-module.exports = (module) => {
+function logger(label) {
   return new winston.Logger({
     exitOnError: false,
     transports: [
@@ -16,12 +15,58 @@ module.exports = (module) => {
         json: true,
       }),
       new winston.transports.Console({
+        label,
         level: 'debug',
-        label: module.filename.split('/').slice(-2).join('/'),
         handleException: true,
         colorize: true,
         json: false,
       })
-    ]
+    ],
   });
+}
+
+function globalErrorHandler(logger, error, request, response) {
+  if (error instanceof ResponseError) {
+    response.json(error.payload);
+  }
+  else {
+    error.status = error.status || 500;
+    error.errorId = error.errorId || 0;
+    error.message = error.message || 'Internal server error';
+
+    response.status(error.status);
+    logger.error('%d %s - %s (%d)', response.statusCode, request.method, error.message, error.errorId);
+
+    if (!response.headersSent) {
+      response.json({
+        error: error.message.toString ? error.message.toString() : error.message,
+        errorId: error.errorId,
+      });
+    }
+  }
+}
+
+function routeErrorHandler(logger, request, response, next) {
+  const handler = (logger, request, response, self, error) => {
+    globalErrorHandler(logger, error, request, response);
+    process.removeListener('unhandledRejection', self);
+  };
+
+  // @todo Unfortunately there's no nicer way in Express.js to handle promises rejections globally.
+  // @link https://stackoverflow.com/questions/33410101/unhandled-rejections-in-express-applications
+  process.once('unhandledRejection', handler.bind(undefined, logger, request, response, handler));
+
+  return next();
+}
+
+winston.emitErrs = true;
+
+module.exports = module => {
+  const log = logger(module.filename.split('/').slice(-2).join('/'));
+
+  return {
+    log,
+    routeErrorHandler: routeErrorHandler.bind(undefined, log),
+    globalErrorHandler: globalErrorHandler.bind(undefined, log),
+  };
 };

@@ -1,50 +1,44 @@
+let {generateTotpSecret, isTotpTokenValid} = require('../auth/functions');
+
 module.exports = app => {
   const mongoose = app.get('mongoose');
-  const crypto = app.get('crypto');
-  const User = new mongoose.Schema({
+  const totp = app.get('config').get('security:totp');
+
+  generateTotpSecret = generateTotpSecret.bind(undefined, totp);
+  isTotpTokenValid = isTotpTokenValid.bind(undefined, totp);
+
+  const model = new mongoose.Schema({
     username: {
       type: String,
       unique: true,
       required: true,
     },
-    hashedPassword: {
+    secret: {
       type: String,
+      unique: true,
       required: true,
-    },
-    salt: {
-      type: String,
-      required: true,
+      default: generateTotpSecret,
     },
     created: {
       type: Date,
       default: Date.now,
     },
+    group: {
+      type: String,
+      default: 'viewer',
+      required: true,
+    },
   });
 
-  User.methods.encryptPassword = function (password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+  model.methods.isTotpValid = function (code) {
+    return isTotpTokenValid(this.secret, code);
   };
 
-  User.methods.checkPassword = function (password) {
-    return this.encryptPassword(password) === this.hashedPassword;
-  };
-
-  User
+  model
     .virtual('userId')
     .get(function () {
       return this.id;
     });
 
-  User
-    .virtual('password')
-    .set(function (password) {
-      this._plainPassword = password;
-      this.salt = crypto.randomBytes(128).toString('hex');
-      this.hashedPassword = this.encryptPassword(password);
-    })
-    .get(function () {
-      return this._plainPassword;
-    });
-
-  return mongoose.model('User', User);
+  return mongoose.model('User', model);
 };

@@ -1,1 +1,1 @@
-module.exports = require('./_link')('stop');
+module.exports = require('../_resource')('manager', 'droplet/commands/stop');

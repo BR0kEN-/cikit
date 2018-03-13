@@ -1,1 +1,1 @@
-module.exports = require('./_link')('list', true);
+module.exports = require('../_resource')('viewer', 'droplet/commands/list', true);

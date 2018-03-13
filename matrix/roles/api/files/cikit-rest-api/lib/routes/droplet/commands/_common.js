@@ -1,14 +1,12 @@
-const command = require('./_command');
 const list = require('./list');
+const command = require('./_command');
 
-module.exports = (endpoint, taskName) => app => {
+module.exports = (task, taskName) => app => {
   const listCommand = list(app);
 
-  return command(app, endpoint, (request, response) => {
+  return command(app, task, (request, response) => {
     request.params.taskName = taskName.replace('[droplet]', request.params.droplet);
 
-    return (result, output, status) => status
-      ? listCommand(request, response)
-      : response.json({output});
+    return () => listCommand(request, response);
   });
 };

@@ -1,1 +1,1 @@
-module.exports = require('./_link')('restart');
+module.exports = require('../_resource')('manager', 'droplet/commands/restart');

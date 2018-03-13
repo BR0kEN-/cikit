@@ -1,1 +1,1 @@
-module.exports = require('./_link')('delete');
+module.exports = require('../_resource')('manager', 'droplet/commands/delete');

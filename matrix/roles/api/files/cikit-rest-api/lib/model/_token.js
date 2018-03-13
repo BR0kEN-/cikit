@@ -1,12 +1,7 @@
 module.exports = name => app => {
   const mongoose = app.get('mongoose');
-
-  return mongoose.model(name, new mongoose.Schema({
+  const model = new mongoose.Schema({
     userId: {
-      type: String,
-      required: true,
-    },
-    clientId: {
       type: String,
       required: true,
     },
@@ -19,5 +14,11 @@ module.exports = name => app => {
       type: Date,
       default: Date.now,
     },
-  }));
+  });
+
+  model.methods.toString = function () {
+    return this.token;
+  };
+
+  return mongoose.model(name, model);
 };

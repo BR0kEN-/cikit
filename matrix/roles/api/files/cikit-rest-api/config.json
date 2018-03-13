@@ -1,17 +1,30 @@
 {
   "port": 1337,
   "security": {
-    "tokenLife": 7200
+    "tokenLife": 7200,
+    "totp": {
+      "type": "base32",
+      "issuer": "CIKit Matrix",
+      "length": 32
+    },
+    "user": {
+      "groups": {
+        "viewer": ["manager", "owner"],
+        "manager": ["owner"],
+        "owner": []
+      }
+    }
   },
   "mongoose": {
     "uri": "mongodb://127.0.0.1/cikit-rest-api"
   },
   "routes": {
     "use": [
-      "oauth/token",
       "droplet/list"
     ],
     "post": [
+      "auth/otp",
+      "auth/token",
       "droplet/add"
     ],
     "patch": [
@@ -22,5 +35,20 @@
     "delete": [
       "droplet/delete/:droplet"
     ]
+  },
+  "errors": {
+    "ansible_command_failed": 900,
+    "totp_code_missing_data": 901,
+    "totp_code_invalid": 902,
+    "user_not_found": 903,
+    "user_unauthorized": 904,
+    "user_group_unknown": 905,
+    "user_owner_exists": 906,
+    "user_ungrouped": 907,
+    "access_token_not_found": 908,
+    "access_token_expired": 909,
+    "refresh_token_not_found": 910,
+    "route_group_unknown": 911,
+    "route_access_denied": 912
   }
 }
