@@ -17,11 +17,9 @@
 
 - name: Define the options
   set_fact:
-    options: >
-      -v /sys/fs/cgroup:/sys/fs/cgroup:ro
+    options: >-
       --tmpfs /run
       --tmpfs /run/lock
-      --security-opt seccomp=unconfined
   when: "'Darwin' != uname.stdout"
 
 - name: Create the container
@@ -29,6 +27,10 @@
     docker run \
       -d \
       -h '{{ hostname }}' \
+      -e 'container=docker' \
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      --cap-add=SYS_ADMIN \
+      --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
       {{ options }} \
       {{ mounts }} \
@@ -37,7 +39,7 @@
 
 - name: Install the requirements
   shell: |-
-    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo dbus python-minimal -y && service dbus restart'
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo python-minimal -y'
 
 - name: Print the name of created container
   debug:
