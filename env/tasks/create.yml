@@ -11,17 +11,26 @@
       {{ ports }} -p {{ item }}
   with_items: "{{ vm.ports }}"
 
+- name: Determine OS family
+  shell: uname
+  register: uname
+
+- name: Define the options
+  set_fact:
+    options: >
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro
+      --tmpfs /run
+      --tmpfs /run/lock
+      --security-opt seccomp=unconfined
+  when: "'Darwin' != uname.stdout"
+
 - name: Create the container
-  # @todo These options aren't working on macOS.
-  # -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  # --tmpfs /run \
-  # --tmpfs /run/lock \
-  # --security-opt seccomp=unconfined \
   shell: |-
     docker run \
       -d \
       -h '{{ hostname }}' \
       --name '{{ hostname }}' \
+      {{ options }} \
       {{ mounts }} \
       {{ ports }} \
       solita/ubuntu-systemd
