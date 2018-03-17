@@ -14,7 +14,6 @@
     - name: Define the hostname
       set_fact:
         hostname: "{{ site_url.split('//') | last }}"
-        options: ""
         mounts: ""
         ports: ""
 

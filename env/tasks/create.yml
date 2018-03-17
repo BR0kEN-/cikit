@@ -11,17 +11,6 @@
       {{ ports }} -p {{ item }}
   with_items: "{{ vm.ports }}"
 
-- name: Determine OS family
-  shell: uname
-  register: uname
-
-- name: Define the options
-  set_fact:
-    options: >-
-      --tmpfs /run
-      --tmpfs /run/lock
-  when: "'Darwin' != uname.stdout"
-
 - name: Create the container
   shell: |-
     docker run \
@@ -30,10 +19,11 @@
       -e 'container=docker' \
       -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
       -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib' \
+      --tmpfs /run \
+      --tmpfs /run/lock \
       --cap-add=SYS_ADMIN \
       --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
-      {{ options }} \
       {{ mounts }} \
       {{ ports }} \
       solita/ubuntu-systemd
