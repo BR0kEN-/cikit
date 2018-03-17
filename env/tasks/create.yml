@@ -29,7 +29,7 @@
       -h '{{ hostname }}' \
       -e 'container=docker' \
       -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-      -v '{{ __selfdir__ }}':'{{ __selfdir__ }}' \
+      -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib' \
       --cap-add=SYS_ADMIN \
       --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
