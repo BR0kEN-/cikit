@@ -1,0 +1,35 @@
+---
+- name: Define the mounts
+  set_fact:
+    mounts: |-
+      {{ mounts }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target else 'source'] }}'
+  with_items: "{{ vm.folders }}"
+
+- name: Define the ports
+  set_fact:
+    ports: |-
+      {{ ports }} -p {{ item }}
+  with_items: "{{ vm.ports }}"
+
+- name: Create the container
+  # @todo These options aren't working on macOS.
+  # -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+  # --tmpfs /run \
+  # --tmpfs /run/lock \
+  # --security-opt seccomp=unconfined \
+  shell: |-
+    docker run \
+      -d \
+      -h '{{ hostname }}' \
+      --name '{{ hostname }}' \
+      {{ mounts }} \
+      {{ ports }} \
+      solita/ubuntu-systemd
+
+- name: Install the requirements
+  shell: |-
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo dbus python-minimal -y && service dbus restart'
+
+- name: Print the name of created container
+  debug:
+    msg: "The '{{ hostname }}' just have been created."

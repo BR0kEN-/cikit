@@ -1,0 +1,3 @@
+# requires-project-root
+---
+- import_playbook: start.yml __action=rm

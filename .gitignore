@@ -5,6 +5,7 @@
 !lib/
 !cmf/
 !docs/
+!env/
 docs/_site/
 !tests/
 !scripts/
