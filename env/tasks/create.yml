@@ -29,6 +29,7 @@
       -h '{{ hostname }}' \
       -e 'container=docker' \
       -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      -v '{{ __selfdir__ }}':'{{ __selfdir__ }}' \
       --cap-add=SYS_ADMIN \
       --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
@@ -39,7 +40,7 @@
 
 - name: Install the requirements
   shell: |-
-    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo python-minimal -y'
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo wget python-minimal -y'
 
 - name: Print the name of created container
   debug:

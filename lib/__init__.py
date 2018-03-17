@@ -51,8 +51,8 @@ else:
             args.limit = hostname + ','
 
             PARAMS.append("-i '%s'" % args.limit)
-            PARAMS.append("-c 'docker'")
-            PARAMS.append("-u 'root'")
+            PARAMS.append("-c docker")
+            PARAMS.append("-u root")
 
     # Duplicate the "limit" option as "extra" because some playbooks may
     # require it and required options are checked within the "extra" only.
