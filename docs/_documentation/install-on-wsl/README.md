@@ -29,15 +29,14 @@ After the system is boot again, open Microsoft Store and use search to find `Ubu
 
 Read [the provisioning script](wsl-provision.sh) first and then execute it on WSL (if you're willing to change something in it - download, modify and run). Don't forget to **restart WSL afterward**.
 
-A possible argument for the script is a Vagrant version. Defaults to `2.0.1` and must not be lower than `1.9.5` due to CIKit requirements.
+A possible argument for the script is a Vagrant version. Defaults to `2.0.3` and must not be lower than `2.0.3` due to CIKit requirements.
 
 ```bash
-curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_documentation/install-on-wsl/wsl-provision.sh | bash -s -- "2.0.1"
+curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/docs/_documentation/install-on-wsl/wsl-provision.sh | bash -s -- "2.0.3"
 ```
 
 **Notes**:
 - You don't need to have Vagrant as a Windows program. Do never use `vagrant.exe` in Linux in a case you already have it and don't want to remove.
-- The above script patches Vagrant with [https://github.com/hashicorp/vagrant/pull/9300](https://github.com/hashicorp/vagrant/pull/9300).
 
 ## All ready
 
