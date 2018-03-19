@@ -1,0 +1,8 @@
+---
+- name: Install CIKit package
+  shell: |-
+    curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash -s -- --no-requirements-check
+    cikit -h
+  args:
+    warn: no
+    creates: /usr/local/bin/cikit
