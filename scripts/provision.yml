@@ -14,25 +14,25 @@
   vars_prompt:
     - name: web_server
       prompt: Which web server you want to use? (apache2/nginx)
-      default: apache2
+      default: "apache2"
       private: no
       tags: ["php-stack", "security", "web-server"]
 
     - name: php_version
       prompt: Which version of PHP you'd want to install? (5.6/7.0/7.1/7.2)
-      default: 7.1
+      default: "7.1"
       private: no
       tags: ["php", "php-stack"]
 
     - name: nodejs_version
       prompt: Which version of Node.js you'd want to install? (4/5/6/7/8/9)
-      default: 6
+      default: "6"
       private: no
       tags: ["nodejs", "phantomjs"]
 
     - name: ruby_version
       prompt: Which version of Ruby you'd want to install? (2.1.10/2.2.6/2.3.3/2.4.0/2.5.0)
-      default: 2.4.0
+      default: "2.4.0"
       private: no
       tags: ["sniffers", "ruby"]
 
