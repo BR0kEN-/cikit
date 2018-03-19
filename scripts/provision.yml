@@ -25,7 +25,7 @@
       tags: ["php", "php-stack"]
 
     - name: nodejs_version
-      prompt: Which version of Node.js you'd want to install? (4/5/6/7)
+      prompt: Which version of Node.js you'd want to install? (4/5/6/7/8/9)
       default: 6
       private: no
       tags: ["nodejs", "phantomjs"]
@@ -101,10 +101,7 @@
         - ansible
 
   pre_tasks:
-    - name: Check Ansible compatibility
-      fail:
-        msg: "Continuation is possible only with Ansible 2.4.x on host machine."
-      when: "ansible_version.major < 2 and ansible_version.minor < 4"
+    - import_tasks: tasks/ansible-compatibility.yml
       tags: ["always"]
 
     - name: Check whether preselected web server is available
@@ -196,10 +193,10 @@
       when: localhost
 
     - name: Process facts
-      set_fact: {"install_{{ item.key }}": "{{ item.value not in ['no', false] }}"}
+      set_fact: {"{{ item.key }}": "{{ item.value not in ['no', false] }}"}
       with_dict:
-        solr: "{{ solr_version }}"
-        mssql: "{{ mssql_install }}"
+        install_solr: "{{ solr_version }}"
+        install_mssql: "{{ mssql_install }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -235,29 +232,10 @@
 
     # We have to install CIKit after getting all mandatory APT packages
     # because the installer may use some of them (e.g. "curl").
-    - name: Install CIKit package
-      shell: |-
-        curl -LSs https://raw.githubusercontent.com/BR0kEN-/cikit/master/install.sh | bash -s -- --no-requirements-check
-        cikit -h
-      args:
-        warn: no
+    - include_tasks: tasks/cikit-install.yml
       when: not localhost
 
-    - name: Install EasyInstall and PIP
-      shell: "[ $(which {{ item.tool }}) ] || {{ item.script }}"
-      args:
-        warn: no
-        executable: /bin/bash
-      # "with_dict" cannot be used since ordering of operations is important!
-      with_items:
-        - tool: pip
-          script: "easy_install pip"
-
-    - name: Install PIP packages
-      pip:
-        name: "{{ item }}"
-        state: latest
-      with_items: "{{ basic_packages.pip }}"
+    - include_tasks: tasks/pip-install.yml pip_packages="{{ basic_packages.pip }}"
 
   roles:
     - role: cikit-security

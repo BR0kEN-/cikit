@@ -14,10 +14,8 @@
     restart: ""
 
   pre_tasks:
-    - name: Check Ansible compatibility
-      fail:
-        msg: "Continuation is possible only with Ansible 2.4.x on host machine."
-      when: "ansible_version.major < 2 and ansible_version.minor < 4"
+    - import_tasks: ../scripts/tasks/ansible-compatibility.yml
+      tags: ["always"]
 
     - name: Ensure Python is installed on remote host
       # We must use "raw" instead of "shell" here due to the following:
@@ -29,18 +27,22 @@
       # See https://gist.github.com/gwillem/4ba393dceb55e5ae276a87300f6b8e6f#gistcomment-1869582
     - name: Gather facts
       setup: ~
+      tags: ["always"]
 
     - name: Determine domain
       set_fact:
         domain: "{{ domain | default(ansible_host) }}"
+      tags: ["always"]
 
     - include_vars: "{{ item }}"
       with_fileglob: vars/*.yml
+      tags: ["always"]
 
     - name: Compute allowed hosts
       set_fact:
         # Ensure current IP is in the list. Otherwise we're risking to lose access to provisioning machine.
         allowed_hosts: "{{ os_configuration.allowed_hosts + [ansible_env.SSH_CLIENT.split() | first] if 'SSH_CLIENT' in ansible_env else [] }}"
+      tags: ["always"]
 
     - name: Configure hostname
       hostname:

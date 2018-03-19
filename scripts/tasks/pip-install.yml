@@ -1,0 +1,14 @@
+# Used variables:
+# - pip_packages: a list of packages to install/update.
+---
+- name: Install PIP
+  shell: "[ $(which pip) ] || easy_install pip"
+  args:
+    warn: no
+    executable: /bin/bash
+
+- name: Install PIP packages
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ pip_packages }}"
