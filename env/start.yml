@@ -18,6 +18,8 @@
         ports: ""
 
     - name: Check whether container exists
+      # Calling "docker" also help to detect whether a system has Docker
+      # and is it running.
       shell: "docker ps -qaf name='^/{{ hostname }}'"
       register: container_exists
 
