@@ -10,7 +10,6 @@ from arguments import args
 from re import search
 
 PARAMS = []
-COMMAND = 'ansible-playbook'
 
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
@@ -37,6 +36,11 @@ if None is PLAYBOOK:
 if 'CIKIT_LIST_TAGS' in os.environ:
     PARAMS.append('--list-tags')
 else:
+    # Duplicate the "limit" option as "extra" because some playbooks may
+    # require it and required options are checked within the "extra" only.
+    if args.limit:
+        args.extra['limit'] = args.limit
+
     for line in open(PLAYBOOK):
         if search('^# requires-project-root$', line) and not variables.INSIDE_PROJECT_DIR:
             functions.error(
@@ -64,62 +68,11 @@ else:
                     errno.EPERM
                 )
 
-    ENV_CONFIG = variables.dirs['cikit'] + '/environment.yml'
-
-    if os.path.isfile(ENV_CONFIG):
-        ansible_executable = functions.call('which', COMMAND)
-
-        if '' == ansible_executable:
-            # Only warn and do not fail the execution because it's possible to continue without
-            # these values. The command may be not found in a case it is set as an "alias".
-            functions.warn(
-                (
-                    'Cannot read environment configuration from "%s". Looks '
-                    'like Python setup cannot provide Ansible operability.'
-                )
-                %
-                (
-                    ENV_CONFIG
-                )
-            )
-        else:
-            # It's an interesting trick for detecting Python interpreter. Sometimes it
-            # may differ. Especially on MacOS, when Ansible installed via Homebrew. For
-            # instance, "which python" returns the "/usr/local/Cellar/python/2.7.13/
-            # Frameworks/Python.framework/Versions/2.7/bin/python2.7", but this particular
-            # setup may not have necessary packages for full Ansible operability. Since
-            # Ansible - is a Python scripts, they must have a shadebag line with a path
-            # to interpreter they should run by. Grab it and try!
-            # Given:
-            #   $(realpath $(which python)) -c 'import yaml'
-            # Ends by:
-            #   Traceback (most recent call last):
-            #     File "<string>", line 1, in <module>
-            #   ImportError: No module named yaml
-            # But:
-            #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
-            # Just works.
-            with open(ansible_executable) as ansible_executable:
-                python_ansible = ansible_executable.readline().lstrip('#!').strip()
-
-                # Do not apply the workaround if an exactly same interpreter is used for
-                # running CIKit and Ansible.
-                if functions.call('which', 'python').strip() == python_ansible:
-                    import yaml
-
-                    ENV_CONFIG = json.dumps(yaml.load(open(ENV_CONFIG)))
-                else:
-                    ENV_CONFIG = functions.call(
-                        python_ansible,
-                        '-c',
-                        'import yaml, json\nprint json.dumps(yaml.load(open(\'%s\')))' % ENV_CONFIG,
-                    )
-
-                for key, value in json.loads(ENV_CONFIG).iteritems():
-                    # Add the value from environment config only if it's not specified as
-                    # an option to the command.
-                    if key not in args.extra:
-                        args.extra[key] = value
+    for key, value in variables.read_yaml(variables.dirs['cikit'] + '/environment.yml').iteritems():
+        # Add the value from environment config only if it's not specified as
+        # an option to the command.
+        if key not in args.extra:
+            args.extra[key] = value
 
     if 'EXTRA_VARS' in os.environ:
         functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
@@ -163,7 +116,7 @@ os.environ['ANSIBLE_FORCE_COLOR'] = '1'
 os.environ['DISPLAY_SKIPPED_HOSTS'] = '0'
 os.environ['ANSIBLE_RETRY_FILES_ENABLED'] = '0'
 
-COMMAND = "%s '%s' %s" % (COMMAND, PLAYBOOK, ' '.join(PARAMS))
+COMMAND = "%s '%s' %s" % (variables.ANSIBLE_COMMAND, PLAYBOOK, ' '.join(PARAMS))
 
 # Print entire command if verbosity requested.
 if 'ANSIBLE_VERBOSITY' in os.environ:

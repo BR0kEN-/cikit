@@ -51,9 +51,4 @@ args.extra = {}
 
 parse_extra_vars(argv, args.extra)
 
-# Duplicate the "limit" option as "extra" because some playbooks may
-# require it and required options are checked within the "extra" only.
-if args.limit:
-    args.extra['limit'] = args.limit
-
 del argv

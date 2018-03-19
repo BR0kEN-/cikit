@@ -39,7 +39,16 @@ def parse_extra_vars(args, bag):
             bag[arg[0].replace('-', '_')] = arg[1]
 
 
-def error(message, code):
+def get_hostname(config):
+    # The name of Docker container for local development is forming based on the
+    # hostname that is taken from the "site_url".
+    if 'site_url' in config:
+        return config['site_url'].split('//')[-1]
+
+    return ''
+
+
+def error(message, code=1):
     print('\033[91mERROR: ' + message + '\033[0m')
     exit(code)
 
