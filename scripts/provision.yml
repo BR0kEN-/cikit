@@ -116,7 +116,11 @@
 
     - name: Check whether provision running for local environment
       set_fact:
-        localhost: "{{ ansible_host in ['127.0.0.1', 'localhost'] }}"
+        # Handle the "ad-hoc" inventory of Docker provisioning target.
+        # Example: "ansible-playbook -i 'container-name,'". The value
+        # of "ansible_host" will be "ansible_host" but "inventory_file"
+        # remain "container-name,".
+        localhost: "{{ ansible_host in ['127.0.0.1', 'localhost'] or ansible_host + ',' == inventory_file }}"
       tags: ["always"]
 
     - include_tasks: tasks/password.yml
@@ -140,7 +144,7 @@
       setup: ~
       tags: ["always"]
 
-    - name: Obtain home directory of "{{ ansible_user }}" user
+    - name: "Obtain home directory of '{{ ansible_user }}' user"
       shell: "eval echo ~{{ ansible_user }}"
       register: user_home
       tags: ["always"]
@@ -150,6 +154,9 @@
         docker: "{{ 'docker' == ansible_virtualization_type }}"
         user_home: "{{ user_home.stdout }}"
         operation_place: "{{ 'local' if localhost else 'remote' }}"
+        # @todo Remove this temporary workaround once the issue will be solved.
+        # https://github.com/ansible/ansible/issues/37563#issuecomment-373941586
+        ansible_user: "{{ ansible_user }}"
       tags: ["always"]
 
     - include_tasks: tasks/project-variable.yml
@@ -182,7 +189,7 @@
     - name: Create CIKit command line utility
       file:
         # This directory is explicitly mounted in the Vagrantfile.
-        src: "/usr/local/share/cikit/lib/{{ item.src }}"
+        src: "{{ __selfdir__ }}/lib/{{ item.src }}"
         dest: "{{ item.dest }}/{{ item.src }}"
         state: link
       with_items:
