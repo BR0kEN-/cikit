@@ -1,9 +1,31 @@
-## Authentication flow
+## User
+
+- Get help.
+
+  ```bash
+  node ./lib/cli/commands/create-user.js -h
+  ```
+
+- Create an owner of the API (kinda super user that can be only one per system):
+
+  ```bash
+  node ./lib/cli/commands/create-user.js -u BR0kEN -g owner
+  ```
+
+  Note, that further attempts to create an owner will be declined.
+
+- Forcibly invalidate user's authentication tokens.
+
+  ```bash
+  node ./lib/cli/commands/create-user.js -u BR0kEN -g owner -r
+  ```
+
+## Authentication
 
 - Define base URL for sending queries.
 
   ```bash
-  export CIKIT_MATRIX_REST_API_BASE_URL="http://ipu1.loc:1337/api/v1"
+  export CIKIT_MATRIX_REST_API_BASE_URL="http://127.0.0.1:1337/api/v1"
   ```
 
 - Use temporary code from an authenticating app to send the request for obtaining an access token.

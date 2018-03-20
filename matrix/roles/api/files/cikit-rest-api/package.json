@@ -1,8 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "node ./index.js",
-    "create-user": "node ./create-user.js"
+    "start": "node ./index.js"
   },
   "dependencies": {
     "body-parser": "^1.18.x",

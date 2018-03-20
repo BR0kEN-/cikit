@@ -2,12 +2,13 @@ let {generateTotpSecret, isTotpTokenValid} = require('../auth/functions');
 
 module.exports = app => {
   const mongoose = app.get('mongoose');
-  const totp = app.get('config').get('security:totp');
+  const config = app.get('config');
+  const totp = config.get('security:totp');
 
   generateTotpSecret = generateTotpSecret.bind(undefined, totp);
   isTotpTokenValid = isTotpTokenValid.bind(undefined, totp);
 
-  const model = new mongoose.Schema({
+  const schema = new mongoose.Schema({
     username: {
       type: String,
       unique: true,
@@ -25,20 +26,21 @@ module.exports = app => {
     },
     group: {
       type: String,
+      enum: Object.keys(config.get('security:user:groups')),
       default: 'viewer',
       required: true,
     },
   });
 
-  model.methods.isTotpValid = function (code) {
+  schema.methods.isTotpValid = function (code) {
     return isTotpTokenValid(this.secret, code);
   };
 
-  model
+  schema
     .virtual('userId')
     .get(function () {
       return this.id;
     });
 
-  return mongoose.model('User', model);
+  return mongoose.model('User', schema);
 };

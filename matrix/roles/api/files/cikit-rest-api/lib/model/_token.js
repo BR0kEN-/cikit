@@ -1,6 +1,6 @@
 module.exports = name => app => {
   const mongoose = app.get('mongoose');
-  const model = new mongoose.Schema({
+  const schema = new mongoose.Schema({
     userId: {
       type: String,
       required: true,
@@ -16,9 +16,9 @@ module.exports = name => app => {
     },
   });
 
-  model.methods.toString = function () {
+  schema.methods.toString = function () {
     return this.token;
   };
 
-  return mongoose.model(name, model);
+  return mongoose.model(name, schema);
 };

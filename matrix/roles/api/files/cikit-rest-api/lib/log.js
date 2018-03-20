@@ -26,7 +26,10 @@ function logger(label) {
 }
 
 function globalErrorHandler(logger, error, request, response) {
-  if (error instanceof ResponseError) {
+  if (response.headersSent) {
+    // The response has already been sent.
+  }
+  else if (error instanceof ResponseError) {
     response.json(error.payload);
   }
   else {
@@ -34,15 +37,17 @@ function globalErrorHandler(logger, error, request, response) {
     error.errorId = error.errorId || 0;
     error.message = error.message || 'Internal server error';
 
+    console.log(
+      error
+    );
+
     response.status(error.status);
     logger.error('%d %s - %s (%d)', response.statusCode, request.method, error.message, error.errorId);
 
-    if (!response.headersSent) {
-      response.json({
-        error: error.message.toString ? error.message.toString() : error.message,
-        errorId: error.errorId,
-      });
-    }
+    response.json({
+      error: error.message.toString ? error.message.toString() : error.message,
+      errorId: error.errorId,
+    });
   }
 }
 

@@ -19,14 +19,12 @@ module.exports = (requestedUserGroup, filenameOrFunction, ...args) => {
     filenameOrFunction = require('./' + filenameOrFunction);
   }
 
-  return app => {
-    return [
-      // Every API resource requires an authentication.
-      app.get('passport').authenticate('access-token', {session: false}),
-      // If a user is logged in successfully its permissions is oughta check.
-      ensureAuthorizedAccess(app, requestedUserGroup),
-      // Do resource's actions.
-      filenameOrFunction(app, ...args),
-    ];
-  };
+  return app => [
+    // Every API resource requires an authentication.
+    app.get('passport').authenticate('access-token', {session: false}),
+    // If a user is logged in successfully its permissions is oughta check.
+    ensureAuthorizedAccess(app, requestedUserGroup),
+    // Do resource's actions.
+    filenameOrFunction(app, ...args),
+  ];
 };

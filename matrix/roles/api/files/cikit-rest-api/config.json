@@ -20,12 +20,14 @@
   },
   "routes": {
     "use": [
-      "droplet/list"
+      "droplet/list",
+      "user/list"
     ],
     "post": [
       "auth/otp",
       "auth/token",
-      "droplet/add"
+      "droplet/add",
+      "user/add"
     ],
     "patch": [
       "droplet/stop/:droplet",
@@ -33,7 +35,8 @@
       "droplet/restart/:droplet"
     ],
     "delete": [
-      "droplet/delete/:droplet"
+      "droplet/delete/:droplet",
+      "user/delete/:user"
     ]
   },
   "errors": {
@@ -49,6 +52,8 @@
     "access_token_expired": 909,
     "refresh_token_not_found": 910,
     "route_group_unknown": 911,
-    "route_access_denied": 912
+    "route_access_denied": 912,
+    "user_add_missing_data": 913,
+    "user_name_taken": 914
   }
 }

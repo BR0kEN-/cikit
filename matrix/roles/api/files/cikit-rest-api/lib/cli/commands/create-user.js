@@ -24,13 +24,13 @@ parser.addArgument(['-u', '--username'], {
 });
 
 parser.addArgument(['-g', '--group'], {
-  help: 'The names of groups the user belongs to.',
+  help: 'The name of a group a user belong to.',
   choices: app.get('config').get('security:user:groups'),
   required: true,
 });
 
 parser.addArgument(['-r', '--recreate'], {
-  help: 'Remove the user and the client.',
+  help: 'Regenerate the user and tokens.',
   action: 'storeTrue',
 });
 
@@ -39,7 +39,24 @@ parser.addArgument(['-r', '--recreate'], {
  * @type {{username: {String}, recreate: {Bool}, group: {String}}}
  */
 const args = parser.parseArgs();
+const manager = require('../../user/UserManager')(app);
 
-require('../../user/manager')(app, args.username, args.group, args.recreate);
+manager
+  .ensureUser(args.username, args.group, args.recreate)
+  .then(async user => {
+    console.log({
+      message:
+        'Open base64-encoded PNG in a browser and scan QR code by your authenticator' +
+        'app (e.g. Google Authenticator) or input the "secret" code manually to add' +
+        'an integration.' +
+        "\n\n" +
+        'Keep this data private or remove them at all if an integration is added to' +
+        'an authenticating app. Later, having an access to the service via SSH, you' +
+        'will be able to recreate 2FA secret key.',
+      group: user.group,
+      secret: user.secret,
+      barcode: await manager.generateBarcode(user),
+    });
+  });
 
 setTimeout(() => app.get('mongoose').disconnect(), 1500);
