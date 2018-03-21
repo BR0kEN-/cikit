@@ -1,4 +1,3 @@
-const RuntimeError = require('../../error/RuntimeError');
 const BearerStrategy = require('passport-http-bearer');
 
 /**
@@ -7,28 +6,35 @@ const BearerStrategy = require('passport-http-bearer');
  */
 class AccessTokenStrategy extends BearerStrategy {
   constructor(app) {
-    super(AccessTokenStrategy.verify.bind(undefined, app.get('config'), app.get('User'), app.get('AccessToken')));
+    super(AccessTokenStrategy.verify.bind(undefined, app));
 
     this.name = 'access-token';
   }
 
-  static async verify(config, user, accessToken, token, done) {
-    token = await accessToken.findOne({token});
+  /**
+   * @param {Application} app
+   * @param {String} token
+   * @param {Function} done
+   *
+   * @return {Promise<void>}
+   */
+  static async verify(app, token, done) {
+    token = await app.mongoose.models.AccessToken.findOne({token});
 
     if (!token) {
-      throw new RuntimeError('Access token not found', 404, config.get('errors:access_token_not_found'));
+      throw new app.errors.RuntimeError('Access token not found', 404, 'access_token_not_found');
     }
 
-    if (Math.round((Date.now() - token.created) / 1000) > config.get('security:tokenLife')) {
+    if (Math.round((Date.now() - token.created) / 1000) > app.config.get('security:tokenLife')) {
       await token.remove();
 
-      throw new RuntimeError('Access token expired', 401, config.get('errors:access_token_expired'));
+      throw new app.errors.RuntimeError('Access token expired', 401, 'access_token_expired');
     }
 
-    user = await user.findById(token.userId);
+    const user = await app.mongoose.models.User.findById(token.userId);
 
     if (!user) {
-      throw new RuntimeError('User not found', 404, config.get('errors:user_not_found'));
+      throw new app.errors.RuntimeError('User not found', 404, 'user_not_found');
     }
 
     done(null, user);

@@ -1,5 +1,6 @@
 {
   "port": 1337,
+  "prefix": "/api/v1",
   "security": {
     "tokenLife": 7200,
     "totp": {

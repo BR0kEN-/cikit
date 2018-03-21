@@ -1,5 +1,5 @@
 const speakeasy = require('speakeasy');
-const RuntimeError = require('../error/RuntimeError');
+const crypto = require('crypto');
 
 /**
  * Destroy old and generate new "access" and "refresh" tokens.
@@ -12,17 +12,15 @@ const RuntimeError = require('../error/RuntimeError');
  * @return {Promise}
  */
 async function generateTokens(app, userId) {
-  const crypto = app.get('crypto');
   const [AccessToken, RefreshToken] = await Promise.all(['AccessToken', 'RefreshToken'].map(async name => {
-    const object = app.get(name);
-    await object.remove({userId});
+    await app.mongoose.models[name].remove({userId});
 
-    return await new object({userId, token: crypto.randomBytes(32).toString('hex')}).save();
+    return await new app.mongoose.models[name]({userId, token: crypto.randomBytes(32).toString('hex')}).save();
   }));
 
   return {
     token_type: 'Bearer',
-    expires_in: app.get('config').get('security:tokenLife'),
+    expires_in: app.config.get('security:tokenLife'),
     access_token: AccessToken.toString(),
     refresh_token: RefreshToken.toString(),
   };
@@ -65,7 +63,7 @@ function isTotpTokenValid(totp, secret, token) {
 /**
  * Checks whether the user is authorized and belongs to requested group.
  *
- * @param {Object} app
+ * @param {Application} app
  *   The application's object.
  * @param {String} requestedGroup
  *   The name of a group, the route require the user to have.
@@ -74,23 +72,23 @@ function isTotpTokenValid(totp, secret, token) {
  *   Express.js middleware.
  */
 function ensureAuthorizedAccess(app, requestedGroup) {
-  const verifier = (config, requestedGroup, request, response, next) => {
+  return (request, response, next) => {
     if (!request.user) {
-      throw new RuntimeError('Unauthorized', 401, config.get('errors:user_unauthorized'));
+      throw new app.errors.RuntimeError('Unauthorized', 401, 'user_unauthorized');
     }
 
     if (!request.user.group) {
-      throw new RuntimeError('The user does not belong to a group', 401, config.get('errors:user_ungrouped'));
+      throw new app.errors.RuntimeError('The user does not belong to a group', 401, 'user_ungrouped');
     }
 
-    const userGroups = config.get('security:user:groups');
+    const userGroups = app.config.get('security:user:groups');
 
     if (!userGroups.hasOwnProperty(request.user.group)) {
-      throw new RuntimeError('The user is in an unknown group', 401, config.get('errors:user_group_unknown'));
+      throw new app.errors.RuntimeError('The user is in an unknown group', 401, 'user_group_unknown');
     }
 
     if (!userGroups.hasOwnProperty(requestedGroup)) {
-      throw new RuntimeError('Route requested an access for the unknown group', 401, config.get('errors:route_group_unknown'));
+      throw new app.errors.RuntimeError('Route requested an access for the unknown group', 401, 'route_group_unknown');
     }
 
     if (
@@ -102,10 +100,8 @@ function ensureAuthorizedAccess(app, requestedGroup) {
       return next();
     }
 
-    throw new RuntimeError('Access denied', 403, config.get('errors:route_access_denied'));
+    throw new app.errors.RuntimeError('Access denied', 403, 'route_access_denied');
   };
-
-  return verifier.bind(undefined, app.get('config'), requestedGroup);
 }
 
 module.exports = {

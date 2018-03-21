@@ -2,17 +2,16 @@ const speakeasy = require('speakeasy');
 const hostname = require('os').hostname();
 const QRCode = require('qrcode');
 
-const RuntimeError = require('../error/RuntimeError');
-
 class UserManager {
+  /**
+   * @param {Application} app
+   */
   constructor(app) {
     this.app = app;
   }
 
   async revokeToken(tokenType, userId) {
-    await this.app
-      .get(tokenType)
-      .remove({userId});
+    await this.app.mongoose.models[tokenType].remove({userId});
   }
 
   async revokeTokens(userId) {
@@ -21,7 +20,7 @@ class UserManager {
   }
 
   async generateBarcode(user) {
-    const totp = this.app.get('config').get('security:totp');
+    const totp = this.app.config.get('security:totp');
 
     return await QRCode.toDataURL(speakeasy.otpauthURL({
       // The label must be encoded because otherwise
@@ -35,15 +34,11 @@ class UserManager {
   }
 
   async getUser(username) {
-    return await this.app
-      .get('User')
-      .findOne({username});
+    return await this.app.mongoose.models.User.findOne({username});
   }
 
   async getUsers(conditions = null, projection = null) {
-    return await this.app
-      .get('User')
-      .find(conditions, projection);
+    return await this.app.mongoose.models.User.find(conditions, projection);
   }
 
   /**
@@ -54,37 +49,34 @@ class UserManager {
    * @return {Promise<{message: {String}, group: {String}, secret: {String}, barcode: {String}}>}
    */
   async ensureUser(username, group, recreate = false) {
-    const log = this.app.get('log');
-    const User = this.app.get('User');
-    const config = this.app.get('config');
-    const createUser = async (config, username, group) => {
-      if ('owner' === group && null !== await User.findOne({group, username: {'$ne': username}})) {
-        throw new RuntimeError('The system cannot have multiple owners', 403, config.get('errors:user_owner_exists'));
+    const createUser = async (username, group) => {
+      if ('owner' === group && null !== await this.app.mongoose.models.User.findOne({group, username: {'$ne': username}})) {
+        throw new this.app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
       }
 
-      return new User({username, group}).save();
+      return new this.app.mongoose.models.User({username, group}).save();
     };
 
     const user = await this
       .getUser(username)
       .then(async user => {
         if (recreate && null !== user) {
-          log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
+          this.app.log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
 
-          return User
+          return this.app.mongoose.models.User
             .remove({_id: user.id})
-            .then(createUser.bind(undefined, config, username, group));
+            .then(createUser.bind(undefined, username, group));
         }
 
         if (null !== user) {
-          log.debug('The "access" and "refresh" tokens for %s will be revoked.', username);
+          this.app.log.debug('The "access" and "refresh" tokens for %s will be revoked.', username);
 
           return user;
         }
 
-        log.debug('An account for %s will be created.', username);
+        this.app.log.debug('An account for %s will be created.', username);
 
-        return createUser(config, username, group);
+        return createUser(username, group);
       });
 
     await this.revokeTokens(user.id);

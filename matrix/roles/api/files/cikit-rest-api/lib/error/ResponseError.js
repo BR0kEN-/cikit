@@ -1,5 +1,5 @@
 class ResponseError extends Error {
-  constructor(payload) {
+  constructor(config, payload) {
     super();
 
     this.payload = payload;

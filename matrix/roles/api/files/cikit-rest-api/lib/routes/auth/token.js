@@ -1,21 +1,24 @@
 const oauth2orize = require('oauth2orize');
 const authServer = oauth2orize.createServer();
-const RuntimeError = require('../../error/RuntimeError');
-const generateTokens = require('../../auth/functions').generateTokens;
+const {generateTokens} = require('../../auth/functions');
 
+/**
+ * @param {Application} app
+ *
+ * @return {Function[]}
+ */
 module.exports = app => {
   const callback = async (app, client, refreshToken, scope, done) => {
-    const token = await app.get('RefreshToken').findOne({token: refreshToken});
-    const config = app.get('config');
+    const token = await app.mongoose.models.RefreshToken.findOne({token: refreshToken});
 
     if (!token) {
-      throw new RuntimeError('Refresh token not found', 404, config.get('errors:refresh_token_not_found'));
+      throw new app.errors.RuntimeError('Refresh token not found', 404, 'refresh_token_not_found');
     }
 
-    const user = await app.get('User').findById(token.userId);
+    const user = await app.mongoose.models.User.findById(token.userId);
 
     if (!user) {
-      throw new RuntimeError('User not found', 404, config.get('errors:user_not_found'));
+      throw new app.errors.RuntimeError('User not found', 404, 'user_not_found');
     }
 
     done(null, true, await generateTokens(app, user.id));

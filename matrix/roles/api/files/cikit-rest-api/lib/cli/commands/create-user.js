@@ -12,7 +12,7 @@
  * node ./lib/cli/commands/create-user.js -u BR0kEN -r -g
  */
 
-const ArgumentParser = require('argparse').ArgumentParser;
+const {ArgumentParser} = require('argparse');
 const app = require('../../app');
 const parser = new ArgumentParser({
   addHelp: true,
@@ -25,7 +25,7 @@ parser.addArgument(['-u', '--username'], {
 
 parser.addArgument(['-g', '--group'], {
   help: 'The name of a group a user belong to.',
-  choices: app.get('config').get('security:user:groups'),
+  choices: app.config.get('security:user:groups'),
   required: true,
 });
 
@@ -39,6 +39,9 @@ parser.addArgument(['-r', '--recreate'], {
  * @type {{username: {String}, recreate: {Bool}, group: {String}}}
  */
 const args = parser.parseArgs();
+/**
+ * @type {UserManager}
+ */
 const manager = require('../../user/UserManager')(app);
 
 manager
@@ -59,4 +62,4 @@ manager
     });
   });
 
-setTimeout(() => app.get('mongoose').disconnect(), 1500);
+setTimeout(() => app.mongoose.disconnect(), 1500);

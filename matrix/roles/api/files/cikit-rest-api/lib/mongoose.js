@@ -1,10 +1,32 @@
+const mongoose = require('mongoose');
+
+/**
+ * @param {Application} app
+ *
+ * @return {Mongoose}
+ */
 module.exports = app => {
-  const mongoose = require('mongoose');
-  const log = app.get('log');
+  mongoose.connect(app.config.get('mongoose:uri'));
+  mongoose.connection.once('open', () => app.log.debug('Connected to DB!'));
+  mongoose.connection.on('error', error => app.log.error('Connection error:', error.message));
 
-  mongoose.connect(app.get('config').get('mongoose:uri'));
-  mongoose.connection.once('open', () => log.debug('Connected to DB!'));
-  mongoose.connection.on('error', error => log.error('Connection error:', error.message));
+  app.mongoose = mongoose;
 
-  return mongoose;
+  /**
+   * @memberOf Mongoose#models
+   * @type {
+   *   {
+   *     User: {Model},
+   *     AccessToken: {Model},
+   *     RefreshToken: {Model},
+   *   }
+   * }
+   */
+  const models = app.discovery('./model');
+
+  for (const model in models) {
+    models[model](app);
+  }
+
+  return app.mongoose;
 };

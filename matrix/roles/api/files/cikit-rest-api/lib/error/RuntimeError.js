@@ -1,9 +1,9 @@
 class RuntimeError extends Error {
-  constructor(message, httpCode, errorId) {
+  constructor(config, message, httpCode, errorId) {
     super();
 
     this.message = message;
-    this.errorId = errorId;
+    this.errorId = config.get('errors:' + errorId);
     this.status = httpCode;
   }
 }

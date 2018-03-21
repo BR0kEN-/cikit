@@ -1,11 +1,36 @@
 'use strict';
 
-const mongooseModelNames = [
-  'User',
-  'AccessToken',
-  'RefreshToken',
-];
+/**
+ * @namespace Application
+ */
 
+/**
+ * @param {String} dir
+ *
+ * @return {Object}
+ */
+function discovery(dir) {
+  const data = Object.create(null);
+
+  dir = __dirname + '/' + dir;
+
+  fs
+    .readdirSync(dir)
+    .forEach(name => {
+      if (/[A-Z]/.test(name)) {
+        const extension = path.extname(name);
+
+        if ('.js' === extension) {
+          data[path.basename(name, extension)] = require(dir + '/' + name);
+        }
+      }
+    });
+
+  return data;
+}
+
+const fs = require('fs');
+const path = require('path');
 /**
  * @type {bodyParser}
  */
@@ -15,40 +40,76 @@ const bodyParser = require('body-parser');
  */
 const passport = require('passport');
 /**
- * @type {Object}
+ * @type {Application}
  */
 const app = require('express')();
 /**
- * @type {nconf}
+ * @type {nconf.Provider}
  */
 const config = require('./config');
+/**
+ * The prefix of API routes.
+ *
+ * @type {String}
+ */
+const prefix = config.get('prefix');
 /**
  * @var {winston.Logger} log
  * @var {Function} routeErrorHandler
  * @var {Function} globalErrorHandler
  */
 const {log, routeErrorHandler, globalErrorHandler} = require('./log')(module);
+
 /**
- * @type {TotpCodeStrategy}
+ * @memberOf Application#
+ * @type {Function}
  */
-const TotpCodeStrategy = require('./auth/strategy/TotpCodeStrategy');
+app.discovery = discovery;
+
 /**
- * @type {AccessTokenStrategy}
+ * @memberOf Application#
+ * @type {winston.Logger}
  */
-const AccessTokenStrategy = require('./auth/strategy/AccessTokenStrategy');
+app.log = log;
 
-app.set('log', log);
-app.set('port', Number(process.env.PORT || config.get('port') || 3000));
-app.set('isDev', process.env.NODE_ENV === 'development');
-app.set('crypto', require('crypto'));
-app.set('config', config);
-app.set('passport', passport);
-app.set('mongoose', require('./mongoose')(app));
+/**
+ * @memberOf Application#
+ * @type {Number}
+ */
+app.port = Number(process.env.PORT || config.get('port') || 3000);
 
-mongooseModelNames.forEach(name => app.set(name, require('./model/' + name)(app)));
+/**
+ * @memberOf Application#
+ * @type {Boolean}
+ */
+app.isDev = app.get('env') === 'development';
 
-passport.use(new TotpCodeStrategy(app));
-passport.use(new AccessTokenStrategy(app));
+/**
+ * @memberOf Application#
+ * @type {nconf.Provider}
+ */
+app.config = config;
+
+/**
+ * @memberOf Application#
+ */
+app.passport = passport;
+
+/**
+ * @memberOf Application#
+ * @type {Object.<Error>}
+ */
+app.errors = require('./errors')(app);
+
+/**
+ * @memberOf Application#
+ * @type {Mongoose}
+ */
+app.mongoose = require('./mongoose')(app);
+
+for (const [, object] of Object.entries(discovery('./auth/strategy'))) {
+  passport.use(new object(app));
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -60,7 +121,7 @@ for (const [type, routes] of Object.entries(config.get('routes'))) {
 
     stack.unshift(routeErrorHandler);
 
-    app[type]('/api/v1/' + path, stack);
+    app[type](prefix + '/' + path, stack);
   });
 }
 

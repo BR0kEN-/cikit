@@ -1,4 +1,4 @@
-const ensureAuthorizedAccess = require('../auth/functions').ensureAuthorizedAccess;
+const {ensureAuthorizedAccess} = require('../auth/functions');
 
 /**
  * Ensures an authorized access to the resource.
@@ -21,7 +21,7 @@ module.exports = (requestedUserGroup, filenameOrFunction, ...args) => {
 
   return app => [
     // Every API resource requires an authentication.
-    app.get('passport').authenticate('access-token', {session: false}),
+    app.passport.authenticate('access-token', {session: false}),
     // If a user is logged in successfully its permissions is oughta check.
     ensureAuthorizedAccess(app, requestedUserGroup),
     // Do resource's actions.
