@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @namespace Application
  */
@@ -12,21 +10,16 @@
  *   The list of discovered components.
  */
 function discovery(dir) {
-  const data = Object.create(null);
+  const data = {};
 
   dir = __dirname + '/' + dir;
 
-  fs
-    .readdirSync(dir)
-    .forEach(name => {
-      if (/[A-Z]/.test(name)) {
-        const extension = path.extname(name);
-
-        if ('.js' === extension) {
-          data[path.basename(name, extension)] = require(dir + '/' + name);
-        }
-      }
-    });
+  fs.readdirSync(dir).forEach(name => {
+    // The first character is a capital letter and ".js" is an extension.
+    if (/^[A-Z].+?\.js/.test(name)) {
+      data[path.basename(name, '.js')] = require(dir + '/' + name);
+    }
+  });
 
   return data;
 }

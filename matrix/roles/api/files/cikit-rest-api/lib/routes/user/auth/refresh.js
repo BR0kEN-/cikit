@@ -10,7 +10,7 @@ const {generateTokens} = require('../../../auth/functions');
  *   The list of middleware.
  */
 module.exports = app => {
-  const callback = async (app, client, refreshToken, scope, done) => {
+  const callback = async (app, client, refreshToken, done) => {
     const token = await app.mongoose.models.RefreshToken.findOne({token: refreshToken});
 
     if (!token) {

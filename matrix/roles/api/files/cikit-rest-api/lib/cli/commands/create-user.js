@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @example
  * // Create a new user or remove "access" and "refresh" OAuth tokens if

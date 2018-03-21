@@ -31,7 +31,7 @@
 - Use temporary code from an authenticating app to send the request for obtaining an access token.
 
   ```bash
-  curl "$CIKIT_MATRIX_REST_API_BASE_URL/auth/otp" \
+  curl "$CIKIT_MATRIX_REST_API_BASE_URL/user/auth" \
     -X POST \
     -H 'Content-Type: application/json' \
     -d '{"code": "CODE_FROM_AUTH_APP", "username": "BR0kEN"}'
@@ -51,7 +51,7 @@
 - Add `Authorization: Bearer: ACCESS_TOKEN` header or `{"access_token": "ACCESS_TOKEN"}` to body for every request to an API. If you'll get `401`, then the token is expired and you have to send a request for its refreshment (better flow is to store the `expires_in` in your implementation and check its validity before sending a request to an API).
 
   ```bash
-  curl "$CIKIT_MATRIX_REST_API_BASE_URL/auth/token" \
+  curl "$CIKIT_MATRIX_REST_API_BASE_URL/user/auth/refresh" \
     -X POST \
     -H 'Content-Type: application/json' \
     -d '{"grant_type", "refresh_token", "refresh_token": "REFRESH_TOKEN"}'
