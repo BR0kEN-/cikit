@@ -5,20 +5,38 @@ const QRCode = require('qrcode');
 class UserManager {
   /**
    * @param {Application} app
+   *   The application.
    */
   constructor(app) {
     this.app = app;
   }
 
+  /**
+   * @param {String} tokenType
+   *   The type of token (a name of "mongoose" model).
+   * @param {Number} userId
+   *   The ID of a user.
+   */
   async revokeToken(tokenType, userId) {
     await this.app.mongoose.models[tokenType].remove({userId});
   }
 
+  /**
+   * @param {Number} userId
+   *   The ID of a user.
+   */
   async revokeTokens(userId) {
     await Promise
       .all(['AccessToken', 'RefreshToken'].map(type => this.revokeToken(type, userId)));
   }
 
+  /**
+   * @param {Object} user
+   *   The user's object.
+   *
+   * @return {Promise.<String>}
+   *   A Base64 encoded PNG.
+   */
   async generateBarcode(user) {
     const totp = this.app.config.get('security:totp');
 
@@ -33,24 +51,45 @@ class UserManager {
     }));
   }
 
+  /**
+   * @param {String} username
+   *   The name of a user.
+   *
+   * @return {Promise.<Object>|null}
+   *   The user's object.
+   */
   async getUser(username) {
     return await this.app.mongoose.models.User.findOne({username});
   }
 
+  /**
+   * @param {Object} [conditions=null]
+   *   The list of conditions.
+   * @param {Object} [projection=null]
+   *   The list of properties to return (http://bit.ly/1HotzBo).
+   *
+   * @return {Promise.<Object[]>|null}
+   *   A list of users.
+   */
   async getUsers(conditions = null, projection = null) {
     return await this.app.mongoose.models.User.find(conditions, projection);
   }
 
   /**
    * @param {String} username
+   *   The name of a user.
    * @param {String} group
+   *   The name of a user's group.
    * @param {Boolean} recreate
+   *   An indicator for removing an existing user and creating it again. This
+   *   can be useful in order to regenerate TOTP secret.
    *
-   * @return {Promise<{message: {String}, group: {String}, secret: {String}, barcode: {String}}>}
+   * @return {Object}
+   *   The user's object.
    */
   async ensureUser(username, group, recreate = false) {
     const createUser = async (username, group) => {
-      if ('owner' === group && null !== await this.app.mongoose.models.User.findOne({group, username: {'$ne': username}})) {
+      if ('owner' === group && null !== await this.app.mongoose.models.User.findOne({group, username: {$ne: username}})) {
         throw new this.app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
       }
 

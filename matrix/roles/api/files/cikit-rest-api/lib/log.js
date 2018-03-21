@@ -20,7 +20,7 @@ function logger(label) {
         handleException: true,
         colorize: true,
         json: false,
-      })
+      }),
     ],
   });
 }
@@ -36,10 +36,6 @@ function globalErrorHandler(logger, error, request, response) {
     error.status = error.status || 500;
     error.errorId = error.errorId || 0;
     error.message = error.message || 'Internal server error';
-
-    console.log(
-      error
-    );
 
     response.status(error.status);
     logger.error('%d %s - %s (%d)', response.statusCode, request.method, error.message, error.errorId);

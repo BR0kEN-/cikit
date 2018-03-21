@@ -1,7 +1,9 @@
 /**
  * @param {Application} app
+ *   The application.
  *
  * @return {Function[]}
+ *   The list of middleware.
  */
 module.exports = app => [
   // We must define the callback in order to not allow the passport

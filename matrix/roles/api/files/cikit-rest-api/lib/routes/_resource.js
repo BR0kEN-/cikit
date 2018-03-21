@@ -15,7 +15,7 @@ const {ensureAuthorizedAccess} = require('../auth/functions');
  *   A list of Express.js route's middleware.
  */
 module.exports = (requestedUserGroup, filenameOrFunction, ...args) => {
-  if (typeof filenameOrFunction === 'string') {
+  if ('string' === typeof filenameOrFunction) {
     filenameOrFunction = require('./' + filenameOrFunction);
   }
 

@@ -47,12 +47,13 @@ const manager = require('../../user/UserManager')(app);
 manager
   .ensureUser(args.username, args.group, args.recreate)
   .then(async user => {
+    // eslint-disable-next-line no-console
     console.log({
       message:
         'Open base64-encoded PNG in a browser and scan QR code by your authenticator' +
         'app (e.g. Google Authenticator) or input the "secret" code manually to add' +
         'an integration.' +
-        "\n\n" +
+        '\n\n' +
         'Keep this data private or remove them at all if an integration is added to' +
         'an authenticating app. Later, having an access to the service via SSH, you' +
         'will be able to recreate 2FA secret key.',

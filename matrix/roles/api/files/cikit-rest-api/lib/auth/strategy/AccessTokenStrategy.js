@@ -5,6 +5,10 @@ const BearerStrategy = require('passport-http-bearer');
  * @classdesc Authenticates user by an access token.
  */
 class AccessTokenStrategy extends BearerStrategy {
+  /**
+   * @param {Application} app
+   *   The application.
+   */
   constructor(app) {
     super(AccessTokenStrategy.verify.bind(undefined, app));
 
@@ -13,10 +17,11 @@ class AccessTokenStrategy extends BearerStrategy {
 
   /**
    * @param {Application} app
+   *   The application.
    * @param {String} token
+   *   The access token.
    * @param {Function} done
-   *
-   * @return {Promise<void>}
+   *   A callback to execute if user passed the authorization.
    */
   static async verify(app, token, done) {
     token = await app.mongoose.models.AccessToken.findOne({token});

@@ -1,11 +1,13 @@
 const oauth2orize = require('oauth2orize');
 const authServer = oauth2orize.createServer();
-const {generateTokens} = require('../../auth/functions');
+const {generateTokens} = require('../../../auth/functions');
 
 /**
  * @param {Application} app
+ *   The application.
  *
  * @return {Function[]}
+ *   The list of middleware.
  */
 module.exports = app => {
   const callback = async (app, client, refreshToken, scope, done) => {

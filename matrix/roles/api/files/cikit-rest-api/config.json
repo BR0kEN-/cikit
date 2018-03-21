@@ -25,10 +25,10 @@
       "user/list"
     ],
     "post": [
-      "auth/otp",
-      "auth/token",
       "droplet/add",
-      "user/add"
+      "user/add",
+      "user/auth",
+      "user/auth/refresh"
     ],
     "patch": [
       "droplet/stop/:droplet",
@@ -37,7 +37,8 @@
     ],
     "delete": [
       "droplet/delete/:droplet",
-      "user/delete/:user"
+      "user/delete/:user",
+      "user/token/revoke/:user"
     ]
   },
   "errors": {

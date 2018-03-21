@@ -2,8 +2,10 @@ const mongoose = require('mongoose');
 
 /**
  * @param {Application} app
+ *   The application.
  *
  * @return {Mongoose}
+ *   The "mongoose" database connection.
  */
 module.exports = app => {
   mongoose.connect(app.config.get('mongoose:uri'));
@@ -25,7 +27,9 @@ module.exports = app => {
   const models = app.discovery('./model');
 
   for (const model in models) {
-    models[model](app);
+    if (models.hasOwnProperty(model)) {
+      models[model](app);
+    }
   }
 
   return app.mongoose;

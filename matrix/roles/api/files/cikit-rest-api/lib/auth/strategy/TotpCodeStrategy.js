@@ -8,6 +8,7 @@ const generateTokens = require('../../auth/functions').generateTokens;
 class TotpCodeStrategy extends Strategy {
   /**
    * @param {Application} app
+   *   The application.
    */
   constructor(app) {
     super();

@@ -6,8 +6,10 @@
 
 /**
  * @param {String} dir
+ *   The relative path to directory to discover.
  *
  * @return {Object}
+ *   The list of discovered components.
  */
 function discovery(dir) {
   const data = Object.create(null);
@@ -82,7 +84,7 @@ app.port = Number(process.env.PORT || config.get('port') || 3000);
  * @memberOf Application#
  * @type {Boolean}
  */
-app.isDev = app.get('env') === 'development';
+app.isDev = 'development' === app.get('env');
 
 /**
  * @memberOf Application#

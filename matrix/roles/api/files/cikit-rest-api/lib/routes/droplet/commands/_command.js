@@ -15,7 +15,7 @@ module.exports = (app, command, handler) => (request, response) => {
 
       app.log.debug('Applying JSON path query "%s"', jsonPath);
 
-      if (stats.failures !== 0 || stats.unreachable !== 0) {
+      if (0 !== stats.failures || 0 !== stats.unreachable) {
         throw new app.errors.RuntimeError(output, 501, 'ansible_command_failed');
       }
 
