@@ -4,10 +4,13 @@ DirectoryIndex index.php index.html
 {% if localhost -%}
     {% set root_type = "DocumentRoot" %}
     {% set directory = "docroot" %}
+    {% set directory_suffix = "" %}
     {% set server_name = project + ".loc" %}
 {% else -%}
     {% set root_type = "VirtualDocumentRoot" %}
     {% set directory = "%1/docroot" %}
+    {# On CI droplet the build is in a subdirectory. #}
+    {% set directory_suffix = "/*" %}
     {% set server_name = ansible_host %}
 {% endif -%}
 
@@ -16,7 +19,7 @@ DirectoryIndex index.php index.html
     {{ root_type }} {{ webroot }}/{{ directory }}
 {% endset -%}
 
-<Directory "{{ webroot }}/*/*">
+<Directory "{{ webroot }}/*{{ directory_suffix }}">
     AllowOverride All
     Options -Indexes +FollowSymLinks
     Require all granted
