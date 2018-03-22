@@ -76,6 +76,19 @@ class UserManager {
   }
 
   /**
+   * Checks whether the user is a system owner.
+   *
+   * @param {Object|String} user
+   *   The user's object or the name of a group.
+   *
+   * @return {Boolean}
+   *   A state of check.
+   */
+  static isOwner(user) {
+    return 'owner' === ('string' === typeof user ? user : user.group);
+  }
+
+  /**
    * @param {String} username
    *   The name of a user.
    * @param {String} group
@@ -89,7 +102,7 @@ class UserManager {
    */
   async ensureUser(username, group, recreate = false) {
     const createUser = async (username, group) => {
-      if ('owner' === group && null !== await this.app.mongoose.models.User.findOne({group, username: {$ne: username}})) {
+      if (this.constructor.isOwner(group) && null !== await this.app.mongoose.models.User.findOne({group, username: {$ne: username}})) {
         throw new this.app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
       }
 

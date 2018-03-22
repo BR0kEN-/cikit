@@ -38,7 +38,7 @@
     "delete": [
       "droplet/delete/:droplet",
       "user/delete/:user",
-      "user/token/revoke/:user"
+      "user/auth/revoke/:user"
     ]
   },
   "errors": {

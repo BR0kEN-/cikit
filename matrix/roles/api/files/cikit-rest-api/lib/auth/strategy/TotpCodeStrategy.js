@@ -1,5 +1,5 @@
 const Strategy = require('passport-strategy');
-const generateTokens = require('../../auth/functions').generateTokens;
+const {generateTokens} = require('../../auth/functions');
 
 /**
  * @class TotpCodeStrategy
