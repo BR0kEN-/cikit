@@ -11,7 +11,7 @@ module.exports = (app, chai) => {
   const prefix = app.config.get('prefix');
 
   /**
-   * Sends the request.
+   * Prepares the request.
    *
    * @param {String} method
    *   HTTP method in lowercase.
@@ -40,7 +40,7 @@ module.exports = (app, chai) => {
     .send({username, code});
 
   /**
-   * Sends an authorized API request.
+   * Prepares an authorized API request.
    *
    * @param {Object} auth
    *   The response of authentication request.

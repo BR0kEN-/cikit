@@ -51,6 +51,13 @@ class UserManager {
     }));
   }
 
+  /**
+   * @param {Object|String} user
+   *   The user's object or its username.
+   *
+   * @return {Promise.<String>}
+   *   TOTP code for exchanging for an access token.
+   */
   async generateTotpCode(user) {
     const totp = this.app.config.get('security:totp');
 
@@ -93,13 +100,11 @@ class UserManager {
   }
 
   /**
-   * Checks whether the user is a system owner.
-   *
    * @param {Object|String} user
    *   The user's object or the name of a group.
    *
    * @return {Boolean}
-   *   A state of check.
+   *   A state whether the user is a system owner.
    */
   static isOwner(user) {
     return 'owner' === ('string' === typeof user ? user : user.group);
@@ -132,8 +137,8 @@ class UserManager {
         if (recreate && null !== user) {
           this.app.log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
 
-          return this
-            .removeUser(user)
+          return this.app.mongoose.models.User
+            .remove({_id: user.id})
             .then(createUser.bind(undefined, username, group));
         }
 
