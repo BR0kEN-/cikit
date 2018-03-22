@@ -71,13 +71,13 @@ app.log = log;
  * @memberOf Application#
  * @type {Number}
  */
-app.port = Number(process.env.PORT || config.get('port') || 3000);
+app.port = Number(process.env.PORT || config.get('port'));
 
 /**
  * @memberOf Application#
  * @type {Boolean}
  */
-app.isDev = 'development' === app.get('env');
+app.isDev = 'production' !== app.get('env');
 
 /**
  * @memberOf Application#

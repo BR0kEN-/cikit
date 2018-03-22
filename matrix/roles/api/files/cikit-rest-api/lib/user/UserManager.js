@@ -51,6 +51,23 @@ class UserManager {
     }));
   }
 
+  async generateTotpCode(user) {
+    const totp = this.app.config.get('security:totp');
+
+    if ('string' === typeof user) {
+      user = await this.getUser(user);
+    }
+
+    if (null === user) {
+      throw new Error('A user does not exist');
+    }
+
+    return speakeasy.totp({
+      secret: user.secret,
+      encoding: totp.type,
+    });
+  }
+
   /**
    * @param {String} username
    *   The name of a user.
@@ -115,8 +132,8 @@ class UserManager {
         if (recreate && null !== user) {
           this.app.log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
 
-          return this.app.mongoose.models.User
-            .remove({_id: user.id})
+          return this
+            .removeUser(user)
             .then(createUser.bind(undefined, username, group));
         }
 

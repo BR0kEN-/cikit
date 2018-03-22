@@ -55,7 +55,7 @@
     "refresh_token_not_found": 910,
     "route_group_unknown": 911,
     "route_access_denied": 912,
-    "user_add_missing_data": 913,
+    "user_missing_data": 913,
     "user_name_taken": 914
   }
 }

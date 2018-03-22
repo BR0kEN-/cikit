@@ -215,6 +215,15 @@
         "requireParamDescription": true,
         "requireReturnDescription": true
       }
+    ],
+    "node/no-unpublished-require": [
+      "error",
+      {
+        "allowModules": [
+          "chai",
+          "chai-http"
+        ]
+      }
     ]
   }
 }

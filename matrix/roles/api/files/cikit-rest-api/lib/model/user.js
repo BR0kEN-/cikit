@@ -1,10 +1,10 @@
-let {generateTotpSecret, isTotpTokenValid} = require('../auth/functions');
+let {generateTotpSecret, isTotpCodeValid} = require('../auth/functions');
 
 module.exports = app => {
   const totp = app.config.get('security:totp');
 
   generateTotpSecret = generateTotpSecret.bind(undefined, totp);
-  isTotpTokenValid = isTotpTokenValid.bind(undefined, totp);
+  isTotpCodeValid = isTotpCodeValid.bind(undefined, totp);
 
   const schema = new app.mongoose.Schema({
     username: {
@@ -31,7 +31,7 @@ module.exports = app => {
   });
 
   schema.methods.isTotpValid = function (code) {
-    return isTotpTokenValid(this.secret, code);
+    return isTotpCodeValid(this.secret, code);
   };
 
   schema

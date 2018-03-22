@@ -27,7 +27,7 @@ class AccessTokenStrategy extends BearerStrategy {
     token = await app.mongoose.models.AccessToken.findOne({token});
 
     if (!token) {
-      throw new app.errors.RuntimeError('Access token not found', 404, 'access_token_not_found');
+      throw new app.errors.RuntimeError('Access token not found', 401, 'access_token_not_found');
     }
 
     if (Math.round((Date.now() - token.created) / 1000) > app.config.get('security:tokenLife')) {
@@ -36,13 +36,7 @@ class AccessTokenStrategy extends BearerStrategy {
       throw new app.errors.RuntimeError('Access token expired', 401, 'access_token_expired');
     }
 
-    const user = await app.mongoose.models.User.findById(token.userId);
-
-    if (!user) {
-      throw new app.errors.RuntimeError('User not found', 404, 'user_not_found');
-    }
-
-    done(null, user);
+    done(null, await app.mongoose.models.User.findById(token.userId));
   }
 }
 

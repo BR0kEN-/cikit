@@ -29,7 +29,7 @@ class TotpCodeStrategy extends Strategy {
       const user = await this.app.mongoose.models.User.findOne({username});
 
       if (!user) {
-        throw new this.app.errors.RuntimeError('User not found', 404, 'user_not_found');
+        throw new this.app.errors.RuntimeError('User not found', 400, 'user_not_found');
       }
 
       if (!user.isTotpValid(code)) {
