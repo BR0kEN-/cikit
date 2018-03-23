@@ -9,7 +9,7 @@ module.exports = app => {
   function removeTokens(createNew) {
     return Promise.all(['AccessToken', 'RefreshToken'].map(async name => {
       const data = {user: this};
-      await app.mongoose.models[name].remove(data);
+      await app.db.models[name].remove(data);
 
       if (!createNew) {
         return null;
@@ -17,11 +17,11 @@ module.exports = app => {
 
       data.token = crypto.randomBytes(32).toString('hex');
 
-      return await new app.mongoose.models[name](data).save();
+      return await new app.db.models[name](data).save();
     }));
   }
 
-  const schema = new app.mongoose.Schema({
+  const schema = new app.db.Schema({
     username: {
       type: String,
       unique: true,
@@ -103,5 +103,5 @@ module.exports = app => {
     return 'owner' === this.group;
   };
 
-  return app.mongoose.model('User', schema);
+  return app.db.model('User', schema);
 };

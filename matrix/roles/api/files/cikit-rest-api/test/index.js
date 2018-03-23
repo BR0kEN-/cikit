@@ -63,7 +63,7 @@ describe('The user', () => {
 
     // Restore an owner.
     if (null !== owner) {
-      new app.mongoose.models.User(owner.toObject()).save();
+      new app.db.models.User(owner.toObject()).save();
     }
   });
 
@@ -145,7 +145,7 @@ describe('The user', () => {
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
     // Obtain an object of current, valid access token.
-    const token = await app.mongoose.models.AccessToken.findOne({token: auth.body.access_token});
+    const token = await app.db.models.AccessToken.findOne({token: auth.body.access_token});
     // Compulsorily grow old the token and save it.
     await token.update({created: token.created.setSeconds(token.created.getSeconds() - 86400)});
     // Ensure the "toString()" method of token's object returns an actual token.

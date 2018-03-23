@@ -10,7 +10,7 @@ const authServer = oauth2orize.createServer();
  */
 module.exports = app => {
   const callback = async (app, client, refreshToken, done) => {
-    const token = await app.mongoose.models.RefreshToken
+    const token = await app.db.models.RefreshToken
       .findOne({token: refreshToken})
       .populate('user');
 

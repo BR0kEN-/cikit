@@ -1,7 +1,7 @@
 module.exports = name => app => {
-  const schema = new app.mongoose.Schema({
+  const schema = new app.db.Schema({
     user: {
-      type: app.mongoose.Schema.Types.ObjectId,
+      type: app.db.Schema.Types.ObjectId,
       ref: 'User',
     },
     token: {
@@ -23,5 +23,5 @@ module.exports = name => app => {
     .path('user')
     .required(true);
 
-  return app.mongoose.model(name, schema);
+  return app.db.model(name, schema);
 };

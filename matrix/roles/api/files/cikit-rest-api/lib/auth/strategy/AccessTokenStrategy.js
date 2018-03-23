@@ -24,7 +24,7 @@ class AccessTokenStrategy extends BearerStrategy {
    *   A callback to execute if user passed the authorization.
    */
   static async verify(app, token, done) {
-    token = await app.mongoose.models.AccessToken
+    token = await app.db.models.AccessToken
       .findOne({token})
       .populate('user');
 

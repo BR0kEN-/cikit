@@ -16,7 +16,7 @@
       }
     }
   },
-  "mongoose": {
+  "db": {
     "uri": "mongodb://127.0.0.1/cikit-rest-api"
   },
   "routes": {

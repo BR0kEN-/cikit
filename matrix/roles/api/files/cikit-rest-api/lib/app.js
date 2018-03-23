@@ -104,7 +104,7 @@ app.errors = require('./errors')(app);
  * @memberOf Application#
  * @type {Mongoose}
  */
-app.mongoose = require('./mongoose')(app);
+app.db = require('./db')(app);
 
 /**
  * @memberOf Application#

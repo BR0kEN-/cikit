@@ -16,7 +16,7 @@ module.exports = app => {
      *   A list of users.
      */
     async getUsers(conditions = null, projection = null) {
-      return await app.mongoose.models.User.find(conditions, projection);
+      return await app.db.models.User.find(conditions, projection);
     },
 
     /**
@@ -27,7 +27,7 @@ module.exports = app => {
      *   The user's object.
      */
     async getUser(conditions) {
-      return await app.mongoose.models.User.findOne(conditions);
+      return await app.db.models.User.findOne(conditions);
     },
 
     /**
@@ -61,7 +61,7 @@ module.exports = app => {
           throw new app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
         }
 
-        return new app.mongoose.models.User({username, group}).save();
+        return new app.db.models.User({username, group}).save();
       };
 
       const user = await this

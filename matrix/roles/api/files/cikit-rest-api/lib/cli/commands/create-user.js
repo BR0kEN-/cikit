@@ -57,4 +57,4 @@ app.managers.user
     });
   });
 
-setTimeout(() => app.mongoose.disconnect(), 1500);
+setTimeout(() => app.db.disconnect(), 1500);

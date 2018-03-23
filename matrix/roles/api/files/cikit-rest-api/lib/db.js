@@ -8,11 +8,11 @@ const mongoose = require('mongoose');
  *   The "mongoose" database connection.
  */
 module.exports = app => {
-  mongoose.connect(app.config.get('mongoose:uri'));
+  mongoose.connect(app.config.get('db:uri'));
   mongoose.connection.once('open', () => app.log.debug('Connected to DB!'));
   mongoose.connection.on('error', error => app.log.error('Connection error:', error.message));
 
-  app.mongoose = mongoose;
+  app.db = mongoose;
 
   /**
    * @memberOf Mongoose#models
@@ -28,5 +28,5 @@ module.exports = app => {
     model(app);
   }
 
-  return app.mongoose;
+  return app.db;
 };
