@@ -36,17 +36,6 @@ module.exports = app => {
     },
 
     /**
-     * @param {Object|String} user
-     *   The user's object or the name of a group.
-     *
-     * @return {Boolean}
-     *   A state whether the user is a system owner.
-     */
-    isOwner(user) {
-      return 'owner' === ('string' === typeof user ? user : user.group);
-    },
-
-    /**
      * @param {String} username
      *   The name of a user.
      * @param {String} group
@@ -60,7 +49,9 @@ module.exports = app => {
      */
     async ensureUser(username, group, recreate = false) {
       const createUser = async () => {
-        if (this.isOwner(group) && null !== await this.getUser({group, username: {$ne: username}})) {
+        const user = await this.getUser({group, username: {$ne: username}});
+
+        if (null !== user && user.isOwner()) {
           throw new app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
         }
 
@@ -72,6 +63,7 @@ module.exports = app => {
         .then(async user => {
           if (recreate && null !== user) {
             app.log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
+
             await user.remove();
 
             return createUser();

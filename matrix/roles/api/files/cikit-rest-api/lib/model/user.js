@@ -99,5 +99,9 @@ module.exports = app => {
     await removeTokens.call(this, false);
   };
 
+  schema.methods.isOwner = function () {
+    return 'owner' === this.group;
+  };
+
   return app.mongoose.model('User', schema);
 };

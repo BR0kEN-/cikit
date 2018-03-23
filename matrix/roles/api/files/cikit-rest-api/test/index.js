@@ -122,11 +122,6 @@ describe('The user', () => {
   it('should get a generated QR code for setting up an authenticating application', async () => {
     // No errors should be thrown.
     await users.owner.generateBarcode();
-
-    // Pass user's object.
-    true.should.be.eql(app.managers.user.isOwner(users.owner));
-    // Pass the name of a group.
-    false.should.be.eql(app.managers.user.isOwner(users.manager.group));
   });
 
   it('should not be able to access the resource with an invalid access token', async () => {
