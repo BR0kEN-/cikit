@@ -7,9 +7,9 @@ module.exports = app => {
    *   }
    * }
    */
-  const errors = app.discovery('./error');
+  const errors = Object.create(null);
 
-  for (const [name, object] of Object.entries(errors)) {
+  for (const [name, object] of app.discovery('./error')) {
     errors[name] = object.bind(null, app.config);
   }
 

@@ -10,14 +10,14 @@
  *   The list of discovered components.
  */
 function discovery(dir) {
-  const data = {};
+  const data = [];
 
   dir = __dirname + '/' + dir;
 
   fs.readdirSync(dir).forEach(name => {
     // The first character is a capital letter and ".js" is an extension.
     if (/^[A-Za-z].+?\.js/.test(name)) {
-      data[path.basename(name, '.js')] = require(dir + '/' + name);
+      data.push([path.basename(name, '.js'), require(dir + '/' + name)]);
     }
   });
 
@@ -108,15 +108,15 @@ app.mongoose = require('./mongoose')(app);
 
 /**
  * @memberOf Application#
+ * @type {Object.<Object>}
  */
-app.managers = {
-  /**
-   * @memberOf Application.managers#
-   */
-  user: require('./user/UserManager')(app),
-};
+app.managers = Object.create(null);
 
-for (const [, object] of Object.entries(discovery('./user/auth/strategy'))) {
+for (const [name, manager] of discovery('./manager')) {
+  app.managers[name] = manager(app);
+}
+
+for (const [, object] of discovery('./auth/strategy')) {
   passport.use(new object(app));
 }
 
@@ -126,7 +126,7 @@ app.use(passport.initialize());
 
 for (const [type, routes] of Object.entries(config.get('routes'))) {
   routes.forEach(path => {
-    const stack = require('./routes/' + path.replace(/\/:\w+/g, ''))(app);
+    const stack = require('./route/' + path.replace(/\/:\w+/g, ''))(app);
 
     stack.unshift(routeErrorHandler);
 
@@ -136,7 +136,7 @@ for (const [type, routes] of Object.entries(config.get('routes'))) {
 
 // Set lazy-loaders for parameters in order to perform actions
 // only after successful authentication and permissions check.
-for (const [name, handler] of Object.entries(discovery('./params'))) {
+for (const [name, handler] of discovery('./param')) {
   app.param(name, (request, response, next, value) => {
     request.loaders = request.loaders || {};
     request.loaders[name] = handler.bind(undefined, value);

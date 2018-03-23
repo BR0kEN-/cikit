@@ -21,7 +21,7 @@ const assert = require('./assert');
 describe('The developer', () => {
   it('should not be able to set a middleware for a route with an unknown group', () => {
     try {
-      require('../lib/routes/_resource')('v1ewer', () => () => {})(app);
+      require('../lib/route/_resource')('v1ewer', () => () => {})(app);
       throw new Error('This should never be reached!');
     }
     catch (error) {

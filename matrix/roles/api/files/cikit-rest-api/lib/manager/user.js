@@ -1,4 +1,10 @@
+/**
+ * @memberOf Application.managers#
+ */
 module.exports = app => {
+  /**
+   * @namespace Application.managers.user
+   */
   return {
     /**
      * @param {Object} [conditions=null]

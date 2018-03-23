@@ -24,12 +24,8 @@ module.exports = app => {
    *   }
    * }
    */
-  const models = app.discovery('./model');
-
-  for (const model in models) {
-    if (models.hasOwnProperty(model)) {
-      models[model](app);
-    }
+  for (const [, model] of app.discovery('./model')) {
+    model(app);
   }
 
   return app.mongoose;
