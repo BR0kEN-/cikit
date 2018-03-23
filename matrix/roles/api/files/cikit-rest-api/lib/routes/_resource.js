@@ -47,6 +47,15 @@ module.exports = (requestedUserGroup, filenameOrFunction, ...args) => {
 
         throw new app.errors.RuntimeError('Access denied', 403, 'route_access_denied');
       },
+      async (request, response, next) => {
+        if (request.hasOwnProperty('loaders')) {
+          for (const [name, handler] of Object.entries(request.loaders)) {
+            request.params[name] = await handler(app);
+          }
+        }
+
+        next();
+      },
       // Do resource's actions.
       filenameOrFunction(app, ...args),
     ];

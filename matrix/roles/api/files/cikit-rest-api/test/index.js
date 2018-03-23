@@ -303,7 +303,7 @@ describe('The user', () => {
     assert.response.error(await request.api(auth, 'delete', 'user/delete/bla').send(), {
       httpCode: 400,
       errorId: 903,
-      error: 'Cannot delete a non-existent user',
+      error: 'User not found',
     });
 
     // Remove a user created the moment before.

@@ -16,7 +16,7 @@ function discovery(dir) {
 
   fs.readdirSync(dir).forEach(name => {
     // The first character is a capital letter and ".js" is an extension.
-    if (/^[A-Z].+?\.js/.test(name)) {
+    if (/^[A-Za-z].+?\.js/.test(name)) {
       data[path.basename(name, '.js')] = require(dir + '/' + name);
     }
   });
@@ -131,6 +131,17 @@ for (const [type, routes] of Object.entries(config.get('routes'))) {
     stack.unshift(routeErrorHandler);
 
     app[type](prefix + '/' + path, stack);
+  });
+}
+
+// Set lazy-loaders for parameters in order to perform actions
+// only after successful authentication and permissions check.
+for (const [name, handler] of Object.entries(discovery('./params'))) {
+  app.param(name, (request, response, next, value) => {
+    request.loaders = request.loaders || {};
+    request.loaders[name] = handler.bind(undefined, value);
+
+    return next();
   });
 }
 
