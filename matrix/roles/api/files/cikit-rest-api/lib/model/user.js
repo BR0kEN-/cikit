@@ -8,7 +8,7 @@ module.exports = app => {
 
   function removeTokens(createNew) {
     return Promise.all(['AccessToken', 'RefreshToken'].map(async name => {
-      const data = {userId: this.id};
+      const data = {user: this};
       await app.mongoose.models[name].remove(data);
 
       if (!createNew) {

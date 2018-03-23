@@ -10,15 +10,15 @@ const authServer = oauth2orize.createServer();
  */
 module.exports = app => {
   const callback = async (app, client, refreshToken, done) => {
-    const token = await app.mongoose.models.RefreshToken.findOne({token: refreshToken});
+    const token = await app.mongoose.models.RefreshToken
+      .findOne({token: refreshToken})
+      .populate('user');
 
     if (!token) {
       throw new app.errors.RuntimeError('Refresh token not found', 401, 'refresh_token_not_found');
     }
 
-    const user = await app.mongoose.models.User.findById(token.userId);
-
-    done(null, true, await user.generateAccessToken());
+    done(null, true, await token.user.generateAccessToken());
   };
 
   // Exchange "refresh" token for an "access" token.

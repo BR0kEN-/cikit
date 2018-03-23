@@ -1,8 +1,8 @@
 module.exports = name => app => {
   const schema = new app.mongoose.Schema({
-    userId: {
-      type: String,
-      required: true,
+    user: {
+      type: app.mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     token: {
       type: String,
@@ -18,6 +18,10 @@ module.exports = name => app => {
   schema.methods.toString = function () {
     return this.token;
   };
+
+  schema
+    .path('user')
+    .required(true);
 
   return app.mongoose.model(name, schema);
 };

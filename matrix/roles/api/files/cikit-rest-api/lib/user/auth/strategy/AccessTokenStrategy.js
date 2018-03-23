@@ -24,7 +24,9 @@ class AccessTokenStrategy extends BearerStrategy {
    *   A callback to execute if user passed the authorization.
    */
   static async verify(app, token, done) {
-    token = await app.mongoose.models.AccessToken.findOne({token});
+    token = await app.mongoose.models.AccessToken
+      .findOne({token})
+      .populate('user');
 
     if (!token) {
       throw new app.errors.RuntimeError('Access token not found', 401, 'access_token_not_found');
@@ -36,7 +38,7 @@ class AccessTokenStrategy extends BearerStrategy {
       throw new app.errors.RuntimeError('Access token expired', 401, 'access_token_expired');
     }
 
-    done(null, await app.mongoose.models.User.findById(token.userId));
+    done(null, await token.user);
   }
 }
 
