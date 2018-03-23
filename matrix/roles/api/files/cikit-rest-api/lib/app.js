@@ -39,6 +39,10 @@ const passport = require('passport');
  */
 const app = require('express')();
 /**
+ * @type {Boolean}
+ */
+const isDev = 'development' === app.get('env');
+/**
  * @type {nconf.Provider}
  */
 const config = require('./config');
@@ -53,13 +57,7 @@ const prefix = config.get('prefix');
  * @var {Function} routeErrorHandler
  * @var {Function} globalErrorHandler
  */
-const {log, routeErrorHandler, globalErrorHandler} = require('./log')(module);
-
-/**
- * @memberOf Application#
- * @type {Function}
- */
-app.discovery = discovery;
+const {log, routeErrorHandler, globalErrorHandler} = require('./log')(module, isDev);
 
 /**
  * @memberOf Application#
@@ -77,7 +75,7 @@ app.port = Number(process.env.PORT || config.get('port'));
  * @memberOf Application#
  * @type {Boolean}
  */
-app.isProd = 'production' === app.get('env');
+app.isDev = isDev;
 
 /**
  * @memberOf Application#
@@ -89,6 +87,12 @@ app.config = config;
  * @memberOf Application#
  */
 app.passport = passport;
+
+/**
+ * @memberOf Application#
+ * @type {Function}
+ */
+app.discovery = discovery;
 
 /**
  * @memberOf Application#

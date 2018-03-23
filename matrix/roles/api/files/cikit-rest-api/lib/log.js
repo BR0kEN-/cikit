@@ -1,27 +1,34 @@
 const winston = require('winston');
 const ResponseError = require('./error/ResponseError');
 
-function logger(label) {
-  return new winston.Logger({
-    exitOnError: false,
-    transports: [
-      new winston.transports.File({
-        level: 'info',
-        filename: './all.log',
-        handleException: true,
-        colorize: false,
-        maxFiles: 2,
-        maxSize: 5242880,
-        json: true,
-      }),
+function logger(label, isDev) {
+  const transports = [
+    new winston.transports.File({
+      level: 'info',
+      filename: './all.log',
+      handleException: true,
+      colorize: false,
+      maxFiles: 2,
+      maxSize: 5242880,
+      json: true,
+    }),
+  ];
+
+  if (isDev) {
+    transports.push(
       new winston.transports.Console({
         label,
         level: 'debug',
         handleException: true,
         colorize: true,
         json: false,
-      }),
-    ],
+      })
+    );
+  }
+
+  return new winston.Logger({
+    transports,
+    exitOnError: false,
   });
 }
 
@@ -62,8 +69,8 @@ function routeErrorHandler(logger, request, response, next) {
 
 winston.emitErrs = true;
 
-module.exports = module => {
-  const log = logger(module.filename.split('/').slice(-2).join('/'));
+module.exports = (module, isDev) => {
+  const log = logger(module.filename.split('/').slice(-2).join('/'), isDev);
 
   return {
     log,

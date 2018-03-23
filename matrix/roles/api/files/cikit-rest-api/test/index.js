@@ -19,7 +19,7 @@ const request = require('./request')(app, chai);
 const assert = require('./assert');
 
 describe('The developer', () => {
-  it('should not be able to set a middleware for a route with unknown group', () => {
+  it('should not be able to set a middleware for a route with an unknown group', () => {
     try {
       require('../lib/routes/_resource')('v1ewer', () => () => {})(app);
       throw new Error('This should never be reached!');
@@ -42,7 +42,6 @@ describe('The user', () => {
     const owners = await app.managers.user.getUsers({group: 'owner'});
 
     if (0 < owners.length) {
-      app.log.debug('An existing system owner will be temporarily removed.');
       // Store an existing owner in memory to recreate it afterward.
       owner = owners[owners.length - 1];
       // Remove an existing owner to create a stub for tests.
@@ -117,9 +116,6 @@ describe('The user', () => {
         errorId: 404,
         error: 'Route not found',
       });
-
-      // Assert that virtual property represents an internal ID.
-      users[group].userId.should.be.equal(users[group]._id.toString());
     });
   }
 
@@ -273,6 +269,7 @@ describe('The user', () => {
       group: 'viewer',
     };
 
+    // Authenticate an owner.
     const auth = await request.auth(users.owner.username, users.owner.generateTotp());
 
     // Ensure the user is authenticated.
@@ -282,7 +279,10 @@ describe('The user', () => {
 
     // Various unsuccessful attempts to add a user.
     for (let i = 0; i < addFailingSuites.length; i++) {
-      assert.response.error(await request.api(auth, 'post', 'user/add').send(addFailingSuites[i].data), addFailingSuites[i]);
+      assert.response.error(await request
+        .api(auth, 'post', 'user/add')
+        .send(addFailingSuites[i].data), addFailingSuites[i]
+      );
     }
 
     // Add a new user.
@@ -291,18 +291,22 @@ describe('The user', () => {
     // The updated list should be returned.
     assert.response.list(updatedList);
 
-    // Newly created user is appended to the list. Check its data.
+    // Newly created user is appended to the list.
     ['username', 'group'].forEach(property => {
-      updatedList.body[updatedList.body.length - 1].should.have.property(property).eql(validNewUser[property]);
+      // Take the last one.
+      updatedList.body[updatedList.body.length - 1].should.have
+        .property(property)
+        .eql(validNewUser[property]);
     });
 
+    // Delete a non-existing user.
     assert.response.error(await request.api(auth, 'delete', 'user/delete/bla').send(), {
       httpCode: 400,
       errorId: 903,
       error: 'Cannot delete a non-existent user',
     });
 
-    // Remove a user.
+    // Remove a user created the moment before.
     updatedList = await request.api(auth, 'delete', `user/delete/${validNewUser.username}`).send();
     // The list of users is returned.
     assert.response.list(updatedList);

@@ -99,11 +99,5 @@ module.exports = app => {
     await removeTokens.call(this, false);
   };
 
-  schema
-    .virtual('userId')
-    .get(function () {
-      return this.id;
-    });
-
   return app.mongoose.model('User', schema);
 };

@@ -9,7 +9,7 @@ module.exports = (app, command, handler) => (request, response) => {
 
   app.log.debug('Running "%s"', shellCommand);
 
-  return (async () => app.isProd ? JSON.parse(await execSync(shellCommand)) : require('./examples/' + command))()
+  return (async () => app.isDev ? require('./examples/' + command) : JSON.parse(await execSync(shellCommand)))()
     .then(output => {
       const stats = output.stats[hostname];
 
