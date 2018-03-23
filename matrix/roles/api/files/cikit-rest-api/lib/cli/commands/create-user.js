@@ -37,12 +37,8 @@ parser.addArgument(['-r', '--recreate'], {
  * @type {{username: {String}, recreate: {Bool}, group: {String}}}
  */
 const args = parser.parseArgs();
-/**
- * @type {UserManager}
- */
-const manager = require('../../user/UserManager')(app);
 
-manager
+app.managers.user
   .ensureUser(args.username, args.group, args.recreate)
   .then(async user => {
     // eslint-disable-next-line no-console
@@ -57,7 +53,7 @@ manager
         'will be able to recreate 2FA secret key.',
       group: user.group,
       secret: user.secret,
-      barcode: await manager.generateBarcode(user),
+      barcode: await user.generateBarcode(),
     });
   });
 

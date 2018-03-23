@@ -1,5 +1,4 @@
 const Strategy = require('passport-strategy');
-const {generateTokens} = require('../../auth/functions');
 
 /**
  * @class TotpCodeStrategy
@@ -26,7 +25,7 @@ class TotpCodeStrategy extends Strategy {
     }
 
     (async () => {
-      const user = await this.app.mongoose.models.User.findOne({username});
+      const user = await this.app.managers.user.getUserByName(username);
 
       if (!user) {
         throw new this.app.errors.RuntimeError('User not found', 400, 'user_not_found');
@@ -36,7 +35,9 @@ class TotpCodeStrategy extends Strategy {
         throw new this.app.errors.RuntimeError('TOTP code invalid', 400, 'totp_code_invalid');
       }
 
-      generateTokens(this.app, user.id).then(data => this.success(user, data));
+      user
+        .generateAccessToken()
+        .then(data => this.success(user, data));
     })();
   }
 }

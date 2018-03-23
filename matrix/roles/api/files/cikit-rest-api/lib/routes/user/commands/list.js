@@ -1,4 +1,4 @@
-module.exports = async (manager, request, response) => response.json(await manager.getUsers(null, {
+module.exports = async (app, request, response) => response.json(await app.managers.user.getUsers(null, {
   username: true,
   created: true,
   secret: true,

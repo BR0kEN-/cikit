@@ -8,11 +8,7 @@ chai.use(require('chai-http'));
 /**
  * @type {Application}
  */
-const app = require('./app');
-/**
- * @type {UserManager}
- */
-const manager = require('../lib/user/UserManager')(app);
+const app = require('../lib/app');
 /**
  * @type {Object.<Function[]>}
  */
@@ -22,7 +18,19 @@ const request = require('./request')(app, chai);
  */
 const assert = require('./assert');
 
-describe('user', () => {
+describe('The developer', () => {
+  it('should not be able to set a middleware for a route with unknown group', () => {
+    try {
+      require('../lib/routes/_resource')('v1ewer', () => () => {})(app);
+      throw new Error('This should never be reached!');
+    }
+    catch (error) {
+      error.message.should.be.eql('You are trying to set a route handler with unknown permissions!');
+    }
+  });
+});
+
+describe('The user', () => {
   let owner = null;
   let users = {
     owner: 'I_AM_OWNER',
@@ -31,7 +39,7 @@ describe('user', () => {
   };
 
   before(async () => {
-    const owners = await manager.getUsers({group: 'owner'});
+    const owners = await app.managers.user.getUsers({group: 'owner'});
 
     if (0 < owners.length) {
       app.log.debug('An existing system owner will be temporarily removed.');
@@ -43,7 +51,7 @@ describe('user', () => {
 
     // Create a stub user for every group.
     for (const [group, username] of Object.entries(users)) {
-      users[group] = await manager.ensureUser(username, group);
+      users[group] = await app.managers.user.ensureUser(username, group);
     }
   });
 
@@ -79,7 +87,7 @@ describe('user', () => {
       error: 'TOTP code invalid',
     },
     {
-      reason: 'user does not exists',
+      reason: 'an account does not exist',
       username: 'null',
       code: 'bla',
       httpCode: 400,
@@ -87,7 +95,7 @@ describe('user', () => {
       error: 'User not found',
     },
   ].forEach(suite => {
-    it('should fail up with an invalid request because ' + suite.reason, async () => {
+    it(`should be informed about an invalid request because ${suite.reason}`, async () => {
       assert.response.error(await request.auth(suite.username, suite.code), suite);
     });
   });
@@ -100,7 +108,7 @@ describe('user', () => {
     const username = users[group];
 
     it('should be authenticated as ' + username, async () => {
-      const auth = await request.auth(username, await manager.generateTotpCode(username));
+      const auth = await request.auth(username, await users[group].generateTotp());
 
       assert.response.auth(auth);
       assert.response.list(await request.api(auth, 'get', 'droplet/list').send());
@@ -115,18 +123,18 @@ describe('user', () => {
     });
   }
 
-  it('should fail up generating a TOTP code for an invalid user.', async () => {
-    try {
-      await manager.generateTotpCode('bla');
-      throw new Error('This should never be reached');
-    }
-    catch (error) {
-      error.message.should.be.eql('A user does not exist');
-    }
+  it('should get a generated QR code for setting up an authenticating application', async () => {
+    // No errors should be thrown.
+    await users.owner.generateBarcode();
+
+    // Pass user's object.
+    true.should.be.eql(app.managers.user.isOwner(users.owner));
+    // Pass the name of a group.
+    false.should.be.eql(app.managers.user.isOwner(users.manager.group));
   });
 
-  it('should fail up accessing an authorized resource with an invalid token', async () => {
-    const auth = await request.auth(users.viewer.username, await manager.generateTotpCode(users.viewer.username));
+  it('should not be able to access the resource with an invalid access token', async () => {
+    const auth = await request.auth(users.viewer.username, users.viewer.generateTotp());
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
@@ -140,8 +148,8 @@ describe('user', () => {
     });
   });
 
-  it('should fail up accessing an authorized resource with outdated token', async () => {
-    const auth = await request.auth(users.manager.username, await manager.generateTotpCode(users.manager.username));
+  it('should not be able to access the resource with an outdated access token', async () => {
+    const auth = await request.auth(users.manager.username, users.manager.generateTotp());
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
@@ -149,6 +157,8 @@ describe('user', () => {
     const token = await app.mongoose.models.AccessToken.findOne({token: auth.body.access_token});
     // Compulsorily grow old the token and save it.
     await token.update({created: token.created.setSeconds(token.created.getSeconds() - 86400)});
+    // Ensure the "toString()" method of token's object returns an actual token.
+    token.token.should.be.eql(token.toString());
 
     assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
       httpCode: 401,
@@ -157,17 +167,151 @@ describe('user', () => {
     });
   });
 
-  it('should fail up accessing an authorized resource with an invalid role', async () => {
-    const auth = await request.auth(users.owner.username, await manager.generateTotpCode(users.owner.username));
-    const response = await request.api(auth, 'get', '_test/wrong-user-group').send();
+  ['viewer', 'manager'].forEach(group => {
+    const denied = {
+      httpCode: 403,
+      errorId: 912,
+      error: 'Access denied',
+    };
 
-    assert.response.error(response, {
-      httpCode: 401,
-      errorId: 911,
-      error: 'Route requested an access for the unknown group',
+    it(`should not be able to access the "user/*" endpoints as a "${group}"`, async () => {
+      const auth = await request.auth(users[group].username, users[group].generateTotp());
+
+      // Ensure the user is authenticated.
+      assert.response.auth(auth);
+
+      // Cannot see the list of users.
+      assert.response.error(await request.api(auth, 'get', 'user/list').send(), denied);
+
+      // Cannot add a new user.
+      assert.response.error(await request.api(auth, 'post', 'user/add').send({
+        username: 'BR0kEN',
+        group: 'viewer',
+      }), denied);
+
+      // Cannot delete a user.
+      assert.response.error(await request.api(auth, 'delete', 'user/delete/BR0kEN').send(), denied);
+
+      // Able to refresh own access token.
+      assert.response.auth(await request.api(auth, 'post', 'user/auth/refresh').send({
+        grant_type: 'refresh_token',
+        refresh_token: auth.body.refresh_token,
+      }));
+
+      // Unable to refresh a non-existing token.
+      assert.response.error(await request.api(auth, 'post', 'user/auth/refresh').send({
+        grant_type: 'refresh_token',
+        refresh_token: auth.body.refresh_token,
+      }), {
+        httpCode: 401,
+        errorId: 910,
+        error: 'Refresh token not found',
+      });
+
+      // Access token was refreshed, therefore it's not possible to access
+      // the resources with an old one anymore.
+      assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
+        httpCode: 401,
+        errorId: 908,
+        error: 'Access token not found',
+      });
+    });
+  });
+
+  it('should be able to access the "user/*" endpoints as an "owner"', async () => {
+    const addFailingSuites = [
+      {
+        httpCode: 400,
+        errorId: 913,
+        error: 'The request body must contain "group" and "username"',
+        data: {},
+      },
+      {
+        httpCode: 400,
+        errorId: 913,
+        error: 'The request body must contain "group" and "username"',
+        data: {
+          group: 'bla',
+        },
+      },
+      {
+        httpCode: 400,
+        errorId: 913,
+        error: 'The request body must contain "group" and "username"',
+        data: {
+          username: 'bla',
+        },
+      },
+      {
+        httpCode: 400,
+        errorId: 914,
+        error: 'Username is already taken',
+        data: users.owner,
+      },
+      {
+        httpCode: 403,
+        errorId: 906,
+        error: 'The system cannot have multiple owners',
+        data: {
+          username: users.owner.username + '-1',
+          group: users.owner.group,
+        },
+      },
+      {
+        httpCode: 400,
+        errorId: 905,
+        error: 'The group is unknown',
+        data: {
+          username: users.owner.username + '-1',
+          group: users.owner.group + '-1',
+        },
+      },
+    ];
+
+    const validNewUser = {
+      username: 'test-user-12',
+      group: 'viewer',
+    };
+
+    const auth = await request.auth(users.owner.username, users.owner.generateTotp());
+
+    // Ensure the user is authenticated.
+    assert.response.auth(auth);
+    // Can see a list of users.
+    assert.response.list(await request.api(auth, 'get', 'user/list').send());
+
+    // Various unsuccessful attempts to add a user.
+    for (let i = 0; i < addFailingSuites.length; i++) {
+      assert.response.error(await request.api(auth, 'post', 'user/add').send(addFailingSuites[i].data), addFailingSuites[i]);
+    }
+
+    // Add a new user.
+    let updatedList = await request.api(auth, 'post', 'user/add').send(validNewUser);
+
+    // The updated list should be returned.
+    assert.response.list(updatedList);
+
+    // Newly created user is appended to the list. Check its data.
+    ['username', 'group'].forEach(property => {
+      updatedList.body[updatedList.body.length - 1].should.have.property(property).eql(validNewUser[property]);
     });
 
-    response.body.should.not.have
-      .property('brutality');
+    assert.response.error(await request.api(auth, 'delete', 'user/delete/bla').send(), {
+      httpCode: 400,
+      errorId: 903,
+      error: 'Cannot delete a non-existent user',
+    });
+
+    // Remove a user.
+    updatedList = await request.api(auth, 'delete', `user/delete/${validNewUser.username}`).send();
+    // The list of users is returned.
+    assert.response.list(updatedList);
+
+    // Iterate the list of users trying to find removed account.
+    updatedList.body.forEach(user => {
+      if (user.username === validNewUser.username) {
+        throw new Error('User was not removed!');
+      }
+    });
   });
 });

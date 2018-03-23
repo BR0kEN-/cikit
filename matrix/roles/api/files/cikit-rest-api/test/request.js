@@ -24,7 +24,6 @@ module.exports = (app, chai) => {
   const request = (method, route) => chai
     .request(app)[method](prefix + '/' + route);
 
-
   /**
    * Sends the request for authentication.
    *

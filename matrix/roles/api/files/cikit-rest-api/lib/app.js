@@ -102,7 +102,17 @@ app.errors = require('./errors')(app);
  */
 app.mongoose = require('./mongoose')(app);
 
-for (const [, object] of Object.entries(discovery('./auth/strategy'))) {
+/**
+ * @memberOf Application#
+ */
+app.managers = {
+  /**
+   * @memberOf Application.managers#
+   */
+  user: require('./user/UserManager')(app),
+};
+
+for (const [, object] of Object.entries(discovery('./user/auth/strategy'))) {
   passport.use(new object(app));
 }
 

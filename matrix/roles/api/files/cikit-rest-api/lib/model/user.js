@@ -1,10 +1,25 @@
-let {generateTotpSecret, isTotpCodeValid} = require('../auth/functions');
+const speakeasy = require('speakeasy');
+const hostname = require('os').hostname();
+const crypto = require('crypto');
+const QRCode = require('qrcode');
 
 module.exports = app => {
   const totp = app.config.get('security:totp');
 
-  generateTotpSecret = generateTotpSecret.bind(undefined, totp);
-  isTotpCodeValid = isTotpCodeValid.bind(undefined, totp);
+  function removeTokens(createNew) {
+    return Promise.all(['AccessToken', 'RefreshToken'].map(async name => {
+      const data = {userId: this.id};
+      await app.mongoose.models[name].remove(data);
+
+      if (!createNew) {
+        return null;
+      }
+
+      data.token = crypto.randomBytes(32).toString('hex');
+
+      return await new app.mongoose.models[name](data).save();
+    }));
+  }
 
   const schema = new app.mongoose.Schema({
     username: {
@@ -16,7 +31,9 @@ module.exports = app => {
       type: String,
       unique: true,
       required: true,
-      default: generateTotpSecret,
+      default: () => {
+        return speakeasy.generateSecret({length: totp.length, otpauth_url: false})[totp.type];
+      },
     },
     created: {
       type: Date,
@@ -31,7 +48,55 @@ module.exports = app => {
   });
 
   schema.methods.isTotpValid = function (code) {
-    return isTotpCodeValid(this.secret, code);
+    return speakeasy.totp.verify({
+      secret: this.secret,
+      token: code,
+      encoding: totp.type,
+    });
+  };
+
+  schema.methods.generateTotp = function () {
+    return speakeasy.totp({
+      secret: this.secret,
+      encoding: totp.type,
+    });
+  };
+
+  /**
+   * @return {Promise.<String>}
+   *   A Base64 encoded PNG.
+   */
+  schema.methods.generateBarcode = async function () {
+    return await QRCode.toDataURL(speakeasy.otpauthURL({
+      // The label must be encoded because otherwise
+      // QR code will be invalid.
+      label: encodeURIComponent(hostname),
+      secret: this.secret,
+      // The issues can be an unprocessed text.
+      issuer: `${totp.issuer} (${this.username})`,
+      encoding: totp.type,
+    }));
+  };
+
+  /**
+   * Destroy old and generate new "access" and "refresh" tokens.
+   *
+   * @return {{token_type: {String}, expires_in: {Number}, access_token: {String}, refresh_token: {String}}}
+   *   The Bearer's token object.
+   */
+  schema.methods.generateAccessToken = async function () {
+    const [accessToken, refreshToken] = await removeTokens.call(this, true);
+
+    return {
+      token_type: 'Bearer',
+      expires_in: app.config.get('security:tokenLife'),
+      access_token: accessToken.toString(),
+      refresh_token: refreshToken.toString(),
+    };
+  };
+
+  schema.methods.revokeAccess = async function () {
+    await removeTokens.call(this, false);
   };
 
   schema
