@@ -77,7 +77,7 @@ app.port = Number(process.env.PORT || config.get('port'));
  * @memberOf Application#
  * @type {Boolean}
  */
-app.isDev = 'production' !== app.get('env');
+app.isProd = 'production' === app.get('env');
 
 /**
  * @memberOf Application#

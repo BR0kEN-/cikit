@@ -1,5 +1,3 @@
-const {ensureAuthorizedAccess} = require('../auth/functions');
-
 /**
  * Ensures an authorized access to the resource.
  *
@@ -19,11 +17,31 @@ module.exports = (requestedUserGroup, filenameOrFunction, ...args) => {
     filenameOrFunction = require('./' + filenameOrFunction);
   }
 
+  /**
+   * @param {Application} app
+   */
   return app => [
     // Every API resource requires an authentication.
     app.passport.authenticate('access-token', {session: false}),
     // If a user is logged in successfully its permissions is oughta check.
-    ensureAuthorizedAccess(app, requestedUserGroup),
+    (request, response, next) => {
+      const userGroups = app.config.get('security:user:groups');
+
+      if (!userGroups.hasOwnProperty(requestedUserGroup)) {
+        throw new app.errors.RuntimeError('Route requested an access for the unknown group', 401, 'route_group_unknown');
+      }
+
+      if (
+        // A user belongs to the requested group.
+        requestedUserGroup === request.user.group ||
+        // A user's group inherits the requested group.
+        -1 !== userGroups[requestedUserGroup].indexOf(request.user.group)
+      ) {
+        return next();
+      }
+
+      throw new app.errors.RuntimeError('Access denied', 403, 'route_access_denied');
+    },
     // Do resource's actions.
     filenameOrFunction(app, ...args),
   ];

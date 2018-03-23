@@ -8,12 +8,18 @@ chai.use(require('chai-http'));
 /**
  * @type {Application}
  */
-const app = require('../lib/app');
+const app = require('./app');
 /**
  * @type {UserManager}
  */
 const manager = require('../lib/user/UserManager')(app);
-const {authRequest, apiRequest} = require('./request')(app, chai);
+/**
+ * @type {Object.<Function[]>}
+ */
+const request = require('./request')(app, chai);
+/**
+ * @type {Object.<Function[]>}
+ */
 const assert = require('./assert');
 
 describe('user', () => {
@@ -82,7 +88,7 @@ describe('user', () => {
     },
   ].forEach(suite => {
     it('should fail up with an invalid request because ' + suite.reason, async () => {
-      assert.response.error(await authRequest(suite.username, suite.code), suite);
+      assert.response.error(await request.auth(suite.username, suite.code), suite);
     });
   });
 
@@ -94,33 +100,40 @@ describe('user', () => {
     const username = users[group];
 
     it('should be authenticated as ' + username, async () => {
-      const auth = await authRequest(username, await manager.generateTotpCode(username));
+      const auth = await request.auth(username, await manager.generateTotpCode(username));
 
       assert.response.auth(auth);
-
-      const response = await apiRequest(auth, 'get', 'droplet/list').send();
-
-      response.should.have
-        .status(200);
-
-      response.should.have
-        .property('body')
-        .to.be.an('array');
+      assert.response.list(await request.api(auth, 'get', 'droplet/list').send());
+      assert.response.error(await request.api(auth, 'get', 'droplet/l1st').send(), {
+        httpCode: 404,
+        errorId: 404,
+        error: 'Route not found',
+      });
 
       // Assert that virtual property represents an internal ID.
       users[group].userId.should.be.equal(users[group]._id.toString());
     });
   }
 
+  it('should fail up generating a TOTP code for an invalid user.', async () => {
+    try {
+      await manager.generateTotpCode('bla');
+      throw new Error('This should never be reached');
+    }
+    catch (error) {
+      error.message.should.be.eql('A user does not exist');
+    }
+  });
+
   it('should fail up accessing an authorized resource with an invalid token', async () => {
-    const auth = await authRequest(users.viewer.username, await manager.generateTotpCode(users.viewer.username));
+    const auth = await request.auth(users.viewer.username, await manager.generateTotpCode(users.viewer.username));
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
     // Then spoof the token to fail a request to an authorized resource.
     auth.body.access_token = 'bla';
 
-    assert.response.error(await apiRequest(auth, 'get', 'droplet/list').send(), {
+    assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
       httpCode: 401,
       errorId: 908,
       error: 'Access token not found',
@@ -128,7 +141,7 @@ describe('user', () => {
   });
 
   it('should fail up accessing an authorized resource with outdated token', async () => {
-    const auth = await authRequest(users.viewer.username, await manager.generateTotpCode(users.viewer.username));
+    const auth = await request.auth(users.manager.username, await manager.generateTotpCode(users.manager.username));
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
@@ -137,10 +150,24 @@ describe('user', () => {
     // Compulsorily grow old the token and save it.
     await token.update({created: token.created.setSeconds(token.created.getSeconds() - 86400)});
 
-    assert.response.error(await apiRequest(auth, 'get', 'droplet/list').send(), {
+    assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
       httpCode: 401,
       errorId: 909,
       error: 'Access token expired',
     });
+  });
+
+  it('should fail up accessing an authorized resource with an invalid role', async () => {
+    const auth = await request.auth(users.owner.username, await manager.generateTotpCode(users.owner.username));
+    const response = await request.api(auth, 'get', '_test/wrong-user-group').send();
+
+    assert.response.error(response, {
+      httpCode: 401,
+      errorId: 911,
+      error: 'Route requested an access for the unknown group',
+    });
+
+    response.body.should.not.have
+      .property('brutality');
   });
 });

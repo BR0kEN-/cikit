@@ -32,5 +32,13 @@ module.exports = {
         .property('refresh_token')
         .length(64);
     },
+    list: (response) => {
+      response.should.have
+        .status(200);
+
+      response.should.have
+        .property('body')
+        .to.be.an('array');
+    },
   },
 };

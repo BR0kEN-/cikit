@@ -67,53 +67,8 @@ function isTotpCodeValid(totp, secret, code) {
   return speakeasy.totp.verify({secret, token: code, encoding: totp.type});
 }
 
-/**
- * Checks whether the user is authorized and belongs to requested group.
- *
- * @param {Application} app
- *   The application.
- * @param {String} requestedGroup
- *   The name of a group, the route require the user to have.
- *
- * @return {Function}
- *   Express.js middleware.
- */
-function ensureAuthorizedAccess(app, requestedGroup) {
-  return (request, response, next) => {
-    if (!request.user) {
-      throw new app.errors.RuntimeError('Unauthorized', 401, 'user_unauthorized');
-    }
-
-    if (!request.user.group) {
-      throw new app.errors.RuntimeError('The user does not belong to a group', 401, 'user_ungrouped');
-    }
-
-    const userGroups = app.config.get('security:user:groups');
-
-    if (!userGroups.hasOwnProperty(request.user.group)) {
-      throw new app.errors.RuntimeError('The user is in an unknown group', 401, 'user_group_unknown');
-    }
-
-    if (!userGroups.hasOwnProperty(requestedGroup)) {
-      throw new app.errors.RuntimeError('Route requested an access for the unknown group', 401, 'route_group_unknown');
-    }
-
-    if (
-      // A user belongs to the requested group.
-      requestedGroup === request.user.group ||
-      // A user's group inherits the requested group.
-      -1 !== userGroups[requestedGroup].indexOf(request.user.group)
-    ) {
-      return next();
-    }
-
-    throw new app.errors.RuntimeError('Access denied', 403, 'route_access_denied');
-  };
-}
-
 module.exports = {
   generateTokens,
   generateTotpSecret,
   isTotpCodeValid,
-  ensureAuthorizedAccess,
 };
