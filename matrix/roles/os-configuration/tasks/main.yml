@@ -6,5 +6,12 @@
     mode: 0755
   with_fileglob: templates/motd/*.j2
 
-- import_tasks: tasks/tasks/sshd.yml
+- name: Check whether SSH daemon is installed
+  stat:
+    path: /etc/ssh/sshd_config
+  register: ssh_config
+
+- include_tasks: tasks/tasks/sshd.yml
+  when: ssh_config.stat.exists
+
 - import_tasks: tasks/tasks/hosts.yml

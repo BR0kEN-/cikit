@@ -14,6 +14,6 @@ apt:
     - "build-essential"
     - "linux-headers-generic"
     # {{ ansible_kernel }} is the same as result of "uname -r".
-    - "linux-headers-{{ ansible_kernel }}"
+    #- "linux-headers-{{ ansible_kernel }}"
     - "nginx"
     - "python-passlib"

@@ -6,7 +6,7 @@
     line: |-
       {{ item.key }} {{ item.value }}
     mode: 0644
-    dest: /etc/ssh/sshd_config
+    dest: "{{ ssh_config.stat.path }}"
   with_dict: "{{ os_configuration.sshd }}"
 
 - name: Restart SSH daemon
