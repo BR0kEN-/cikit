@@ -18,6 +18,12 @@ const request = require('./request')(app, chai);
  */
 const assert = require('./assert');
 
+const denied = {
+  httpCode: 403,
+  errorId: 912,
+  error: 'Access denied',
+};
+
 describe('The developer', () => {
   it('should not be able to set a middleware for a route with an unknown group', () => {
     try {
@@ -117,11 +123,6 @@ describe('The user', () => {
     });
   }
 
-  it('should get a generated QR code for setting up an authenticating application', async () => {
-    // No errors should be thrown.
-    await users.owner.generateBarcode();
-  });
-
   it('should not be able to access the resource with an invalid access token', async () => {
     const auth = await request.auth(users.viewer);
 
@@ -157,12 +158,6 @@ describe('The user', () => {
   });
 
   ['viewer', 'manager'].forEach(group => {
-    const denied = {
-      httpCode: 403,
-      errorId: 912,
-      error: 'Access denied',
-    };
-
     it(`should not be able to access the "user/*" endpoints as a "${group}"`, async () => {
       const auth = await request.auth(users[group]);
 
@@ -205,6 +200,13 @@ describe('The user', () => {
         error: 'Access token not found',
       });
     });
+
+    it(`should not be able to get a QR code for setting up an authenticating application as a "${group}"`, async () => {
+      const auth = await request.auth(users[group]);
+
+      assert.response.auth(auth);
+      assert.response.error(await request.api(auth, 'get', `user/auth/setup/${users[group]}`), denied);
+    });
   });
 
   it('should be able to access the "user/*" endpoints as an "owner"', async () => {
@@ -242,7 +244,7 @@ describe('The user', () => {
         errorId: 906,
         error: 'The system cannot have multiple owners',
         data: {
-          username: users.owner.username + '-1',
+          username: users.owner + '-1',
           group: users.owner.group,
         },
       },
@@ -251,7 +253,7 @@ describe('The user', () => {
         errorId: 905,
         error: 'The group is unknown',
         data: {
-          username: users.owner.username + '-1',
+          username: users.owner + '-1',
           group: users.owner.group + '-1',
         },
       },
@@ -312,11 +314,18 @@ describe('The user', () => {
     });
   });
 
+  it('should be able to get a QR code for setting up an authenticating application as an "owner"', async () => {
+    const auth = await request.auth(users.owner);
+
+    assert.response.auth(auth);
+    assert.response.auth.setup(await request.api(auth, 'get', `user/auth/setup/${users.owner}`));
+  });
+
   it('should be able to revoke an access token for yourself', async () => {
     // Authenticate a user with least permissions.
     const auth = await request.auth(users.viewer);
     // Revoke an access for yourself.
-    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer}`));
   });
 
   it('should not be able to revoke an access token for others', async () => {
@@ -324,7 +333,7 @@ describe('The user', () => {
     const auth = await request.auth(users.manager);
 
     // Cannot revoke an access for a viewer.
-    assert.response.error(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`), {
+    assert.response.error(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer}`), {
       httpCode: 401,
       errorId: 904,
       error: 'Only system owner can revoke access for others',
@@ -335,7 +344,7 @@ describe('The user', () => {
     // Authenticate an owner.
     const auth = await request.auth(users.owner);
 
-    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
-    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.manager.username}`));
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer}`));
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.manager}`));
   });
 });

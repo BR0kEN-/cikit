@@ -47,6 +47,10 @@ module.exports = app => {
     },
   });
 
+  schema.methods.toString = function () {
+    return this.username;
+  };
+
   schema.methods.isTotpValid = function (code) {
     return speakeasy.totp.verify({
       secret: this.secret,

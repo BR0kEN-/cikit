@@ -8,8 +8,8 @@
  */
 module.exports = async (app, request, response) => {
   // Allow revoking for ourselves and for anyone by owner.
-  if (request.user.id === request.params.user.id || request.user.isOwner()) {
-    await request.params.user.revokeAccess();
+  if (request.user.id === request.payload.user.id || request.user.isOwner()) {
+    await request.payload.user.revokeAccess();
 
     response.json({
       status: 'ok',

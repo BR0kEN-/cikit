@@ -16,4 +16,4 @@ module.exports = async (username, app) => {
 };
 ```
 
-The returned value will be added to the request's `params` object and replace the input value (i.e. `request.params.user`).
+The returned value will be added to the request's `payload` object (i.e. `request.payload.user`).

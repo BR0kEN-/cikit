@@ -1,8 +1,9 @@
+const assertHttpCode = (response, code = 200) => response.should.have.status(code);
+
 const assert = {
   response: {
     error: (response, suite) => {
-      response.should.have
-        .status(suite.httpCode);
+      assertHttpCode(response, suite.httpCode);
 
       response.body.should.have
         .property('error')
@@ -13,8 +14,7 @@ const assert = {
         .eql(suite.errorId);
     },
     auth: (response) => {
-      response.should.have
-        .status(200);
+      assertHttpCode(response);
 
       response.body.should.have
         .property('token_type')
@@ -33,8 +33,7 @@ const assert = {
         .length(64);
     },
     list: (response) => {
-      response.should.have
-        .status(200);
+      assertHttpCode(response);
 
       response.should.have
         .property('body')
@@ -44,12 +43,18 @@ const assert = {
 };
 
 assert.response.auth.revoke = (response) => {
-  response.should.have
-    .status(200);
+  assertHttpCode(response);
 
   response.body.should.have
     .property('status')
     .eql('ok');
+};
+
+assert.response.auth.setup = (response) => {
+  assertHttpCode(response);
+
+  response.body.should.have
+    .property('qr');
 };
 
 module.exports = assert;

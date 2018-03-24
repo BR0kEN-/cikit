@@ -22,7 +22,8 @@
   "routes": {
     "use": [
       "droplet/list",
-      "user/list"
+      "user/list",
+      "user/auth/setup/:user"
     ],
     "post": [
       "droplet/add",
