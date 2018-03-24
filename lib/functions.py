@@ -19,7 +19,6 @@ def playbooks_find(*paths):
 
 def is_project_root(directory):
     return \
-        path.isdir(directory + '/scripts') and \
         path.isdir(directory + '/.cikit') and \
         path.exists(directory + '/.cikit/config.yml')
 
