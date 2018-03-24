@@ -2,8 +2,15 @@
 - name: Define the mounts
   set_fact:
     mounts: |-
-      {{ mounts }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target else 'source'] }}'
+      {{ mounts }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target is defined else 'source'] }}'
   with_items: "{{ vm.folders }}"
+
+- name: Append the CIKit package to the list of mounts
+  set_fact:
+    mounts: "{{ mounts }} -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib'"
+  # This is an exceptional case allowing to create a testing environment for
+  # the CIKit REST API.
+  when: ignore_cikit_mount is undefined
 
 - name: Define the ports
   set_fact:
@@ -18,7 +25,6 @@
       -h '{{ hostname }}' \
       -e 'container=docker' \
       -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-      -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib' \
       --tmpfs /run \
       --tmpfs /run/lock \
       --cap-add=SYS_ADMIN \
@@ -30,7 +36,7 @@
 
 - name: Install the requirements
   shell: |-
-    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo wget python-minimal -y'
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo curl wget python-minimal apt-transport-https -y'
 
 - name: Print the name of created container
   debug:
