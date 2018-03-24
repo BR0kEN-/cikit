@@ -1,0 +1,4 @@
+---
+- name: Check whether container is running
+  shell: "docker inspect -f {% raw %}{{.State.Running}}{% endraw %} {{ hostname }}"
+  register: container_running

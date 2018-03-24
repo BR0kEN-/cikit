@@ -1,0 +1,7 @@
+---
+- include_tasks: stop.yml
+
+- include_tasks: do.yml
+  args:
+    command: rm
+    operation: Remove

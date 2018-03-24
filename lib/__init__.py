@@ -9,6 +9,28 @@ from subprocess import call
 from arguments import args
 from re import search
 
+
+def get_hostname(action_description):
+    # Read the configuration of a project we're currently in.
+    hostname = functions.get_hostname(variables.read_yaml(variables.CONFIG_FILE))
+
+    if '' == hostname:
+        functions.error(
+            (
+                'You are trying to %s the container but its hostname cannot '
+                'be determined. Did you break the "site_url" variable in "%s"?'
+            )
+            %
+            (
+                action_description,
+                variables.CONFIG_FILE,
+            ),
+            200
+        )
+
+    return hostname
+
+
 PARAMS = []
 
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
@@ -16,12 +38,15 @@ if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
 
 if '' == args.playbook:
     if not variables.INSIDE_VM_OR_CI:
-        for group in ['host', 'matrix']:
+        for group in ['env', 'host', 'matrix']:
             functions.playbooks_print(variables.dirs['self'], '%s/' % group)
 
     functions.playbooks_print(variables.dirs['scripts'])
 
     sys.exit(0)
+elif 'ssh' == args.playbook:
+    # @todo This leaves Python process to wait for "docker exec". Is it ok?
+    sys.exit(call(['docker exec -it %s bash' % get_hostname('login to')], shell=True))
 
 PLAYBOOK = functions.playbooks_find(
     variables.dirs['scripts'] + '/' + args.playbook,
@@ -36,6 +61,15 @@ if None is PLAYBOOK:
 if 'CIKIT_LIST_TAGS' in os.environ:
     PARAMS.append('--list-tags')
 else:
+    # The "cikit provision" run without required "--limit" option.
+    if args.playbook.endswith('provision') and not args.limit:
+        # http://blog.oddbit.com/2015/10/13/ansible-20-the-docker-connection-driver
+        args.limit = get_hostname('provision') + ','
+
+        PARAMS.append("-i '%s'" % args.limit)
+        PARAMS.append("-c docker")
+        PARAMS.append("-u root")
+
     # Duplicate the "limit" option as "extra" because some playbooks may
     # require it and required options are checked within the "extra" only.
     if args.limit:

@@ -1,0 +1,30 @@
+# requires-project-root
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - "{{ __targetdir__ }}/.cikit/config.yml"
+
+  vars:
+    __action: start
+
+  tasks:
+    - name: Define the hostname
+      set_fact:
+        hostname: "{{ site_url.split('//') | last }}"
+        mounts: ""
+        ports: ""
+
+    - name: Check whether container exists
+      # Calling "docker" also help to detect whether a system has Docker
+      # and is it running.
+      shell: "docker ps -qaf name='^/{{ hostname }}'"
+      register: container_exists
+
+    - include_tasks: tasks/create.yml
+      when: "not container_exists.stdout and 'start' == __action"
+
+    - include_tasks: "tasks/{{ __action }}.yml"
+      when: container_exists.stdout

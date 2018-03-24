@@ -93,3 +93,5 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
                     return json.loads(result)
 
             return {}
+
+CONFIG_FILE = dirs['cikit'] + '/config.yml'

@@ -1,0 +1,37 @@
+---
+- name: Define the mounts
+  set_fact:
+    mounts: |-
+      {{ mounts }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target else 'source'] }}'
+  with_items: "{{ vm.folders }}"
+
+- name: Define the ports
+  set_fact:
+    ports: |-
+      {{ ports }} -p {{ item }}
+  with_items: "{{ vm.ports }}"
+
+- name: Create the container
+  shell: |-
+    docker run \
+      -d \
+      -h '{{ hostname }}' \
+      -e 'container=docker' \
+      -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+      -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib' \
+      --tmpfs /run \
+      --tmpfs /run/lock \
+      --cap-add=SYS_ADMIN \
+      --security-opt seccomp=unconfined \
+      --name '{{ hostname }}' \
+      {{ mounts }} \
+      {{ ports }} \
+      solita/ubuntu-systemd
+
+- name: Install the requirements
+  shell: |-
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo wget python-minimal -y'
+
+- name: Print the name of created container
+  debug:
+    msg: "The '{{ hostname }}' just have been created."
