@@ -104,14 +104,12 @@ describe('The user', () => {
   for (const group in users) {
     // The promise is not resolved for the moment so the "users" have
     // usernames as values.
-    const username = users[group];
-
-    it('should be authenticated as ' + username, async () => {
-      const auth = await request.auth(username, await users[group].generateTotp());
+    it('should be authenticated as ' + users[group], async () => {
+      const auth = await request.auth(users[group]);
 
       assert.response.auth(auth);
-      assert.response.list(await request.api(auth, 'get', 'droplet/list').send());
-      assert.response.error(await request.api(auth, 'get', 'droplet/l1st').send(), {
+      assert.response.list(await request.api(auth, 'get', 'droplet/list'));
+      assert.response.error(await request.api(auth, 'get', 'droplet/l1st'), {
         httpCode: 404,
         errorId: 404,
         error: 'Route not found',
@@ -125,14 +123,14 @@ describe('The user', () => {
   });
 
   it('should not be able to access the resource with an invalid access token', async () => {
-    const auth = await request.auth(users.viewer.username, users.viewer.generateTotp());
+    const auth = await request.auth(users.viewer);
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
     // Then spoof the token to fail a request to an authorized resource.
     auth.body.access_token = 'bla';
 
-    assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
+    assert.response.error(await request.api(auth, 'get', 'droplet/list'), {
       httpCode: 401,
       errorId: 908,
       error: 'Access token not found',
@@ -140,7 +138,7 @@ describe('The user', () => {
   });
 
   it('should not be able to access the resource with an outdated access token', async () => {
-    const auth = await request.auth(users.manager.username, users.manager.generateTotp());
+    const auth = await request.auth(users.manager);
 
     // Initially we should successfully gain an access token.
     assert.response.auth(auth);
@@ -151,7 +149,7 @@ describe('The user', () => {
     // Ensure the "toString()" method of token's object returns an actual token.
     token.token.should.be.eql(token.toString());
 
-    assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
+    assert.response.error(await request.api(auth, 'get', 'droplet/list'), {
       httpCode: 401,
       errorId: 909,
       error: 'Access token expired',
@@ -166,13 +164,13 @@ describe('The user', () => {
     };
 
     it(`should not be able to access the "user/*" endpoints as a "${group}"`, async () => {
-      const auth = await request.auth(users[group].username, users[group].generateTotp());
+      const auth = await request.auth(users[group]);
 
       // Ensure the user is authenticated.
       assert.response.auth(auth);
 
       // Cannot see the list of users.
-      assert.response.error(await request.api(auth, 'get', 'user/list').send(), denied);
+      assert.response.error(await request.api(auth, 'get', 'user/list'), denied);
 
       // Cannot add a new user.
       assert.response.error(await request.api(auth, 'post', 'user/add').send({
@@ -181,7 +179,7 @@ describe('The user', () => {
       }), denied);
 
       // Cannot delete a user.
-      assert.response.error(await request.api(auth, 'delete', 'user/delete/BR0kEN').send(), denied);
+      assert.response.error(await request.api(auth, 'delete', 'user/delete/BR0kEN'), denied);
 
       // Able to refresh own access token.
       assert.response.auth(await request.api(auth, 'post', 'user/auth/refresh').send({
@@ -201,7 +199,7 @@ describe('The user', () => {
 
       // Access token was refreshed, therefore it's not possible to access
       // the resources with an old one anymore.
-      assert.response.error(await request.api(auth, 'get', 'droplet/list').send(), {
+      assert.response.error(await request.api(auth, 'get', 'droplet/list'), {
         httpCode: 401,
         errorId: 908,
         error: 'Access token not found',
@@ -265,12 +263,12 @@ describe('The user', () => {
     };
 
     // Authenticate an owner.
-    const auth = await request.auth(users.owner.username, users.owner.generateTotp());
+    const auth = await request.auth(users.owner);
 
     // Ensure the user is authenticated.
     assert.response.auth(auth);
     // Can see a list of users.
-    assert.response.list(await request.api(auth, 'get', 'user/list').send());
+    assert.response.list(await request.api(auth, 'get', 'user/list'));
 
     // Various unsuccessful attempts to add a user.
     for (let i = 0; i < addFailingSuites.length; i++) {
@@ -295,14 +293,14 @@ describe('The user', () => {
     });
 
     // Delete a non-existing user.
-    assert.response.error(await request.api(auth, 'delete', 'user/delete/bla').send(), {
+    assert.response.error(await request.api(auth, 'delete', 'user/delete/bla'), {
       httpCode: 400,
       errorId: 903,
       error: 'User not found',
     });
 
     // Remove a user created the moment before.
-    updatedList = await request.api(auth, 'delete', `user/delete/${validNewUser.username}`).send();
+    updatedList = await request.api(auth, 'delete', `user/delete/${validNewUser.username}`);
     // The list of users is returned.
     assert.response.list(updatedList);
 
@@ -316,14 +314,14 @@ describe('The user', () => {
 
   it('should be able to revoke an access token for yourself', async () => {
     // Authenticate a user with least permissions.
-    const auth = await request.auth(users.viewer.username, users.viewer.generateTotp());
+    const auth = await request.auth(users.viewer);
     // Revoke an access for yourself.
     assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
   });
 
   it('should not be able to revoke an access token for others', async () => {
     // Authenticate a manager.
-    const auth = await request.auth(users.manager.username, users.manager.generateTotp());
+    const auth = await request.auth(users.manager);
 
     // Cannot revoke an access for a viewer.
     assert.response.error(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`), {
@@ -335,7 +333,7 @@ describe('The user', () => {
 
   it('should be able to revoke an access token for others as an "owner"', async () => {
     // Authenticate an owner.
-    const auth = await request.auth(users.owner.username, users.owner.generateTotp());
+    const auth = await request.auth(users.owner);
 
     assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
     assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.manager.username}`));
