@@ -6,7 +6,7 @@ This directory is automatically scanned for the route parameter loaders. In a ca
 
 ```javascript
 module.exports = async (username, app) => {
-  const user = await app.managers.user.getUserByName(username);
+  const user = await app.managers.user.getByName(username);
 
   if (null !== user) {
     return user;

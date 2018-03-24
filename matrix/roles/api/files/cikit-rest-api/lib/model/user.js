@@ -63,11 +63,11 @@ module.exports = app => {
   };
 
   /**
-   * @return {Promise.<String>}
-   *   A Base64 encoded PNG.
+   * @return {String}
+   *   A URL suitable for use with an authenticating app.
    */
-  schema.methods.generateBarcode = async function () {
-    return await QRCode.toDataURL(speakeasy.otpauthURL({
+  schema.methods.generateBarcodeUrl = function () {
+    return speakeasy.otpauthURL({
       // The label must be encoded because otherwise
       // QR code will be invalid.
       label: encodeURIComponent(hostname),
@@ -75,7 +75,11 @@ module.exports = app => {
       // The issues can be an unprocessed text.
       issuer: `${totp.issuer} (${this.username})`,
       encoding: totp.type,
-    }));
+    });
+  };
+
+  schema.methods.generateBarcode = async function () {
+    return await QRCode.toDataURL(this.generateBarcodeUrl());
   };
 
   /**

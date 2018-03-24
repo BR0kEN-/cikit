@@ -39,7 +39,7 @@ describe('The user', () => {
   };
 
   before(async () => {
-    const owners = await app.managers.user.getUsers({group: 'owner'});
+    const owners = await app.managers.user.getMultiple({group: 'owner'});
 
     if (0 < owners.length) {
       // Store an existing owner in memory to recreate it afterward.
@@ -50,7 +50,7 @@ describe('The user', () => {
 
     // Create a stub user for every group.
     for (const [group, username] of Object.entries(users)) {
-      users[group] = await app.managers.user.ensureUser(username, group);
+      users[group] = await app.managers.user.create(username, group);
     }
   });
 

@@ -1,5 +1,5 @@
 module.exports = async (username, app) => {
-  const user = await app.managers.user.getUserByName(username);
+  const user = await app.managers.user.getByName(username);
 
   if (null !== user) {
     return user;

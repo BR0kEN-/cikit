@@ -1,4 +1,4 @@
-module.exports = async (app, request, response) => response.json(await app.managers.user.getUsers(null, {
+module.exports = async (app, request, response) => response.json(await app.managers.user.getMultiple(null, {
   username: true,
   created: true,
   secret: true,

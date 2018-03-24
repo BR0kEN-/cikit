@@ -5,12 +5,12 @@ module.exports = async (app, request, response) => {
     throw new app.errors.RuntimeError('The request body must contain "group" and "username"', 400, 'user_missing_data');
   }
 
-  if (null !== await app.managers.user.getUserByName(request.body.username)) {
+  if (null !== await app.managers.user.getByName(request.body.username)) {
     throw new app.errors.RuntimeError('Username is already taken', 400, 'user_name_taken');
   }
 
   try {
-    await app.managers.user.ensureUser(request.body.username, request.body.group);
+    await app.managers.user.create(request.body.username, request.body.group);
   }
   catch (error) {
     // This error can be thrown by the "user" model validation.

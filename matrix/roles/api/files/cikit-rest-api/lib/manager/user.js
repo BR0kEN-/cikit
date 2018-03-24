@@ -1,6 +1,3 @@
-/**
- * @memberOf Application.managers#
- */
 module.exports = app => {
   /**
    * @namespace Application.managers.user
@@ -15,7 +12,7 @@ module.exports = app => {
      * @return {Promise.<Mongoose.Model[]>|null}
      *   A list of users.
      */
-    async getUsers(conditions = null, projection = null) {
+    async getMultiple(conditions = null, projection = null) {
       return await app.db.models.User.find(conditions, projection);
     },
 
@@ -26,7 +23,7 @@ module.exports = app => {
      * @return {Promise.<Mongoose.Model>|null}
      *   The user's object.
      */
-    async getUser(conditions) {
+    async get(conditions) {
       return await app.db.models.User.findOne(conditions);
     },
 
@@ -37,8 +34,8 @@ module.exports = app => {
      * @return {Promise.<Mongoose.Model>|null}
      *   The user's object.
      */
-    async getUserByName(username) {
-      return await this.getUser({username});
+    async getByName(username) {
+      return await this.get({username});
     },
 
     /**
@@ -46,49 +43,18 @@ module.exports = app => {
      *   The name of a user.
      * @param {String} group
      *   The name of a user's group.
-     * @param {Boolean} recreate
-     *   An indicator for removing an existing user and creating it again. This
-     *   can be useful in order to regenerate TOTP secret.
      *
-     * @return {Object}
+     * @return {Promise.<Object>}
      *   The user's object.
      */
-    async ensureUser(username, group, recreate = false) {
-      const createUser = async () => {
-        const user = await this.getUser({group, username: {$ne: username}});
+    async create(username, group) {
+      const user = await this.get({group, username: {$ne: username}});
 
-        if (null !== user && user.isOwner()) {
-          throw new app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
-        }
+      if (null !== user && user.isOwner()) {
+        throw new app.errors.RuntimeError('The system cannot have multiple owners', 403, 'user_owner_exists');
+      }
 
-        return new app.db.models.User({username, group}).save();
-      };
-
-      const user = await this
-        .getUserByName(username)
-        .then(async user => {
-          if (recreate && null !== user) {
-            app.log.debug('An account for %s will be re-created. This action will invalidate the belonged secret key.', username);
-
-            await user.remove();
-
-            return createUser();
-          }
-
-          if (null !== user) {
-            app.log.debug('The "access" and "refresh" tokens for %s will be revoked.', username);
-
-            return user;
-          }
-
-          app.log.debug('An account for %s will be created.', username);
-
-          return createUser();
-        });
-
-      await user.revokeAccess();
-
-      return user;
+      return new app.db.models.User({username, group}).save();
     },
   };
 };

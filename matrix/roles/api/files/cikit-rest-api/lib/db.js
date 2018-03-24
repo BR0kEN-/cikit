@@ -15,7 +15,7 @@ module.exports = app => {
   app.db = mongoose;
 
   /**
-   * @memberOf Mongoose#models
+   * @memberOf Application.db.models#
    * @type {
    *   {
    *     User: {Model},

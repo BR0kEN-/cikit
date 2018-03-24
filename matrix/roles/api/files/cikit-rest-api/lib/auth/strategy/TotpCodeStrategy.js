@@ -25,7 +25,7 @@ class TotpCodeStrategy extends Strategy {
     }
 
     (async () => {
-      const user = await this.app.managers.user.getUserByName(username);
+      const user = await this.app.managers.user.getByName(username);
 
       if (!user) {
         throw new this.app.errors.RuntimeError('User not found', 400, 'user_not_found');
