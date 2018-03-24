@@ -5,7 +5,7 @@ function logger(label, isDev) {
   const transports = [
     new winston.transports.File({
       level: 'info',
-      filename: './all.log',
+      filename: `./logs/${label}.log`,
       handleException: true,
       colorize: false,
       maxFiles: 2,
