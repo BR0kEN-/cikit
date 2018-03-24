@@ -74,6 +74,13 @@
   delegate_to: localhost
   become: no
 
+- name: Ensure .ssh directory exists
+  file:
+    path: "{{ ssh_data.destination }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+
 - name: Copy SSH key-pair to host
   copy:
     src: "{{ ssh_data.source }}/{{ droplet }}.{{ item }}.key"
