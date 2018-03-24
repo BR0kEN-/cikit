@@ -1,4 +1,4 @@
-module.exports = {
+const assert = {
   response: {
     error: (response, suite) => {
       response.should.have
@@ -42,3 +42,14 @@ module.exports = {
     },
   },
 };
+
+assert.response.auth.revoke = (response) => {
+  response.should.have
+    .status(200);
+
+  response.body.should.have
+    .property('status')
+    .eql('ok');
+};
+
+module.exports = assert;

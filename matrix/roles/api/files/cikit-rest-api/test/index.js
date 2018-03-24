@@ -313,4 +313,31 @@ describe('The user', () => {
       }
     });
   });
+
+  it('should be able to revoke an access token for yourself', async () => {
+    // Authenticate a user with least permissions.
+    const auth = await request.auth(users.viewer.username, users.viewer.generateTotp());
+    // Revoke an access for yourself.
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
+  });
+
+  it('should not be able to revoke an access token for others', async () => {
+    // Authenticate a manager.
+    const auth = await request.auth(users.manager.username, users.manager.generateTotp());
+
+    // Cannot revoke an access for a viewer.
+    assert.response.error(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`), {
+      httpCode: 401,
+      errorId: 904,
+      error: 'Only system owner can revoke access for others',
+    });
+  });
+
+  it('should be able to revoke an access token for others as an "owner"', async () => {
+    // Authenticate an owner.
+    const auth = await request.auth(users.owner.username, users.owner.generateTotp());
+
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer.username}`));
+    assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.manager.username}`));
+  });
 });

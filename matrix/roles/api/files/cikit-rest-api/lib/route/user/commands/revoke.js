@@ -16,7 +16,7 @@ module.exports = async (app, request, response) => {
     });
   }
   else {
-    throw app.errors.RuntimeError('Only system owner can revoke access for others', 401, 'user_unauthorized');
+    throw new app.errors.RuntimeError('Only system owner can revoke access for others', 401, 'user_unauthorized');
   }
 };
 
