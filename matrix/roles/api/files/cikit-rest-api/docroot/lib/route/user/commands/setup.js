@@ -9,5 +9,6 @@
 module.exports = async (app, request, response) => {
   response.json({
     qr: await request.payload.user.generateBarcode(),
+    secret: request.payload.user.secret,
   });
 };
