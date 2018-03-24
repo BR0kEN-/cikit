@@ -5,7 +5,7 @@ function logger(label, isDev) {
   const transports = [
     new winston.transports.File({
       level: 'info',
-      filename: `./logs/${label}.log`,
+      filename: `/var/log/${label}.log`,
       handleException: true,
       colorize: false,
       maxFiles: 2,
@@ -69,8 +69,8 @@ function routeErrorHandler(logger, request, response, next) {
 
 winston.emitErrs = true;
 
-module.exports = (module, isDev) => {
-  const log = logger(module.filename.split('/').slice(-2).join('/'), isDev);
+module.exports = (config, isDev) => {
+  const log = logger(config.get('db:uri').split('/').slice(-1).join(), isDev);
 
   return {
     log,

@@ -57,7 +57,7 @@ const prefix = config.get('prefix');
  * @var {Function} routeErrorHandler
  * @var {Function} globalErrorHandler
  */
-const {log, routeErrorHandler, globalErrorHandler} = require('./log')(module, isDev);
+const {log, routeErrorHandler, globalErrorHandler} = require('./log')(config, isDev);
 
 /**
  * @memberOf Application#
