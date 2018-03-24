@@ -1,21 +1,30 @@
 ---
 - name: Define the mounts
   set_fact:
-    mounts: |-
-      {{ mounts }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target is defined else 'source'] }}'
+    options: |-
+      {{ options | default('') }} -v '{{ item.source if item.source[0] == '/' else __targetdir__ + '/' + item.source }}':'{{ item['target' if item.target is defined else 'source'] }}'
   with_items: "{{ vm.folders }}"
 
 - name: Append the CIKit package to the list of mounts
   set_fact:
-    mounts: "{{ mounts }} -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib'"
+    options: "{{ options }} -v '{{ __selfdir__ }}/lib'"
   # This is an exceptional case allowing to create a testing environment for
   # the CIKit REST API.
   when: ignore_cikit_mount is undefined
 
+- name: Check whether a privileged container requested
+  set_fact:
+    options: "--privileged -v /var/lib/docker {{ options }}"
+  # The privileged mode might mean we're gonna run Docker in Docker and it's
+  # not possible without some tricks, one of which is unsupported AUFS mount.
+  # - https://blog.docker.com/2013/09/docker-can-now-run-within-docker
+  # - https://github.com/jpetazzo/dind/blob/master/Dockerfile#L20
+  when: privileged is defined
+
 - name: Define the ports
   set_fact:
-    ports: |-
-      {{ ports }} -p {{ item }}
+    options: |-
+      {{ options }} -p {{ item }}
   with_items: "{{ vm.ports }}"
 
 - name: Create the container
@@ -30,8 +39,7 @@
       --cap-add=SYS_ADMIN \
       --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
-      {{ mounts }} \
-      {{ ports }} \
+      {{ options }} \
       solita/ubuntu-systemd
 
 - name: Install the requirements

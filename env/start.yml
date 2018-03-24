@@ -14,8 +14,6 @@
     - name: Define the hostname
       set_fact:
         hostname: "{{ site_url.split('//') | last }}"
-        mounts: ""
-        ports: ""
 
     - name: Check whether container exists
       # Calling "docker" also help to detect whether a system has Docker
