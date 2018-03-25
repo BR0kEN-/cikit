@@ -5,7 +5,6 @@ webroot: /var/www
 project: cikit-rest-api
 site_url: https://cikit-rest-api.loc
 vm:
-  ip: 192.168.56.132
   ports: [1337]
   folders:
     - source: ./docroot
