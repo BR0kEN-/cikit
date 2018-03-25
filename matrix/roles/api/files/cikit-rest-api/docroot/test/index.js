@@ -402,7 +402,7 @@ describe('The user', () => {
       // Store the initial number of droplets.
       currentLength = droplets.body.length;
 
-      await compare('post', `droplet/add`, 1);
+      await compare('post', 'droplet/add', 1);
       await compare('patch', `droplet/stop/${droplet.name}`, 0, 0, /^Exited \(0\)/);
       await compare('patch', `droplet/start/${droplet.name}`);
       await compare('patch', `droplet/restart/${droplet.name}`);
