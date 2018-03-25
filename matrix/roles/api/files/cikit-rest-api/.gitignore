@@ -13,6 +13,7 @@ docroot/node_modules/
 *.retry
 
 !*.md
+!start.sh
 commentinfo.md
 
 # Helper file that might be created by the "synchronize" Ansible's module.

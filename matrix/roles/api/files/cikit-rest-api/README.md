@@ -7,10 +7,7 @@
 ## Installation
 
 ```bash
-cikit env/start --ignore-cikit-mount --privileged
-docker exec -i cikit-rest-api.loc bash -c 'apt install ssh lxc iptables -y'
-cikit matrix/provision --install-api
-docker exec -i cikit-rest-api.loc bash -c 'service docker start && systemctl enable docker'
+./start.sh
 cikit ssh
 cd /var/www/cikit-rest-api
 npm start
