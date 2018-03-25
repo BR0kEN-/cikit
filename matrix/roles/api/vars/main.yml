@@ -1,4 +1,6 @@
 api:
+  dest: /var/www/cikit-rest-api/
+  owner: admin
   pip:
     - ansible
   nodejs_version: "9"
