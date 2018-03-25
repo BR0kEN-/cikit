@@ -7,9 +7,6 @@ python:
 env:
   VAGRANT_VERSION: 2.0.2
 
-services:
-  - docker
-
 install:
   - sudo pip install ansible
   - sudo bash ./install.sh --no-requirements-check
@@ -24,4 +21,3 @@ script:
   - sudo bash ./tests/travis/inventory.sh
   # @todo Uncomment once "xenial" dist become available.
   #- sudo bash ./tests/travis/provision.sh
-  - sudo bash ./matrix/roles/api/files/cikit-rest-api/start.sh test
