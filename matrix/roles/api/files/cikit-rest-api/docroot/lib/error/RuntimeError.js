@@ -3,8 +3,8 @@ class RuntimeError extends Error {
     super();
 
     this.message = message;
-    this.errorId = config.get('errors:' + errorId);
     this.status = httpCode;
+    this.errorId = config.get('errors:' + errorId);
   }
 }
 

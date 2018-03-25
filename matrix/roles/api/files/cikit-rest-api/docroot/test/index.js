@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 
+const Cache = require('sync-disk-cache');
 const chai = require('chai');
 
 chai.should();
@@ -58,6 +59,9 @@ describe('The user', () => {
     for (const [group, username] of Object.entries(users)) {
       users[group] = await app.managers.user.create(username, group);
     }
+
+    // Clear droplets cache.
+    new Cache('droplet').clear();
   });
 
   after(async () => {
@@ -158,7 +162,7 @@ describe('The user', () => {
   });
 
   ['viewer', 'manager'].forEach(group => {
-    it(`should not be able to access the "user/*" endpoints as a "${group}"`, async () => {
+    it(`should not be able to access the "user/*" endpoints as "${group}"`, async () => {
       const auth = await request.auth(users[group]);
 
       // Ensure the user is authenticated.
@@ -201,7 +205,7 @@ describe('The user', () => {
       });
     });
 
-    it(`should not be able to get a QR code for setting up an authenticating application as a "${group}"`, async () => {
+    it(`should not be able to get a QR code for setting up an authenticating application as "${group}"`, async () => {
       const auth = await request.auth(users[group]);
 
       assert.response.auth(auth);
@@ -209,7 +213,7 @@ describe('The user', () => {
     });
   });
 
-  it('should be able to access the "user/*" endpoints as an "owner"', async () => {
+  it('should be able to access the "user/*" endpoints as "owner"', async () => {
     const addFailingSuites = [
       {
         httpCode: 400,
@@ -314,7 +318,7 @@ describe('The user', () => {
     });
   });
 
-  it('should be able to get a QR code for setting up an authenticating application as an "owner"', async () => {
+  it('should be able to get a QR code for setting up an authenticating application as "owner"', async () => {
     const auth = await request.auth(users.owner);
 
     assert.response.auth(auth);
@@ -340,11 +344,87 @@ describe('The user', () => {
     });
   });
 
-  it('should be able to revoke an access token for others as an "owner"', async () => {
+  it('should be able to revoke an access token for others as "owner"', async () => {
     // Authenticate an owner.
     const auth = await request.auth(users.owner);
 
+    assert.response.auth(auth);
     assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.viewer}`));
     assert.response.auth.revoke(await request.api(auth, 'delete', `user/auth/revoke/${users.manager}`));
+  });
+
+  it('should be able to see the list of droplets and be not able to do something with them as "viewer"', async () => {
+    const auth = await request.auth(users.viewer);
+
+    assert.response.auth(auth);
+    assert.response.list(await request.api(auth, 'get', 'droplet/list'));
+    assert.response.error(await request.api(auth, 'post', 'droplet/add'), denied);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/stop/bla'), denied);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/start/bla'), denied);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/restart/bla'), denied);
+    assert.response.error(await request.api(auth, 'delete', 'droplet/delete/bla'), denied);
+  });
+
+  ['manager', 'owner'].forEach(group => {
+    it(`should be able to manage droplets as "${group}"`, async () => {
+      const auth = await request.auth(users[group]);
+      let currentLength = -1;
+      let droplets = [];
+      let droplet = null;
+
+      const doer = async (method, route) => {
+        const list = await request.api(auth, method, route);
+
+        assert.response.list(list);
+
+        return list;
+      };
+
+      const compare = async (method, route, dropletsIncrement = 0, portsNumber = 3, statusRegexp = /^Up \d+/) => {
+        droplets = await doer(method, route);
+        // Ensure new droplet is in the list.
+        droplets.body.should.have.length(currentLength + dropletsIncrement);
+        // Update current number of droplets.
+        currentLength = droplets.body.length;
+        droplet = droplets.body[currentLength - 1];
+
+        if (null !== portsNumber) {
+          Object.keys(droplet.ports).should.have.length(portsNumber);
+          droplet.status.should.match(statusRegexp);
+        }
+      };
+
+      // Ensure a user is authorized.
+      assert.response.auth(auth);
+
+      // Get initial list of droplets.
+      droplets = await doer('get', 'droplet/list');
+      // Store the initial number of droplets.
+      currentLength = droplets.body.length;
+
+      await compare('post', `droplet/add`, 1);
+      await compare('patch', `droplet/stop/${droplet.name}`, 0, 0, /^Exited \(0\)/);
+      await compare('patch', `droplet/start/${droplet.name}`);
+      await compare('patch', `droplet/restart/${droplet.name}`);
+      await compare('delete', `droplet/delete/${droplet.name}`, -1, null);
+    });
+  });
+
+  it('should not be able to do something with not existing droplet as "manager"', async () => {
+    const auth = await request.auth(users.manager);
+    const commonError = {
+      httpCode: 400,
+      errorId: 900,
+      error: 'Error response from daemon: No such container: bla',
+    };
+
+    const startError = Object.assign({}, commonError);
+    startError.error += '\nError: failed to start containers: bla';
+
+    assert.response.auth(auth);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/stop/bla'), commonError);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/start/bla'), startError);
+    assert.response.error(await request.api(auth, 'patch', 'droplet/restart/bla'), commonError);
+    assert.response.error(await request.api(auth, 'delete', 'droplet/delete/bla'), commonError);
   });
 });

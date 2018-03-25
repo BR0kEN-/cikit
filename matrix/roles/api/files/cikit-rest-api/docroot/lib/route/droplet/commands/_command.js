@@ -1,24 +1,24 @@
+const {execSync} = require('child_process');
 const jsonpath = require('jsonpath');
-const execSync = require('child_process').execSync;
 const hostname = 'localhost';
 
-module.exports = (app, command, handler) => (request, response) => {
+module.exports = (app, command, handler) => async (request, response) => {
   const callback = handler(request, response);
-  const jsonPath = `$.plays[0].tasks[?(@.task.name == '${request.params.taskName}')].hosts.${hostname}`;
-  const shellCommand = `ANSIBLE_STDOUT_CALLBACK=json cikit matrix/droplet --droplet-${command}${request.params.droplet ? '=' + request.params.droplet : ''} --limit=${hostname}`;
+  const command1 = `ANSIBLE_STDOUT_CALLBACK=json cikit matrix/droplet --droplet-${command}${request.params.droplet ? '=' + request.params.droplet : ''} --limit=${hostname}`;
+  const parse = (data, query) => {
+    const jsonPath = `$.plays[0].tasks[${query}].hosts.${hostname}`;
 
-  app.log.debug('Running "%s"', shellCommand);
+    app.log.debug('Applying JSON path query "%s"', jsonPath);
 
-  return (async () => app.isDev ? require('./examples/' + command) : JSON.parse(await execSync(shellCommand)))()
-    .then(output => {
-      const stats = output.stats[hostname];
+    return jsonpath.query(JSON.parse(data), jsonPath)[0];
+  };
 
-      app.log.debug('Applying JSON path query "%s"', jsonPath);
+  try {
+    app.log.debug('Running "%s"', command1);
 
-      if (0 !== stats.failures || 0 !== stats.unreachable) {
-        throw new app.errors.RuntimeError(output, 501, 'ansible_command_failed');
-      }
-
-      return callback(jsonpath.query(output, jsonPath)[0], output);
-    });
+    return callback(parse(await execSync(command1), `?(@.task.name == '${request.params.taskName}')`));
+  }
+  catch (error) {
+    throw new app.errors.RuntimeError(parse(error.stdout, '-1:').stderr, 400, 'ansible_command_failed');
+  }
 };

@@ -16,6 +16,18 @@ cd /var/www/cikit-rest-api
 npm start
 ```
 
+## Linting
+
+```bash
+npm run lint
+```
+
+## Testing
+
+```bash
+npm test
+```
+
 ## CLI
 
 ### User

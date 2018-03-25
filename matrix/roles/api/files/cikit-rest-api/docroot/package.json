@@ -3,7 +3,7 @@
   "scripts": {
     "start": "node ./index.js",
     "lint": "./node_modules/.bin/eslint ./lib ./test ./index.js",
-    "test": "nyc --reporter=html mocha --exit"
+    "test": "nyc --reporter=html mocha --timeout 10000000 --exit"
   },
   "engines": {
     "npm": ">=5.6",
