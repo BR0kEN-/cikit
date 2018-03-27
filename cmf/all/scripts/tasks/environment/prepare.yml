@@ -1,10 +1,9 @@
 ---
 - name: Set accesses for directories
   file:
-    mode: 0777
+    mode: 0755
     dest: "{{ item }}"
     state: directory
-    recurse: yes
   with_items:
     - "{{ tmproot }}"
     - "{{ webroot }}/backup"
