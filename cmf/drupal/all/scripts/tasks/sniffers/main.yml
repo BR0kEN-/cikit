@@ -4,7 +4,7 @@
   shell: |-
     drush en security_review -y
     drush secrev 2>&1 | grep error | awk '{$NF=""}1' > '{{ reports.dir }}/Security review.txt'
-    drush dis security_review -y
+    drush {{ 'dis' if core < 8 else 'pmu' }} security_review -y
   args:
     chdir: "{{ project_workspace }}"
   environment: "{{ env_vars }}"

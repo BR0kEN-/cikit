@@ -83,11 +83,14 @@
 
 - name: Copy SSH key-pair to host
   copy:
-    src: "{{ ssh_data.source }}/{{ droplet }}.{{ item }}.key"
+    src: "{{ ssh_data.source }}/{{ droplet }}.{{ item.key }}.key"
     dest: "{{ ssh_data.destination }}"
+    mode: "{{ item.value }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-  with_items: ["private", "public"]
+  with_dict:
+    public: 644
+    private: 400
 
 - name: Generate "authorized_keys" for new droplet
   shell: "cat {{ droplet }}.public.key > {{ ssh_data.authorized_keys }} && chmod 600 {{ ssh_data.authorized_keys }}"

@@ -237,12 +237,12 @@
       # Update cache only if new packages were installed.
       when: cikit_apt_needs_cache_update.changed
 
+    - include_tasks: tasks/pip-install.yml pip_packages="{{ basic_packages.pip }}"
+
     # We have to install CIKit after getting all mandatory APT packages
     # because the installer may use some of them (e.g. "curl").
     - include_tasks: tasks/cikit-install.yml
       when: not localhost
-
-    - include_tasks: tasks/pip-install.yml pip_packages="{{ basic_packages.pip }}"
 
   roles:
     - role: cikit-security
