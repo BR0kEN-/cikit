@@ -204,6 +204,9 @@
       with_dict:
         install_solr: "{{ solr_version }}"
         install_mssql: "{{ mssql_install }}"
+        # The provisioning is triggered not for a localhost and if
+        # neither "--gitlab-ci-token" nor "--gitlab-ci-url" is passed.
+        install_jenkins: "{{ not localhost and (not gitlab_ci_token or not gitlab_ci_url) }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -299,8 +302,12 @@
       tags: ["selenium"]
 
     - role: cikit-jenkins
-      when: not localhost
+      when: install_jenkins
       tags: ["jenkins"]
+
+    - role: cikit-gitlab-ci
+      when: not install_jenkins
+      tags: ["gitlab-ci"]
 
     - role: cikit-project
       tags: ["project"]
