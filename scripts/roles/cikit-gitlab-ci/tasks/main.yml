@@ -34,3 +34,10 @@
       --tls-key-file='{{ ssl_folder }}/ssl.key' \
       --tls-cert-file='{{ ssl_folder }}/ssl.crt' \
       --registration-token='{{ gitlab_ci_token }}'
+
+- name: Create the configuration in a project
+  template:
+    src: .gitlab-ci.yml.j2
+    dest: "{{ __targetdir__ }}/.gitlab-ci.yml"
+  delegate_to: localhost
+  become: no
