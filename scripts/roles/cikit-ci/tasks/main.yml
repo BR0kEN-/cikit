@@ -1,0 +1,5 @@
+---
+- include_role:
+    # Install Gitlab CI if either "--gitlab-ci-token" or "--gitlab-ci-url"
+    # is passed. Use Jenkins otherwise.
+    name: "cikit-{{ 'gitlab-ci' if gitlab_ci_token or gitlab_ci_url else 'jenkins' }}"
