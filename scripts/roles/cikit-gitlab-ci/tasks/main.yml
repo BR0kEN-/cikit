@@ -1,13 +1,4 @@
 ---
-- name: Check the configuration
-  fail:
-    msg: |-
-      You have to pass "--gitlab-ci-url=https://gitlab.com" and "--gitlab-ci-token=TOKEN" as command
-      line arguments or store them as "gitlab_ci_url: https://gitlab.com" and "gitlab_ci_token: TOKEN"
-      variables in "/path/to/project/.cikit/vars/gitlab-ci.yml". Otherwise it won't be possible to
-      conigure Gitlab CI runner.
-  when: "not gitlab_ci_url or not gitlab_ci_token"
-
 - name: Add repository
   shell: "curl -sL https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | bash"
   args:
