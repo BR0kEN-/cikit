@@ -32,11 +32,14 @@ commentinfo.md
 !.eslint*
 !.codespellignore
 !.hostname
-# Platform.sh local config. Keep private!
-!.platform.app.json
+
+# Platform.sh configs.
+!.platform.app.yaml
+!.platform/
 
 # CIKit stuff.
 !.cikit/
 
 !LICENSE
+!Vagrantfile
 !composer.*
