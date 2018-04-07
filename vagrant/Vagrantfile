@@ -11,7 +11,7 @@ Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 ui = Vagrant::UI::Colored.new
 is_wsl = Vagrant::Util::Platform.wsl?
 arguments = ARGV.join(' ')
-config_values = YAML.load_file('.cikit/config.yml')
+config_values = YAML.load_file(Vagrant::Environment.new.root_path.to_s + '/.cikit/config.yml')
 vagrantfile_dir = File.dirname(__FILE__)
 cikit_package_dir = File.realdirpath(vagrantfile_dir + '/..')
 # The "site_url" will appear in "config.yml" via repository builder.
