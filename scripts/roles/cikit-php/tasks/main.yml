@@ -15,22 +15,18 @@
 # Allow modifying these variables by tasks.
 - set_fact:
     php_extensions: "{{ php.extensions }}"
-    php_packages: "{{ php.packages }}"
+    php_packages: "{{ php_packages | union(cikit_php.default_packages) }}"
+
+- debug: var=php_packages
 
 - name: Avoid installation of deprecated packages
   set_fact:
     # Remove the packages for the specific version of PHP.
-    php_packages: "{{ php.packages | difference(cikit_php.removed_packages[php_version]) }}"
+    php_packages: "{{ php_packages | difference(cikit_php.removed_packages[php_version]) }}"
   when: php_version in cikit_php.removed_packages
 
 - name: Install PHP packages
-  shell: "apt-get install php{{ php_version }}-{{ php_packages | join(' php' + php_version + '-') }} -y"
-  args:
-    warn: no
-
-- name: Install uncommon PHP packages
-  shell: "apt-get install -y {{ cikit_php_extra.packages | join(' ') }}"
-  when: cikit_php_extra.packages|length > 0
+  shell: "apt install php{{ php_version }}-{{ php_packages | join(' php' + php_version + '-') }} -y"
   args:
     warn: no
 

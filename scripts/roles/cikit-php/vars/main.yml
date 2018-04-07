@@ -7,6 +7,32 @@ cikit_php:
     - "7.0"
     - "7.1"
     - "7.2"
+  default_packages:
+    - dev
+    - mcrypt
+    - curl
+    - mysql
+    - json
+    - intl
+    - imap
+    - gd
+    - cli
+    - bz2
+    - common
+    - dba
+    - gmp
+    - odbc
+    - mbstring
+    - soap
+    - xml
+    - xsl
+    - zip
+    - apc
+    # For providing "mssql_*" functions on PHP 5.6.
+    - sybase
+    - xmlrpc
+    - memcached
+    - fpm
   # A list of packages that are not available for the specific PHP versions.
   removed_packages:
     "7.2":
