@@ -33,8 +33,7 @@ php:
         idekey: PHPSTORM
         remote_log: /tmp/xdebug.log
         remote_port: 9000
-        # @todo Compute this value using "ip route".
-        remote_host: 10.0.2.2
+        remote_host: "{{ ansible_default_ipv4.gateway }}"
         remote_enable: 1
         remote_handler: dbgp
         default_enable: 1

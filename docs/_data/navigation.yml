@@ -68,6 +68,8 @@ documentation:
         url: /documentation/project/web-server/
       - title: Custom virtual hosts
         url: /documentation/project/custom-vhosts/
+      - title: Custom PHP packages
+        url: /documentation/project/custom-php-packages/
 
   - title: Workflow
     url: /documentation/workflow/

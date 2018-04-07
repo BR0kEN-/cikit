@@ -17,8 +17,6 @@
     php_extensions: "{{ php.extensions }}"
     php_packages: "{{ php_packages | union(cikit_php.default_packages) }}"
 
-- debug: var=php_packages
-
 - name: Avoid installation of deprecated packages
   set_fact:
     # Remove the packages for the specific version of PHP.
