@@ -10,7 +10,7 @@
 - name: Set path to reports directory and URL by which they will be accessible
   set_fact:
     reports:
-      comment: "{{ project_workspace }}/commentinfo.md"
+      comment: "{{ project_workspace }}/reports/commentinfo.md"
       dir: "{{ project_workspace }}/reports"
       url: "{{ site_url }}/reports"
     # Get pages through localhost to avoid HTTP authentication. Useful for automated testing.

@@ -1,0 +1,79 @@
+variables:
+  # The name of a project from the ".cikit/config.yml" (underscores
+  # are replaced by dashes).
+  PROJECT: "{{ project | replace('_', '-') }}"
+  # A value of the "webroot" variable from the ".cikit/config.yml".
+  WEBROOT: "{{ webroot }}"
+
+after_script:
+  # Restore possibly broken permissions to prevent failures of next builds.
+  - sudo chown -R gitlab-runner:gitlab-runner ${CI_PROJECT_DIR}
+
+# Consider changing "CI_BUILD_REF_SLUG" by the "CI_BUILD_ID" if you are
+# interested in creating a build per commit. The default behavior is to
+# overwrite the previous build (to have a single instance per branch).
+build/run:
+  stage: deploy
+  environment:
+    # IMPORTANT! Bear in mind that substitution of nested variables is
+    # not working. There's a bug in Gitlab CI.
+    # https://gitlab.com/gitlab-org/gitlab-ce/issues/27098
+    url: "https://${PROJECT}-${CI_BUILD_REF_SLUG}.${CI_RUNNER_DESCRIPTION}"
+    # IMPORTANT! Do not use slashes here! They'll be treated as directory
+    # separators.
+    name: "${PROJECT}-${CI_BUILD_REF_SLUG}"
+    on_stop: build/stop
+  # Valid branch names:
+  # - "feature/*"
+  # - "bug/*"
+  # - "NOJIRA/*"
+  # - "master"
+  # - "dev"
+  only:
+    - /^(feature|bug|NOJIRA)\/.+?$/
+    - master
+    - dev
+  variables:
+    # Display useful verbosity. Max - 4, min - 1.
+    ANSIBLE_VERBOSITY: 2
+  script:
+    # IMPORTANT: Multiline YAML declaration ("- |", or "- >") not working here.
+    # https://gitlab.com/gitlab-org/gitlab-runner/issues/166#note_3805463
+    - export DESTINATION="${WEBROOT}/${CI_ENVIRONMENT_NAME}"
+    # Seek for actions definitions in the commit message.
+    - export BUILD_ACTIONS="$(php -r "echo json_encode(array_map('trim', array_filter(explode(PHP_EOL, '$(git log -n1 --pretty=%B | awk -vRS="]" -vFS="[" '{print $2}')'))));")"
+    # Dump all available variables for debugging purposes.
+    - env
+    # Reinstall a project.
+    - CIKIT_PROJECT_DIR="${CI_PROJECT_DIR}" cikit reinstall --actions="${BUILD_ACTIONS}" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}"
+    # Copy codebase to the "web" directory.
+    - sudo rsync -ra --delete --chown=www-data:www-data ./ "${DESTINATION}"
+    # Run sniffers.
+    - CIKIT_PROJECT_DIR="${DESTINATION}" cikit sniffers --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${DESTINATION}"
+    # Copy artifacts.
+    - cp -r "${DESTINATION}/docroot/reports/" "${CI_PROJECT_DIR}/artifacts/"
+  artifacts:
+    paths:
+      - artifacts/
+    expire_in: 1 day
+
+build/stop:
+  stage: deploy
+  environment:
+    name: "${PROJECT}-${CI_BUILD_REF_SLUG}"
+    action: stop
+  only:
+    - /^(feature|bug|NOJIRA)\/.+?$/
+    - master
+    - dev
+  variables:
+    # https://docs.gitlab.com/ee/ci/environments.html#stopping-an-environment
+    GIT_STRATEGY: none
+  script:
+    - export DESTINATION="${WEBROOT}/${CI_ENVIRONMENT_NAME}"
+    - env
+    - if [ -d "${DESTINATION}" ]; then
+    -   drush sql-drop -r "${DESTINATION}/docroot" -y
+    -   sudo rm -rf "${DESTINATION}"
+    - fi
+  when: manual

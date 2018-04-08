@@ -298,9 +298,9 @@
     - role: cikit-selenium
       tags: ["selenium"]
 
-    - role: cikit-jenkins
+    - role: cikit-ci
       when: not localhost
-      tags: ["jenkins"]
+      tags: ["ci"]
 
     - role: cikit-project
       tags: ["project"]
