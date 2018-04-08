@@ -1,5 +1,6 @@
 variables:
-  # The name of a project from the ".cikit/config.yml".
+  # The name of a project from the ".cikit/config.yml" (underscores
+  # are replaced by dashes).
   PROJECT: "{{ project | replace('_', '-') }}"
   # A value of the "webroot" variable from the ".cikit/config.yml".
   WEBROOT: "{{ webroot }}"
@@ -49,6 +50,12 @@ build/run:
     - sudo rsync -ra --delete --chown=www-data:www-data ./ "${DESTINATION}"
     # Run sniffers.
     - CIKIT_PROJECT_DIR="${DESTINATION}" cikit sniffers --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${DESTINATION}"
+    # Copy artifacts.
+    - cp -r "${DESTINATION}/docroot/reports/" "${CI_PROJECT_DIR}/artifacts/"
+  artifacts:
+    paths:
+      - artifacts/
+    expire_in: 1 day
 
 build/stop:
   stage: deploy
