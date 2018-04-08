@@ -4,7 +4,7 @@ permalink: /documentation/gitlab-ci/
 description: Use Gitlab CI for building branches.
 ---
 
-It is possible to use Gitlab CI instead of Jenkins for continuous builds of projects. There are several differences between these two solutions and we'll review them superficially.
+It is possible to use Gitlab CI instead of Jenkins to continuously build/test a project. There are several differences between these two solutions and we'll review them superficially.
 
 **Jenkins**: fully pluggable system, allowing to create a flexible architecture for your continuous integration. More complex and require some maintenance.
 
@@ -14,7 +14,7 @@ It's also worth saying that Jenkins (in CIKit) don't have an integration with Gi
 
 ## Installation
 
-Let's say you decided to use Gitlab CI instead of Jenkins and ready to provision a CI server. To do so two additional options have to be added to the `cikit provision` command.
+Let's say you've decided to use Gitlab CI instead of Jenkins and ready to provision a CI server. To do so two additional options have to be added to the `cikit provision` command.
 
 ```bash
 cikit provision \
@@ -23,13 +23,13 @@ cikit provision \
   --gitlab-ci-url=https://gitlab.com
 ```
 
-The `https://gitlab.com` is the default value for `--gitlab-ci-url` option, therefore, can be omitted.
+The `https://gitlab.com` is the default value for `--gitlab-ci-url` option, therefore, can be omitted unless you're using custom instance.
 {: .notice--info}
 
-The `TOKEN` can be obtained in the project's settings on Gitlab, see [https://docs.gitlab.com/ce/ci/runners/#registering-a-specific-runner-with-a-project-registration-token](https://docs.gitlab.com/ce/ci/runners/#registering-a-specific-runner-with-a-project-registration-token).
+The `TOKEN` for `--gitlab-ci-token` can be obtained in the project's settings on Gitlab, see [https://docs.gitlab.com/ce/ci/runners/#registering-a-specific-runner-with-a-project-registration-token](https://docs.gitlab.com/ce/ci/runners/#registering-a-specific-runner-with-a-project-registration-token).
 {: .notice--info}
 
-The above command will configure the [Gitlab Runner](https://docs.gitlab.com/runner) on a CI droplet and create the `.gitlab-ci.yml` in the root directory of your project. Commit and push that file to finish an integration.
+The above command will configure the [Gitlab Runner](https://docs.gitlab.com/runner) on a CI droplet and create the `.gitlab-ci.yml` in the root directory of your project. Commit and push that file to complete an integration.
 
 ## Configuration
 
