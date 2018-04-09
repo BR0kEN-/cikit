@@ -11,7 +11,7 @@
 ## Features
 
 - [Install CIKit package](https://cikit.tools/documentation#installation) just once. This guarantees your minimal involvement in keeping the codebase up to date. [Run `cikit self-update`](https://cikit.tools/documentation#update) and enjoy latest fixes/features that are picked up by every project.
-- Build the project by the scenario you want via [Pull Requests on Github/Gitlab (Jenkins CI/Gitlab CI)](https://cikit.tools/documentation/jenkins/github-bot).
+- Build the project by the scenario you want via [Pull Requests on Github (Jenkins CI)](https://cikit.tools/documentation/jenkins/github-bot) or [Gitlab CI](https://cikit.tools/documentation/gitlab-ci/).
 - [Create and maintain a hosting of continuous integration servers](https://cikit.tools/documentation/matrix) (Docker) via command line tool.
 - Deploy a local environment for development on [Windows 10](https://cikit.tools/documentation/install-on-wsl), Linux or macOS with automatic IP allocation for local VPN and smart provisioner that [remembers the configuration of an environment](https://cikit.tools/documentation/project/env-config) you've built and allows sharing it with others.
 - Deploy CI server to whatever cloud hosting you prefer.
