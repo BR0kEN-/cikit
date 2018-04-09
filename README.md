@@ -11,7 +11,7 @@
 ## Features
 
 - [Install CIKit package](https://cikit.tools/documentation#installation) just once. This guarantees your minimal involvement in keeping the codebase up to date. [Run `cikit self-update`](https://cikit.tools/documentation#update) and enjoy latest fixes/features that are picked up by every project.
-- Build the project by the scenario you want via [Pull Requests on Github/Gitlab (Jenkins CI)](https://cikit.tools/documentation/jenkins/github-bot).
+- Build the project by the scenario you want via [Pull Requests on Github/Gitlab (Jenkins CI/Gitlab CI)](https://cikit.tools/documentation/jenkins/github-bot).
 - [Create and maintain a hosting of continuous integration servers](https://cikit.tools/documentation/matrix) (Docker) via command line tool.
 - Deploy a local environment for development on [Windows 10](https://cikit.tools/documentation/install-on-wsl), Linux or macOS with automatic IP allocation for local VPN and smart provisioner that [remembers the configuration of an environment](https://cikit.tools/documentation/project/env-config) you've built and allows sharing it with others.
 - Deploy CI server to whatever cloud hosting you prefer.
@@ -28,7 +28,7 @@
   - [Manage CI servers (droplets)](https://cikit.tools/documentation/matrix#management) via single command.
 - CI server
   - Docker. More system resources for your needs (comparative to the hypervisor).
-  - Jenkins with configured GitHub workflow.
+  - [Jenkins](https://cikit.tools/documentation/jenkins/) with configured [GitHub workflow](https://cikit.tools/documentation/jenkins/github-bot/) or [Gitlab CI](https://cikit.tools/documentation/gitlab-ci/).
 - Virtual machine
   - Automatic IP allocation. You're no longer care about changing the IP for every new VM.
   - User interaction. You'll be asked what to install during provisioning the machine.
