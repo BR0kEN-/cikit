@@ -26,20 +26,11 @@ Hosting platforms differ from each other and we have to take some actions before
     "token": "AUTHENTICATION_TOKEN"
   }
   ```
-  Replace the `PROJECT_ID` and `AUTHENTICATION_TOKEN` by the actual data. Commit this file to **private repositories** only!
+  Replace the `PROJECT_ID` and `AUTHENTICATION_TOKEN` by the actual data. Commit this file to **private repositories** only or just keep it locally.
   {: .notice--warning}
 
 ## Inject Platform.sh configuration
 
 - Open `<PROJECT_DIR>/scripts/vars/main.yml` and add the {% raw %}`platformsh: "{{ lookup('file', '../.platform.app.json') | from_json }}"`{% endraw %} variable.
 - Provision VM/CI server as usual.
-- Log in to VM via `vagrant ssh` and run the following:
-  ```bash
-  cat << 'EOF' >> ~/.profile
-  export PLATFORMSH_CLI_TOKEN="$(json_pp < /var/www/.platform.app.json | awk -F '"' '/token/ {print $4}')"
-  EOF
-  source ~/.profile
-  cd /var/www
-  platform project:set-remote "$(json_pp < /var/www/.platform.app.json | awk -F '"' '/id/ {print $4}')"
-  ```
 - Read [how to grab a database from one of Platform.sh environments](../../project/mysql-import-strategies#platformsh) using SQL workflow.

@@ -10,3 +10,10 @@
   shell: "php {{ installer.dest }}"
   args:
     creates: "{{ cikit_platformsh_cli.bin }}"
+
+- name: Create executable
+  become_user: "{{ ansible_user }}"
+  file:
+    src: "{{ cikit_platformsh_cli.bin }}"
+    dest: "/usr/local/bin/{{ cikit_platformsh_cli.bin | basename }}"
+    state: link
