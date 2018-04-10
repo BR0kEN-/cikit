@@ -135,6 +135,7 @@ defaults:
     values:
       toc: true
       toc_label: Page contents
+      comments: true
       layout: single
       sidebar:
         nav: "documentation"

@@ -62,6 +62,8 @@ documentation:
         url: /documentation/project/mssql/
       - title: Solr
         url: /documentation/project/solr/
+      - title: Xdebug
+        url: /documentation/project/xdebug/
       - title: Sniffers
         url: /documentation/project/sniffers/
       - title: Vagrant box
