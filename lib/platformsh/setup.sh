@@ -2,7 +2,7 @@
 
 cd "$CIKIT_PROJECT_DIR"
 
-if ! grep "PLATFORMSH_CLI_TOKEN" ~/.profile; then
+if ! grep "PLATFORMSH_CLI_TOKEN" ~/.profile > /dev/null; then
   cat << 'EOF' >> ~/.profile
 export PLATFORMSH_CLI_TOKEN="$(json_pp < "$CIKIT_PROJECT_DIR/.platform.app.json" | awk -F '"' '/token/ {print $4}')"
 EOF
