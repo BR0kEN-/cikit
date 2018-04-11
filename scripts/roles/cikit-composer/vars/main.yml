@@ -1,5 +1,7 @@
 cikit_composer:
-  bin: /usr/local/bin
-  dir: /usr/share/composer
+  bin: composer
+  dirs:
+    bin: "/usr/local/bin"
+    home: "{{ user_home }}/.composer"
   system_packages:
     hirak/prestissimo: 0.*
