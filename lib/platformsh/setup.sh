@@ -8,6 +8,12 @@ export PLATFORMSH_CLI_TOKEN="$(json_pp < "$CIKIT_PROJECT_DIR/.platform.app.json"
 EOF
 fi
 
+PLATFORMSH_ENVIRONMENT="$CIKIT_PROJECT_DIR/.environment"
+
+if [ -f "$PLATFORMSH_ENVIRONMENT" ] && ! grep ".environment" ~/.profile > /dev/null; then
+  echo "source \"$PLATFORMSH_ENVIRONMENT\"" >> ~/.profile
+fi
+
 # Make the "PLATFORMSH_CLI_TOKEN" available.
 source ~/.profile
 
