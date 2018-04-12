@@ -1,6 +1,6 @@
 ---
 selenium_dependencies:
-  - src: http://chromedriver.storage.googleapis.com/2.31/chromedriver_linux64.zip
+  - src: http://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip
     dest: /var/lib/chrome-driver/chromedriver.zip
     unzip: yes
     service: no
