@@ -4,7 +4,7 @@ excerpt: Setup a connection between PhpStorm and Xdebug to debug a project.
 permalink: /documentation/project/xdebug/
 ---
 
-After provisioning the environment will have the `XDEBUG_CONFIG="idekey=PHPSTORM"` and `PHP_IDE_CONFIG="serverName=PROJECT_HOSTNAME"` variables set in `/etc/bash.bashrc`.
+After provisioning the environment will have the `XDEBUG_CONFIG="idekey=PHPSTORM"` and `PHP_IDE_CONFIG="serverName=PROJECT_HOSTNAME"` variables set in `/etc/environment`.
 
 The `PHPSTORM` can be changed in the [configuration](https://github.com/BR0kEN-/cikit/blob/master/scripts/roles/cikit-php/defaults/main.yml#L33).
 {: .notice--info}

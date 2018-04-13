@@ -255,9 +255,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   if defined? 'platform_data_auth'
     config.vm.provision(
       :shell,
-      privileged: false,
       keep_color: true,
-      inline: "bash #{cikit_package_dir}/lib/platformsh/setup.sh",
+      inline: "cikit #{cikit_package_dir}/lib/platformsh/setup.yml",
       name: 'Setup Platform.sh integration',
       run: 'always'
     )

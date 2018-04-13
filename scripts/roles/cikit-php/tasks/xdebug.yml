@@ -18,8 +18,8 @@
 
 - name: Set environment variable
   lineinfile:
-    dest: /etc/bash.bashrc
-    line: 'export {{ item.key }}="{{ item.value }}"'
+    dest: /etc/environment
+    line: '{{ item.key }}="{{ item.value }}"'
     regexp: "{{ item.value | regex_escape }}"
     insertbefore: BOF
   with_dict:

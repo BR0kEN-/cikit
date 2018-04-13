@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  become: yes
+
+  vars:
+    authfile: ".platform.app.json"
+    webroot: "{{ lookup('env', 'CIKIT_PROJECT_DIR') }}"
+    config: "{{ lookup('file', webroot + '/' + authfile) | from_json }}"
+
+  tasks:
+    - name: Configure environment
+      lineinfile:
+        dest: /etc/profile
+        line: "{{ item }}"
+        regexp: "{{ item | regex_escape }}"
+        insertafter: BOF
+      with_items:
+        - >-
+          export PLATFORMSH_CLI_TOKEN="$(json_pp < "$CIKIT_PROJECT_DIR/{{ authfile }}" | awk -F '"' '/token/ {print $4}')"
+        - >-
+          source "$CIKIT_PROJECT_DIR/.environment"
+
+    - name: Set an ID of a project
+      command: platform project:set-remote {{ config.id }}
+      args:
+        chdir: "{{ webroot }}"
+      environment:
+        # The environment variable won't be available right after insertion
+        # so we have to explicitly declare it, since "platform" needs it.
+        PLATFORMSH_CLI_TOKEN: "{{ config.token }}"
+
+    - name: Check for a project-wide composer.json
+      stat:
+        path: "{{ webroot }}/composer.json"
+      register: composer_json
+
+    - include_tasks: tasks/composer.yml
+      when: composer_json.stat.exists

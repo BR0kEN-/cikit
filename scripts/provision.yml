@@ -180,8 +180,8 @@
 
     - name: Ensure default directory of CIKit project is set as environment variable
       lineinfile:
-        dest: /etc/bash.bashrc
-        line: 'export CIKIT_PROJECT_DIR="{{ webroot }}"'
+        dest: /etc/environment
+        line: 'CIKIT_PROJECT_DIR="{{ webroot }}"'
         regexp: "{{ webroot | regex_escape }}"
         insertbefore: BOF
       when: localhost
