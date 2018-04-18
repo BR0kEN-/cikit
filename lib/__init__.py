@@ -111,9 +111,6 @@ else:
         if key not in args.extra:
             args.extra[key] = value
 
-    if 'EXTRA_VARS' in os.environ:
-        functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
-
     if 'ANSIBLE_INVENTORY' in os.environ:
         PARAMS.append("-i '%s'" % os.environ['ANSIBLE_INVENTORY'])
 
