@@ -36,10 +36,10 @@ project_hostname = config_values['site_url'].split('//').last
       END
     end
 
-    platform_data_auth = JSON.parse(File.read(platform_file_auth))
+    @platform_data_auth = JSON.parse(File.read(platform_file_auth))
 
     %w[id token].each do |property|
-      if !platform_data_auth.key?(property) || platform_data_auth[property].empty?
+      if !@platform_data_auth.key?(property) || @platform_data_auth[property].empty?
         raise Vagrant::Errors::VagrantError.new, <<-END.chomp.gsub(/^\s+\|/, '')
           |The "#{property}" must not be empty in "#{platform_file_auth}".
         END
@@ -234,25 +234,8 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
     playbook: "#{cikit_package_dir}/scripts/provision"
   )
 
-  # Create Selenium hub.
-  config.vm.provision(
-    :shell,
-    keep_color: true,
-    inline: 'cikit tests',
-    name: 'Start Selenium hub',
-    run: 'always'
-  )
-
-  # Create Selenium node.
-  config.vm.provision(
-    :cikit,
-    controller: "#{cikit_package_dir}/lib/cikit",
-    playbook: "#{cikit_package_dir}/scripts/selenium && true",
-    run: 'always'
-  )
-
   # It's a Platform.sh-hosted project if the variable is defined.
-  if defined? 'platform_data_auth'
+  if defined? @platform_data_auth
     config.vm.provision(
       :shell,
       keep_color: true,
