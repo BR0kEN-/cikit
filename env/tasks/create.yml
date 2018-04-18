@@ -7,7 +7,7 @@
 
 - name: Append the CIKit package to the list of mounts
   set_fact:
-    options: "{{ options }} -v '{{ __selfdir__ }}/lib'"
+    options: "{{ options }} -v '{{ __selfdir__ }}/lib':'{{ __selfdir__ }}/lib'"
   # This is an exceptional case allowing to create a testing environment for
   # the CIKit REST API.
   when: ignore_cikit_mount is undefined

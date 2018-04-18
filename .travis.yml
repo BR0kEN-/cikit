@@ -1,6 +1,9 @@
 sudo: required
 dist: trusty
 
+services:
+  - docker
+
 python:
   - "2.7"
 
@@ -19,5 +22,4 @@ install:
 script:
   - sudo bash ./tests/travis/init.sh
   - sudo bash ./tests/travis/inventory.sh
-  # @todo Uncomment once "xenial" dist become available.
-  #- sudo bash ./tests/travis/provision.sh
+  - sudo bash ./tests/travis/provision.sh
