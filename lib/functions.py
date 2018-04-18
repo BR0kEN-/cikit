@@ -30,12 +30,13 @@ def call(*nargs, **kwargs):
 def parse_extra_vars(args, bag):
     for arg in args:
         if arg.startswith('--', 0):
-            arg = arg[2:].split('=', 1)
+            pair = arg[2:].split('=', 1)
 
-            if 1 == len(arg):
-                arg.append(True)
+            if 1 == len(pair):
+                pair.append(True)
 
-            bag[arg[0].replace('-', '_')] = arg[1]
+            bag[pair[0].replace('-', '_')] = pair[1]
+            args.remove(arg)
 
 
 def get_hostname(config):

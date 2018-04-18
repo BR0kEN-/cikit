@@ -51,4 +51,6 @@ args.extra = {}
 
 parse_extra_vars(argv, args.extra)
 
+args.argv = argv
+
 del argv
