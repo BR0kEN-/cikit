@@ -9,6 +9,7 @@ python:
 
 env:
   VAGRANT_VERSION: 2.0.2
+  ANSIBLE_VERBOSITY: 2
 
 install:
   - sudo pip install ansible
