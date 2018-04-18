@@ -12,7 +12,7 @@ The installation process on **Windows 10** is a bit complicated and must be done
 
 |Name|Version|
 |:---|:---|
-|[Ansible](https://github.com/ansible/ansible)|2.4+|
+|[Ansible](https://github.com/ansible/ansible)|2.4.3+|
 |[Vagrant](https://github.com/hashicorp/vagrant)|1.9.5+|
 |[VirtualBox](https://www.virtualbox.org)|5.1+|
 

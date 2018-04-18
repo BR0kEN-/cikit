@@ -21,7 +21,7 @@
   with_items: "{{ selenium_dependencies_statuses.results }}"
 
 - name: Unarchive item
-  shell: "cd {{ item.item.dest | dirname }} && unzip {{ item.item.dest | basename }} | yes"
+  shell: "cd {{ item.item.dest | dirname }} && unzip -o {{ item.item.dest | basename }}"
   when: not item.stat.exists and item.item.unzip
   with_items: "{{ selenium_dependencies_statuses.results }}"
 

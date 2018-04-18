@@ -16,7 +16,7 @@
 - name: Install APT packages
   apt:
     name: "{{ item }}"
-    state: installed
+    state: present
   with_items: "{{ selenium_packages }}"
 
 - import_tasks: dependencies.yml
