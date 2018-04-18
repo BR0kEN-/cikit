@@ -14,5 +14,5 @@
 - name: Ensure MySQL packages are installed
   apt:
     name: "{{ item }}"
-    state: installed
+    state: present
   with_items: "{{ cikit_mysql_packages }}"

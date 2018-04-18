@@ -1,11 +1,15 @@
 sudo: required
 dist: trusty
 
+services:
+  - docker
+
 python:
   - "2.7"
 
 env:
   VAGRANT_VERSION: 2.0.2
+  ANSIBLE_VERBOSITY: 2
 
 install:
   - sudo pip install ansible
@@ -17,7 +21,6 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - sudo bash ./tests/travis/init.sh
-  - sudo bash ./tests/travis/inventory.sh
-  # @todo Uncomment once "xenial" dist become available.
-  #- sudo bash ./tests/travis/provision.sh
+  - readarray -t ACTIONS < <(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE")
+  - find ./tests/travis -type f -name '*.sh' -exec sudo bash {} \;
+  - env

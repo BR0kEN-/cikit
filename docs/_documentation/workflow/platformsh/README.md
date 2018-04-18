@@ -26,20 +26,26 @@ Hosting platforms differ from each other and we have to take some actions before
     "token": "AUTHENTICATION_TOKEN"
   }
   ```
-  Replace the `PROJECT_ID` and `AUTHENTICATION_TOKEN` by the actual data. Commit this file to **private repositories** only!
+  Replace the `PROJECT_ID` and `AUTHENTICATION_TOKEN` by the actual data. Commit this file to **private repositories** only or just keep it locally.
   {: .notice--warning}
 
 ## Inject Platform.sh configuration
 
 - Open `<PROJECT_DIR>/scripts/vars/main.yml` and add the {% raw %}`platformsh: "{{ lookup('file', '../.platform.app.json') | from_json }}"`{% endraw %} variable.
 - Provision VM/CI server as usual.
-- Log in to VM via `vagrant ssh` and run the following:
-  ```bash
-  cat << 'EOF' >> ~/.profile
-  export PLATFORMSH_CLI_TOKEN="$(json_pp < /var/www/.platform.app.json | awk -F '"' '/token/ {print $4}')"
-  EOF
-  source ~/.profile
-  cd /var/www
-  platform project:set-remote "$(json_pp < /var/www/.platform.app.json | awk -F '"' '/id/ {print $4}')"
-  ```
 - Read [how to grab a database from one of Platform.sh environments](../../project/mysql-import-strategies#platformsh) using SQL workflow.
+- Use similar contents of the `.environment` file in the root of your project since it'll be added to the `/etc/profile`. The `$PLATFORM_APP_DIR` is available on Platform.sh but in a local VM we have to set it manually. This little trick does the job.
+
+  ```bash
+  # This is the Platform.sh-oriented file.
+  # - https://docs.platform.sh/development/variables.html#shell-variables
+  # CIKit support for this file.
+  # - https://cikit.tools/documentation/workflow/platformsh/#inject-platformsh-configuration
+  #
+  # Statements in this file will be executed (sourced) by the shell in SSH
+  # sessions, in deploy hooks, in cron jobs, and in the application's runtime
+  # environment.
+  : "${PLATFORM_APP_DIR:="$CIKIT_PROJECT_DIR"}"
+
+  export PATH="$PLATFORM_APP_DIR/bin:$PATH"
+  ```

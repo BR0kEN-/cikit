@@ -15,3 +15,13 @@
     warn: no
 
 - include_tasks: fixtures/compile.yml name="XDebug" dir="/tmp/{{ cikit_php_xdebug }}"
+
+- name: Set environment variable
+  lineinfile:
+    dest: /etc/environment
+    line: '{{ item.key }}="{{ item.value }}"'
+    regexp: "{{ item.value | regex_escape }}"
+    insertbefore: BOF
+  with_dict:
+    XDEBUG_CONFIG: "idekey={{ php.extensions.xdebug.config.idekey }}"
+    PHP_IDE_CONFIG: "serverName={{ ansible_fqdn }}"

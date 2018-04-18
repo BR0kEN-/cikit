@@ -37,7 +37,7 @@
       tags: ["sniffers", "ruby"]
 
     - name: solr_version
-      prompt: Which version of Solr you'd want to install? (5.5.5/6.6.2/no)
+      prompt: Which version of Solr you'd want to install? (5.5.5/6.6.3/7.3.0/no)
       default: "no"
       private: no
       tags: ["solr"]
@@ -186,8 +186,8 @@
 
     - name: Ensure default directory of CIKit project is set as environment variable
       lineinfile:
-        dest: /etc/bash.bashrc
-        line: 'export CIKIT_PROJECT_DIR="{{ webroot }}"'
+        dest: /etc/environment
+        line: 'CIKIT_PROJECT_DIR="{{ webroot }}"'
         regexp: "{{ webroot | regex_escape }}"
         insertbefore: BOF
       when: localhost
@@ -309,9 +309,9 @@
     - role: cikit-selenium
       tags: ["selenium"]
 
-    - role: cikit-jenkins
+    - role: cikit-ci
       when: not localhost
-      tags: ["jenkins"]
+      tags: ["ci"]
 
     - role: cikit-project
       tags: ["project"]

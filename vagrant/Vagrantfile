@@ -1,4 +1,5 @@
 require 'yaml'
+require 'json'
 require_relative 'message'
 
 VAGRANT_API_VERSION ||= '2'.freeze
@@ -11,12 +12,43 @@ Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 ui = Vagrant::UI::Colored.new
 is_wsl = Vagrant::Util::Platform.wsl?
 arguments = ARGV.join(' ')
-config_values = YAML.load_file('.cikit/config.yml')
+project_root = Vagrant::Environment.new.root_path.to_s
+config_values = YAML.load_file(project_root + '/.cikit/config.yml')
 vagrantfile_dir = File.dirname(__FILE__)
 cikit_package_dir = File.realdirpath(vagrantfile_dir + '/..')
 # The "site_url" will appear in "config.yml" via repository builder.
 # See "scripts/init.yml".
 project_hostname = config_values['site_url'].split('//').last
+
+# Look up YAML or YML Platform.sh configuration.
+%w[yaml yml].each do |extension|
+  platform_file_config = project_root + '/.platform.app.' + extension
+  platform_file_auth = project_root + '/.platform.app.json'
+
+  if File.exist?(platform_file_config)
+    unless File.exist?(platform_file_auth)
+      raise Vagrant::Errors::VagrantError.new, <<-END.chomp.gsub(/^\s+\|/, '')
+        |The "#{platform_file_config}" indicates that the
+        |project has a Platform.sh integration and therefore you have to create
+        |the "#{platform_file_auth}" for local development.
+        |
+        |See https://cikit.tools/documentation/workflow/platformsh/#configure-hosting.
+      END
+    end
+
+    @platform_data_auth = JSON.parse(File.read(platform_file_auth))
+
+    %w[id token].each do |property|
+      if !@platform_data_auth.key?(property) || @platform_data_auth[property].empty?
+        raise Vagrant::Errors::VagrantError.new, <<-END.chomp.gsub(/^\s+\|/, '')
+          |The "#{property}" must not be empty in "#{platform_file_auth}".
+        END
+      end
+    end
+
+    break
+  end
+end
 
 # Check whether CIKit cannot be bootstrapped properly.
 if (arguments.include?('up') || arguments.include?('provision')) && !arguments.include?('no-provision')
@@ -202,21 +234,16 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
     playbook: "#{cikit_package_dir}/scripts/provision"
   )
 
-  # Create Selenium hub.
-  config.vm.provision(
-    :shell,
-    keep_color: true,
-    inline: 'cikit tests',
-    run: 'always'
-  )
-
-  # Create Selenium node.
-  config.vm.provision(
-    :cikit,
-    controller: "#{cikit_package_dir}/lib/cikit",
-    playbook: "#{cikit_package_dir}/scripts/selenium && true",
-    run: 'always'
-  )
+  # It's a Platform.sh-hosted project if the variable is defined.
+  if defined? @platform_data_auth
+    config.vm.provision(
+      :shell,
+      keep_color: true,
+      inline: "cikit #{cikit_package_dir}/lib/platformsh/setup.yml",
+      name: 'Setup Platform.sh integration',
+      run: 'always'
+    )
+  end
 
   config.ssh.shell = 'sh'
   config.ssh.insert_key = false

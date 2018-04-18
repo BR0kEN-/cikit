@@ -45,8 +45,11 @@ if '' == args.playbook:
 
     sys.exit(0)
 elif 'ssh' == args.playbook:
+    if not args.argv:
+        args.argv.append('bash')
+
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
-    sys.exit(call(['docker exec -it %s bash' % get_hostname('login to')], shell=True))
+    sys.exit(call(['docker exec -it %s %s' % (get_hostname('login to'), ' '.join(args.argv))], shell=True))
 
 PLAYBOOK = functions.playbooks_find(
     variables.dirs['scripts'] + '/' + args.playbook,
@@ -107,9 +110,6 @@ else:
         # an option to the command.
         if key not in args.extra:
             args.extra[key] = value
-
-    if 'EXTRA_VARS' in os.environ:
-        functions.parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
     if 'ANSIBLE_INVENTORY' in os.environ:
         PARAMS.append("-i '%s'" % os.environ['ANSIBLE_INVENTORY'])

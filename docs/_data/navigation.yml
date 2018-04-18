@@ -38,12 +38,14 @@ documentation:
   - title: CI server (droplet)
     url: /documentation/jenkins/
     children:
-      - title: Configure Jenkins
+      - title: "Jenkins: configure"
         url: /documentation/jenkins/
-      - title: Reinstall Jenkins
+      - title: "Jenkins: reinstall"
         url: /documentation/jenkins/reinstall/
-      - title: Configure Github bot
+      - title: "Jenkins: configure Github bot"
         url: /documentation/jenkins/github-bot/
+      - title: "Gitlab CI: configure"
+        url: /documentation/gitlab-ci/
       - title: Parameterized builds
         url: /documentation/jenkins/parameterized-builds/
 
@@ -60,6 +62,8 @@ documentation:
         url: /documentation/project/mssql/
       - title: Solr
         url: /documentation/project/solr/
+      - title: Xdebug
+        url: /documentation/project/xdebug/
       - title: Sniffers
         url: /documentation/project/sniffers/
       - title: Vagrant box
@@ -68,6 +72,8 @@ documentation:
         url: /documentation/project/web-server/
       - title: Custom virtual hosts
         url: /documentation/project/custom-vhosts/
+      - title: Custom PHP packages
+        url: /documentation/project/custom-php-packages/
 
   - title: Workflow
     url: /documentation/workflow/

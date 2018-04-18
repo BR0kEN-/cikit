@@ -33,7 +33,7 @@ php:
         idekey: PHPSTORM
         remote_log: /tmp/xdebug.log
         remote_port: 9000
-        remote_host: localhost
+        remote_host: "{{ ansible_default_ipv4.gateway }}"
         remote_enable: 1
         remote_handler: dbgp
         default_enable: 1
@@ -41,31 +41,4 @@ php:
         overload_var_dump: 0
         max_nesting_level: 1000
         remote_connect_back: 1
-  packages:
-    - dev
-    - mcrypt
-    - curl
-    - mysql
-    - json
-    - intl
-    - imap
-    - gd
-    - cli
-    - bz2
-    - common
-    - dba
-    - gmp
-    - odbc
-    - mbstring
-    - soap
-    - xml
-    - xsl
-    - zip
-    - apc
-    # For providing "mssql_*" functions on PHP 5.6.
-    - sybase
-    - xmlrpc
-    - memcached
-    - fpm
-cikit_php_extra:
-  packages: []
+php_packages: []

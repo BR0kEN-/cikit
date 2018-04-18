@@ -1,0 +1,34 @@
+---
+- name: Add repository
+  shell: "curl -sL https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | bash"
+  args:
+    # Suppress warnings about "get_url" usage.
+    warn: no
+    # Actually, it is APT task below creates this file, but
+    # nevermind. We're just not gonna run this second time.
+    creates: /usr/bin/gitlab-runner
+
+- name: Install
+  apt:
+    name: gitlab-runner
+    state: present
+
+- name: Configure
+  shell: |-
+    gitlab-runner register \
+      --non-interactive \
+      --url='{{ gitlab_ci_url }}' \
+      --shell=bash \
+      --locked=false \
+      --executor=shell \
+      --run-untagged=true \
+      --tls-key-file='{{ ssl_folder }}/ssl.key' \
+      --tls-cert-file='{{ ssl_folder }}/ssl.crt' \
+      --registration-token='{{ gitlab_ci_token }}'
+
+- name: Create the configuration in a project
+  template:
+    src: .gitlab-ci.yml.j2
+    dest: "{{ __targetdir__ }}/.gitlab-ci.yml"
+  delegate_to: localhost
+  become: no

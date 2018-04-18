@@ -1,53 +1,41 @@
 ---
+- name: Set environment variable
+  lineinfile:
+    dest: /etc/environment
+    line: 'export {{ item.key }}="{{ item.value }}"'
+    regexp: "{{ item.value | regex_escape }}"
+    insertbefore: BOF
+  with_dict:
+    # https://getcomposer.org/doc/03-cli.md#composer-home
+    COMPOSER_HOME: "{{ cikit_composer.dirs.home }}"
+
 - name: Install Composer
-  shell: "curl -sS https://getcomposer.org/installer | php -- --install-dir={{ cikit_composer.bin }}"
+  shell: |-
+    curl -sS https://getcomposer.org/installer | php -- --install-dir={{ cikit_composer.dirs.bin }} --filename={{ cikit_composer.bin }}
+    chown -R {{ ansible_user }}:{{ ansible_user }} {{ cikit_composer.dirs.home }} {{ cikit_composer.dirs.bin }}/{{ cikit_composer.bin }}
   args:
     warn: no
-
-- name: Rename PHAR file
-  shell: "mv composer.phar composer"
-  args:
-    chdir: "{{ cikit_composer.bin }}"
-
-- name: Make Composer executable
-  file:
-    path: "{{ cikit_composer.bin }}/composer"
-    mode: 0755
-
-- name: Prepare directory for global Composer packages
-  file:
-    path: "{{ cikit_composer.dir }}"
-    state: directory
-
-- name: Install system packages
-  include_tasks: packages.yml
-  args:
-    composer_packages: "{{ cikit_composer.system_packages }}"
-
-- name: Create .config directory
-  file:
-    path: "{{ user_home }}/.config/composer"
-    state: directory
-    recurse: yes
-
-- name: Create Composer config
-  template:
-    src: config.json.j2
-    dest: "{{ user_home }}/.config/composer/config.json"
+    creates: "{{ cikit_composer.dirs.bin }}/{{ cikit_composer.bin }}"
 
 - include_tasks: packages.yml
+  args:
+    name: "Install system packages"
+    composer_packages: "{{ cikit_composer.system_packages }}"
 
-- name: Determine Composer packages
-  shell: ls -A {{ cikit_composer.dir }}/vendor/bin/ | grep -v '\..*'
-  register: packages
+- include_tasks: packages.yml
+  args:
+    name: "Install packages"
 
-- name: Make Composer packages executable
+- name: Determine installed binaries
+  shell: ls -A {{ cikit_composer.dirs.home }}/vendor/bin/ | grep -v '\..*'
+  register: cikit_composer_bins
+
+- name: Ensure installed binaries available globally
   file:
-    src: "{{ cikit_composer.dir }}/vendor/bin/{{ item }}"
-    dest: "{{ cikit_composer.bin }}/{{ item }}"
+    src: "{{ cikit_composer.dirs.home }}/vendor/bin/{{ item }}"
+    dest: "{{ cikit_composer.dirs.bin }}/{{ item }}"
     state: link
-  when: "'composer' != item"
-  with_items: "{{ packages.stdout_lines if 'stdout_lines' in packages else [] }}"
+  with_items: "{{ cikit_composer_bins.stdout_lines if 'stdout_lines' in cikit_composer_bins else [] }}"
 
 - name: Mark role as executed
   set_fact:

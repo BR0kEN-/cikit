@@ -1,0 +1,10 @@
+# https://getcomposer.org/doc/06-config.md#bin-dir
+# https://getcomposer.org/doc/06-config.md#vendor-dir
+---
+- name: Read composer.json
+  set_fact:
+    composer_json: "{{ lookup('file', composer_json.stat.path) | from_json | combine({'config': {'vendor-dir': 'vendor'}}, recursive=True) }}"
+
+- name: Link items from Composer's "bin-dir" to /usr/local/bin
+  shell: >-
+    find "{{ webroot }}/{{ composer_json.config['bin-dir'] | default(composer_json.config['vendor-dir'] + '/bin') }}" -type l -exec ln -fs {} /usr/local/bin/ \;
