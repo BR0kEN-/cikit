@@ -44,7 +44,7 @@
 
 - name: Install the requirements
   shell: |-
-    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo curl wget python-minimal apt-transport-https -y'
+    docker exec -t {{ hostname }} bash -c 'apt update -y && apt install sudo curl wget python-minimal apt-transport-https iproute -y'
 
 - name: Print the name of created container
   debug:
