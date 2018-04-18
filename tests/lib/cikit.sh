@@ -172,12 +172,12 @@ HERE
 
 __cikit_test \
   0 \
-  "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2" \
+  "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.3" \
   "$(cat <<-HERE
 ansible-playbook \
 '${SELF_DIR}/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.2", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.3", "limit": "test", "php_version": "5.6", "bla": "12"}' \
 -i '${SELF_DIR}/lib/inventory' \
 -e __selfdir__='${SELF_DIR}' \
 -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
@@ -189,14 +189,14 @@ HERE
 __cikit_test \
   0 \
   "$(cat <<-HERE
-cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.3 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
 HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
 '${SELF_DIR}/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.3", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
 -i '${SELF_DIR}/lib/inventory' \
 -e __selfdir__='${SELF_DIR}' \
 -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
@@ -210,14 +210,14 @@ export EXTRA_VARS="--bla=14 --ob='{\"a\": {\"b\": 2}}' --ar='[1, 2, 4]'"
 __cikit_test \
   0 \
   "$(cat <<-HERE
-cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.2 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.3 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
 HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
 '${SELF_DIR}/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.2", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.3", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
 -i '${SELF_DIR}/lib/inventory' \
 -e __selfdir__='${SELF_DIR}' \
 -e __targetdir__='${SELF_DIR}/${TEST_PROJECT}' \
