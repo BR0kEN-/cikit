@@ -98,7 +98,8 @@
         - jinja2
         - markupsafe
         - MySQL-python
-        - ansible
+        # @todo See lib/variables.py
+        - ansible==2.5.0
 
   pre_tasks:
     - name: Check whether preselected web server is available
