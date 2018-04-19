@@ -1,6 +1,8 @@
 import os
 import json
+import errno
 import functions
+from distutils.version import LooseVersion
 
 ANSIBLE_COMMAND = 'ansible-playbook'
 ANSIBLE_EXECUTABLE = functions.call('which', ANSIBLE_COMMAND)
@@ -70,7 +72,10 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
     # Do not apply the workaround if an exactly same interpreter is used for
     # running CIKit and Ansible.
     if functions.call('which', 'python').strip() == python_ansible:
+        import ansible.release
         import yaml
+
+        ANSIBLE_VERSION = ansible.release.__version__
 
         def read_yaml(path):
             if os.path.isfile(path):
@@ -81,6 +86,10 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
 
             return {}
     else:
+        ANSIBLE_VERSION = functions\
+            .call(python_ansible, '-c', 'from ansible.release import __version__\nprint __version__')\
+            .strip()
+
         def read_yaml(path):
             if os.path.isfile(path):
                 result = functions.call(
@@ -93,5 +102,27 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
                     return json.loads(result)
 
             return {}
+
+ANSIBLE_VERSION = LooseVersion(ANSIBLE_VERSION)
+ANSIBLE_VERSIONS = {
+    'min': LooseVersion('2.4.3'),
+    # @todo Set to highest when the regressions introduced in 2.5.1 will be resolved.
+    # - https://github.com/ansible/ansible/issues/39007
+    # - https://github.com/ansible/ansible/issues/39014
+    'max': LooseVersion('2.5.0'),
+}
+
+if ANSIBLE_VERSION < ANSIBLE_VERSIONS['min']:
+    functions.error(
+        'You must have at least Ansible %s while the current version is %s' %
+        (ANSIBLE_VERSIONS['min'], ANSIBLE_VERSION),
+        errno.EINVAL
+    )
+elif ANSIBLE_VERSION > ANSIBLE_VERSIONS['max']:
+    functions.error(
+        'Maximum allowed version of Ansible must not be greater than %s while the current one is %s.' %
+        (ANSIBLE_VERSIONS['max'], ANSIBLE_VERSION),
+        errno.EINVAL
+    )
 
 CONFIG_FILE = dirs['cikit'] + '/config.yml'

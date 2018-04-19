@@ -10,11 +10,12 @@
 - name: Set the name for a new droplet
   set_fact:
     droplet: "{{ application }}{{ number }}"
-    ports: []
+    ports: ""
 
 - name: Compute the ports to forward
   set_fact:
-    ports: "{{ ports + [ '-p ' + ('127.0.0.1:' if item.value.vhost else '') + item.key | string + number | string + ':' + item.key | string ] }}"
+    ports: |-
+      {{ ports }} -p {{ '127.0.0.1:' if item.value.vhost else '' }}{{ item.key }}{{ number }}:{{ item.key }}
   with_dict: "{{ nginx.port_forwarding }}"
 
 - name: Compute directory for SSH key-pair
@@ -60,7 +61,7 @@
       --tmpfs /run \
       --tmpfs /run/lock \
       --security-opt seccomp=unconfined \
-      {{ ports | join(' ') }} \
+      {{ ports }} \
       solita/ubuntu-systemd
 
 - name: Generate SSH key-pair for droplet
