@@ -22,5 +22,5 @@ install:
 
 script:
   - readarray -t ACTIONS < <(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE")
-  - find ./tests/travis -type f -name '*.sh' -exec sudo bash {} \;
+  - for file in ./tests/travis/*.sh; do sudo bash "$file"; done
   - env
