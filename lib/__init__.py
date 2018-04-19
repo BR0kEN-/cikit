@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import errno
-import shlex
 import functions
 import variables
 from subprocess import call

@@ -12,7 +12,8 @@ env:
   ANSIBLE_VERBOSITY: 2
 
 install:
-  - sudo pip install ansible
+  # @todo See lib/variables.py
+  - sudo pip install ansible==2.5.0
   - sudo bash ./install.sh --no-requirements-check
   - sudo wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
   - sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
@@ -22,5 +23,5 @@ install:
 
 script:
   - readarray -t ACTIONS < <(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE")
-  - find ./tests/travis -type f -name '*.sh' -exec sudo bash {} \;
+  - for file in ./tests/travis/*.sh; do sudo bash "$file"; done
   - env

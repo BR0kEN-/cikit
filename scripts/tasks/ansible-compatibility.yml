@@ -1,5 +1,0 @@
----
-- name: Check Ansible compatibility
-  fail:
-    msg: "Continuation is possible only with Ansible 2.4.x on host machine."
-  when: "ansible_version.major < 2 and ansible_version.minor < 4"
