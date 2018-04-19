@@ -101,9 +101,6 @@
         - ansible
 
   pre_tasks:
-    - import_tasks: tasks/ansible-compatibility.yml
-      tags: ["always"]
-
     - name: Check whether preselected web server is available
       fail:
         msg: "The '{{ web_server }}' web server is unknown and cannot be used."
