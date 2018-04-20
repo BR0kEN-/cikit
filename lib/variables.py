@@ -1,8 +1,6 @@
 import os
 import json
-import errno
 import functions
-from distutils.version import LooseVersion
 
 ANSIBLE_COMMAND = 'ansible-playbook'
 ANSIBLE_EXECUTABLE = functions.call('which', ANSIBLE_COMMAND)
@@ -103,26 +101,12 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
 
             return {}
 
-ANSIBLE_VERSION = LooseVersion(ANSIBLE_VERSION)
-ANSIBLE_VERSIONS = {
-    'min': LooseVersion('2.4.3'),
+functions.is_version_between(ANSIBLE_VERSION, {
+    'min': '2.4.3',
     # @todo Set to highest when the regressions introduced in 2.5.1 will be resolved.
     # - https://github.com/ansible/ansible/issues/39007
     # - https://github.com/ansible/ansible/issues/39014
-    'max': LooseVersion('2.5.0'),
-}
-
-if ANSIBLE_VERSION < ANSIBLE_VERSIONS['min']:
-    functions.error(
-        'You must have at least Ansible %s while the current version is %s' %
-        (ANSIBLE_VERSIONS['min'], ANSIBLE_VERSION),
-        errno.EINVAL
-    )
-elif ANSIBLE_VERSION > ANSIBLE_VERSIONS['max']:
-    functions.error(
-        'Maximum allowed version of Ansible must not be greater than %s while the current one is %s.' %
-        (ANSIBLE_VERSIONS['max'], ANSIBLE_VERSION),
-        errno.EINVAL
-    )
+    'max': '2.5.0',
+})
 
 CONFIG_FILE = dirs['cikit'] + '/config.yml'
