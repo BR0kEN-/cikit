@@ -10,9 +10,6 @@ python:
 env:
   VAGRANT_VERSION: 2.0.2
   ANSIBLE_VERBOSITY: 2
-  __TEST:
-    bash: sh
-    python: py
 
 install:
   # @todo See lib/variables.py
@@ -29,15 +26,18 @@ script:
   - |
     declare -A TESTS=([bash]=sh [python]=py)
 
-    # Parse the commit message that looks like "#120: [skip bash/init.sh][ skip  python/filename.py] Commit name".
-    # The resulting string will be: "|skipbash/init.sh|skippython/filename.py|"
+    # Parse the commit message that looks like "#120: [skip bash/init.sh][ skip  python] Commit name".
+    # The resulting string will be: "|skipbash/init.sh|skippython|"
     PARAMS="|$(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE" | head -n -1 | tr '\n' '|' | tr -d [[:space:]])"
 
     for INTERPRETER in "${!TESTS[@]}"; do
-      find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f | while read -r TEST; do
-        if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
-          sudo ${INTERPRETER} "$TEST"
-        fi
-      done
+      if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
+        find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f | while read -r TEST; do
+          if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
+            echo "-- Running $TEST..."
+            sudo ${INTERPRETER} "$TEST"
+          fi
+        done
+      fi
     done
   - env
