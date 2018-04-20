@@ -1,3 +1,11 @@
+# NOTES:
+# - Add "[skip DIR]" to commit message and tests from "./tests/travis/DIR" won't be executed.
+# - Use "[skip DIR/FILE]" to skip a particular test from "./tests/travis/DIR/FILE".
+# - The "[skip ci]" handled by Travis personally so the build even won't be created.
+# Examples:
+# - git commit -m '#200: [skip bash] Add Python stuff'
+# - git commit -m '#201: [skip bash/init.sh][bash/provision.sh] Improve inventory handling'
+# - git commit -m '#202: [skip python][bash/provision.sh] Add new CMF'
 sudo: required
 dist: trusty
 
@@ -22,6 +30,5 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - readarray -t ACTIONS < <(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE")
-  - for file in ./tests/travis/*.sh; do sudo bash "$file"; done
+  - sudo ./tests/travis/runner.sh
   - env

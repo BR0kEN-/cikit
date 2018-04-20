@@ -1,5 +1,4 @@
 import os
-import shlex
 from actions import VersionAction
 from argparse import ArgumentParser
 from functions import parse_extra_vars
@@ -50,8 +49,5 @@ parser.add_argument(
 args, argv = parser.parse_known_args()
 args.extra = {}
 args.argv = parse_extra_vars(argv, args.extra)
-
-if 'EXTRA_VARS' in os.environ:
-    parse_extra_vars(shlex.split(os.environ['EXTRA_VARS']), args.extra)
 
 del argv

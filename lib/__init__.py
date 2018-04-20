@@ -124,10 +124,7 @@ if 'self-update' == args.playbook:
 
 if args.limit and 'localhost' != args.limit:
     PARAMS.append("-l '%s'" % args.limit)
-    # When the "--limit" has value in "a.b" form then it means the "a"
-    # represents the name of a matrix that stores a droplet "b". If no
-    # dots in string, then it could be a matrix or an external droplet.
-    variables.dirs['credentials'] += '/%s' % args.limit.replace('.', '/')
+    variables.dirs['credentials'] += '/%s' % functions.process_credentials_dir(args.limit)
 else:
     PARAMS.append("-c 'local'")
     PARAMS.append("-i 'localhost,'")
