@@ -65,6 +65,17 @@ def is_version_between(version_current, versions):
     return versions['cur']
 
 
+def process_credentials_dir(directory):
+    # It's Docker provisioning.
+    if directory.endswith(','):
+        return directory.rstrip(',')
+
+    # When the "--limit" has value in "a.b" form then it means the "a"
+    # represents the name of a matrix that stores a droplet "b". If no
+    # dots in string, then it could be a matrix or an external droplet.
+    return directory.replace('.', '/')
+
+
 def get_hostname(config):
     # The name of Docker container for local development is forming based on the
     # hostname that is taken from the "site_url".
