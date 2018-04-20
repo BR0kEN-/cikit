@@ -1,10 +1,11 @@
 from __future__ import print_function
-from os import path
+from os import path, environ
 from sys import exit, stderr
 from glob import glob
 from errno import EINVAL
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+import shlex
 
 
 def playbooks_print(directory, prefix=''):
@@ -31,6 +32,9 @@ def call(*nargs, **kwargs):
 
 
 def parse_extra_vars(args, bag):
+    if 'EXTRA_VARS' in environ:
+        args += shlex.split(environ['EXTRA_VARS'])
+
     copy = list(args)
 
     for arg in args:
