@@ -10,6 +10,9 @@ python:
 env:
   VAGRANT_VERSION: 2.0.2
   ANSIBLE_VERBOSITY: 2
+  __TEST:
+    bash: sh
+    python: py
 
 install:
   # @todo See lib/variables.py
@@ -22,6 +25,19 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - readarray -t ACTIONS < <(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE")
-  - for file in ./tests/travis/*.sh; do sudo bash "$file"; done
+  - cd ./tests/travis
+  - |
+    declare -A TESTS=([bash]=sh [python]=py)
+
+    # Parse the commit message that looks like "#120: [skip bash/init.sh][ skip  python/filename.py] Commit name".
+    # The resulting string will be: "|skipbash/init.sh|skippython/filename.py|"
+    PARAMS="|$(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE" | head -n -1 | tr '\n' '|' | tr -d [[:space:]])"
+
+    for INTERPRETER in "${!TESTS[@]}"; do
+      find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f | while read -r TEST; do
+        if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
+          sudo ${INTERPRETER} "$TEST"
+        fi
+      done
+    done
   - env

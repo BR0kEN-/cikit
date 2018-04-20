@@ -1,12 +1,15 @@
+from __future__ import print_function
 from os import path
-from sys import exit
+from sys import exit, stderr
 from glob import glob
+from errno import EINVAL
 from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 
 def playbooks_print(directory, prefix=''):
     for playbook in glob(directory + '/' + prefix + '*.yml'):
-        print prefix + path.splitext(path.basename(playbook))[0],
+        print('- ' + prefix + path.splitext(path.basename(playbook))[0])
 
 
 def playbooks_find(*paths):
@@ -43,6 +46,25 @@ def parse_extra_vars(args, bag):
     return copy
 
 
+def is_version_between(version_current, versions):
+    versions.update({'cur': version_current})
+
+    def fail(version_type, message):
+        error(message % (versions[version_type], versions['cur']), EINVAL)
+
+    for key, value in versions.iteritems():
+        versions[key] = LooseVersion(value)
+        # Allow 3 parts maximum.
+        versions[key].version = versions[key].version[:3]
+
+    if versions['cur'] < versions['min']:
+        fail('min', 'You must have at least Ansible %s while the current version is %s.')
+    elif versions['cur'] > versions['max']:
+        fail('max', 'Maximum allowed version of Ansible must not be greater than %s while the current one is %s.')
+
+    return versions['cur']
+
+
 def get_hostname(config):
     # The name of Docker container for local development is forming based on the
     # hostname that is taken from the "site_url".
@@ -53,7 +75,7 @@ def get_hostname(config):
 
 
 def error(message, code=1):
-    print('\033[91mERROR: ' + message + '\033[0m')
+    print('\033[91mERROR: ' + message + '\033[0m', file=stderr)
     exit(code)
 
 
