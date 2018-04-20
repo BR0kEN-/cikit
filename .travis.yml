@@ -30,22 +30,5 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - cd ./tests/travis
-  - |
-    declare -A TESTS=([bash]=sh [python]=py)
-
-    # Parse the commit message that looks like "#120: [skip bash/init.sh][ skip  python] Commit name".
-    # The resulting string will be: "|skipbash/init.sh|skippython|"
-    PARAMS="|$(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE" | head -n -1 | tr '\n' '|' | tr -d [[:space:]])"
-
-    for INTERPRETER in "${!TESTS[@]}"; do
-      if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
-        find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f | while read -r TEST; do
-          if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
-            echo "-- Running $TEST..."
-            sudo ${INTERPRETER} "$TEST"
-          fi
-        done
-      fi
-    done
+  - sudo ./tests/travis/runner.sh
   - env
