@@ -53,5 +53,10 @@
 - include_tasks: tasks/wp.yml name="Manage plugins" command="plugin"
   with_items: "{{ plugins }}"
 
+- shell: "{{ item }}"
+  args:
+    executable: bash
+  with_items: "{{ commands.bash }}"
+
 - include_tasks: tasks/wp.yml name="Execute command"
-  with_items: "{{ commands }}"
+  with_items: "{{ commands['wp-cli'] }}"
