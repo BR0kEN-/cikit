@@ -34,15 +34,6 @@
         become_home: "{{ ansible_env.HOME if 'skipped' in user_home else user_home.stdout }}"
         become_name: "{{ ansible_env.USER if 'skipped' in user_home else ansible_env.SUDO_USER }}"
 
-    - name: Ensure directory for backup data exists
-      file:
-        path: "{{ webroot }}/backup"
-        state: directory
-        owner: "{{ become_name }}"
-      # Inside of Vagrant an error may occur. The reason - mounted file system,
-      # which inherit group and owner from host-OS and it cannot be changed.
-      ignore_errors: yes
-
     - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
 
     - import_tasks: "tasks/reinstall/pre-actions.yml"
