@@ -36,3 +36,4 @@ install:
 script:
   - sudo ./tests/travis/runner.sh
   - env
+  - tty
