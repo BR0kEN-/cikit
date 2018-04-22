@@ -14,5 +14,4 @@ cikit provision
 
 # Test (re-)installation of Drupal
 # @todo Think about WordPress and other CMFs.
-# @todo Cannot run due to https://github.com/solita/docker-systemd/issues/15.
-#cikit ssh "bash -lc 'cikit reinstall'"
+cikit ssh "cikit reinstall"

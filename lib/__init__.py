@@ -44,11 +44,17 @@ if '' == args.playbook:
 
     sys.exit(0)
 elif 'ssh' == args.playbook:
-    if not args.argv:
-        args.argv.append('bash --login')
+    if args.argv:
+        args.argv.insert(0, '-c -- "')
+        args.argv.append('"')
+
+    COMMAND = 'docker exec -it %s su root %s' % (get_hostname('login to'), ' '.join(args.argv))
+
+    if functions.ANSIBLE_VERBOSITY >= 1:
+        print COMMAND
 
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
-    sys.exit(call(['docker exec -it %s %s' % (get_hostname('login to'), ' '.join(args.argv))], shell=True))
+    sys.exit(call([COMMAND], shell=True))
 
 PLAYBOOK = functions.playbooks_find(
     variables.dirs['scripts'] + '/' + args.playbook,
@@ -146,10 +152,10 @@ os.environ['ANSIBLE_FORCE_COLOR'] = '1'
 os.environ['DISPLAY_SKIPPED_HOSTS'] = '0'
 os.environ['ANSIBLE_RETRY_FILES_ENABLED'] = '0'
 
-COMMAND = "%s '%s' %s" % (variables.ANSIBLE_COMMAND, PLAYBOOK, ' '.join(PARAMS))
+COMMAND = "%s '%s' %s" % (functions.ANSIBLE_COMMAND, PLAYBOOK, ' '.join(PARAMS))
 
 # Print entire command if verbosity requested.
-if 'ANSIBLE_VERBOSITY' in os.environ:
+if functions.ANSIBLE_VERBOSITY > 0:
     print COMMAND
 
 if not args.dry_run:
