@@ -45,7 +45,7 @@ if '' == args.playbook:
     sys.exit(0)
 elif 'ssh' == args.playbook:
     if not args.argv:
-        args.argv.append('bash')
+        args.argv.append('bash --login')
 
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
     sys.exit(call(['docker exec -it %s %s' % (get_hostname('login to'), ' '.join(args.argv))], shell=True))
