@@ -44,11 +44,16 @@ if '' == args.playbook:
 
     sys.exit(0)
 elif 'ssh' == args.playbook:
-    if args.argv:
-        args.argv.insert(0, '-c -- "')
-        args.argv.append('"')
+    options = ['-i']
+    runner = 'su root'
 
-    COMMAND = 'docker exec -it %s su root %s' % (get_hostname('login to'), ' '.join(args.argv))
+    if sys.stdout.isatty():
+        options.append('-t')
+
+    if args.argv:
+        runner += ' -c -- "%s"' % ' '.join(args.argv)
+
+    COMMAND = 'docker exec %s %s %s' % (' '.join(options), get_hostname('login to'), runner)
 
     if functions.ANSIBLE_VERBOSITY >= 1:
         print COMMAND
