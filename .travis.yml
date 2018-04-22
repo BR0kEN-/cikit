@@ -21,7 +21,7 @@ python:
 
 env:
   VAGRANT_VERSION: 2.0.2
-  ANSIBLE_VERBOSITY: 2
+  ANSIBLE_VERBOSITY: 1
 
 install:
   # @todo See lib/variables.py

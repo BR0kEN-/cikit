@@ -3,7 +3,7 @@
 cd ./tests/travis
 declare -A TESTS=()
 
-for INTERPRETER in */; do
+for INTERPRETER in [a-z]*/; do
   TESTS["${INTERPRETER%%/}"]="$(head -n1 "$INTERPRETER/.extension")"
 done
 

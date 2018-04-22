@@ -12,4 +12,4 @@ cikit provision
 
 # Test (re-)installation of Drupal
 # @todo Think about WordPress and other CMFs.
-cikit ssh "cikit reinstall"
+cikit ssh "bash -c 'cikit reinstall'"
