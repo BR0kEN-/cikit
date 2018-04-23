@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-bash test.sh
+bash ./tests/travis/test.sh
 
 cd ./tests/travis
 declare -A TESTS=()
