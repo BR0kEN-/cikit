@@ -34,5 +34,5 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - sudo ./tests/travis/runner.sh -i
+  - sudo -s ./tests/travis/runner.sh
   - env
