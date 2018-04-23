@@ -4,7 +4,11 @@ cd ./tests/travis
 declare -A TESTS=()
 
 for INTERPRETER in [a-z]*/; do
-  TESTS["${INTERPRETER%%/}"]="$(head -n1 "$INTERPRETER/.extension")"
+  EXTENSION="$INTERPRETER/.extension"
+
+  if [ -f "$EXTENSION" ]; then
+    TESTS["${INTERPRETER%%/}"]="$(head -n1 "$EXTENSION")"
+  fi
 done
 
 # Parse the commit message that looks like "#120: [skip bash/init][ skip  python] Commit name".
@@ -16,7 +20,6 @@ fi
 for INTERPRETER in "${!TESTS[@]}"; do
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
     for TEST in "$INTERPRETER"/[a-z]*."${TESTS[$INTERPRETER]}"; do
-      bash test.sh
       echo "[$(date --iso-8601=seconds)] -- $TEST"
       ${INTERPRETER} "$TEST"
     done
