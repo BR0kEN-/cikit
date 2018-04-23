@@ -14,10 +14,9 @@ if [ -v TRAVIS_COMMIT_MESSAGE ]; then
 fi
 
 for INTERPRETER in "${!TESTS[@]}"; do
-  bash test.sh
-
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
     while read -r TEST; do
+      bash test.sh
       if [[ ! "$PARAMS" =~ \|skip${TEST%%.${TESTS[$INTERPRETER]}}\| ]]; then
         echo "[$(date --iso-8601=seconds)] -- $TEST"
         ${INTERPRETER} "$TEST"
