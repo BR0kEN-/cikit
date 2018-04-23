@@ -2,8 +2,7 @@ import os
 import json
 import functions
 
-ANSIBLE_COMMAND = 'ansible-playbook'
-ANSIBLE_EXECUTABLE = functions.call('which', ANSIBLE_COMMAND)
+ANSIBLE_EXECUTABLE = functions.call('which', functions.ANSIBLE_COMMAND)
 
 dirs = {
     'lib': os.path.realpath(__file__ + '/..'),
@@ -44,7 +43,7 @@ if '' == ANSIBLE_EXECUTABLE:
         )
         %
         (
-            ANSIBLE_COMMAND
+            functions.ANSIBLE_COMMAND
         )
     )
 

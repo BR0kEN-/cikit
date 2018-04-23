@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 
 cd ./tests/travis
-declare -A TESTS=([bash]=sh [python]=py)
+declare -A TESTS=()
 
-# Parse the commit message that looks like "#120: [skip bash/init.sh][ skip  python] Commit name".
-# The resulting string will be: "|skipbash/init.sh|skippython|"
+# Iterate all over subdirectories.
+for INTERPRETER in [a-z]*/; do
+  EXTENSION="$INTERPRETER/.extension"
+
+  # Assume tests are in a directory that has the ".extension" file.
+  if [ -f "$EXTENSION" ]; then
+    TESTS["${INTERPRETER%%/}"]="$(head -n1 "$EXTENSION")"
+  fi
+done
+
+# Parse the commit message that looks like "#120: [skip bash/init][ skip  python] Commit name".
+# The resulting string will be: "|skipbash/init|skippython|"
 if [ -v TRAVIS_COMMIT_MESSAGE ]; then
   PARAMS="|$(awk -vRS="]" -vFS="[" '{print $2}' <<< "$TRAVIS_COMMIT_MESSAGE" | head -n -1 | tr '\n' '|' | tr -d '[:space:]')"
 fi
 
 for INTERPRETER in "${!TESTS[@]}"; do
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
-    find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f | while read -r TEST; do
+    for TEST in "$INTERPRETER"/[a-z]*."${TESTS[$INTERPRETER]}"; do
       if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
         echo "[$(date --iso-8601=seconds)] -- $TEST"
         ${INTERPRETER} "$TEST"

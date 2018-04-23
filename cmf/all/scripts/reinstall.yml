@@ -14,27 +14,29 @@
   tasks:
     - import_tasks: tasks/environment/initialize.yml
 
-    - name: Check existence of installation mode
+    - name: Check whether specific installation mode requested
       stat:
         path: "tasks/reinstall/modes/{{ reinstall_mode }}.yml"
       register: is_reinstall_mode
 
-    - name: Check existence of environment configuration
+    - name: Check existence of specific environment configuration
       stat:
         path: "vars/environments/{{ env }}.yml"
       register: is_env
 
-    - name: Obtain home directory of a user, who triggered this script
+    - name: Obtain home directory of a user who triggered the script
       shell: "echo ~{{ ansible_env.SUDO_USER }}"
       register: user_home
       when: "'SUDO_USER' in ansible_env"
 
-    - name: Set the user's home directory
+    - name: Compute base facts for process
       set_fact:
         become_home: "{{ ansible_env.HOME if 'skipped' in user_home else user_home.stdout }}"
         become_name: "{{ ansible_env.USER if 'skipped' in user_home else ansible_env.SUDO_USER }}"
+        variables_env: "{{ env if is_env.stat.exists else 'default' }}"
 
-    - include_vars: "vars/environments/{{ env if is_env.stat.exists else 'default' }}.yml"
+    - name: Load variables for '{{ variables_env }}' environment ('{{ env }}' requested)
+      include_vars: "vars/environments/{{ variables_env }}.yml"
 
     - import_tasks: "tasks/reinstall/pre-actions.yml"
     - include_tasks: "tasks/reinstall/modes/{{ reinstall_mode if is_reinstall_mode.stat.exists else 'full' }}.yml"

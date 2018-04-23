@@ -26,11 +26,13 @@
   with_dict: "{{ databases }}"
   when: "sql_workflow and 'source' in item.value"
 
-- include_tasks: tasks/drush.yml
-  with_items: "{{ commands.pre }}"
+- shell: "{{ item }}"
+  args:
+    executable: bash
+  with_items: "{{ commands.bash }}"
 
-- include_tasks: tasks/drush.yml name="Run database updates" command="updb"
-  when: sql_workflow
+- include_tasks: tasks/drush.yml
+  with_items: "{{ commands.drush }}"
 
 # Unique way for both workflows.
 - name: "Set credentials for super user: ({{ drupal.user.name }}/{{ drupal.user.pass }})"
@@ -38,6 +40,3 @@
   with_dict:
     sqlq: "'UPDATE <USERS_INFO_TABLE> SET name=\"{{ drupal.user.name }}\" WHERE uid=1'"
     upwd: "{{ drupal.user.name }} --password={{ drupal.user.pass }}"
-
-- include_tasks: tasks/drush.yml
-  with_items: "{{ commands.post }}"

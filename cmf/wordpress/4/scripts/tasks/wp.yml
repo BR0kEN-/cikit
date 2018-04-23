@@ -11,7 +11,7 @@
 - name: "{{ name | default('command') }}"
   shell: "wp {{ utility }} {{ subcommand }} {{ arguments }} --allow-root"
   args:
-    chdir: ../docroot
+    chdir: "{{ project_workspace }}"
   when: arguments | length
   register: wp_cli_result
   environment: "{{ env_vars }}"
