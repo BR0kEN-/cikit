@@ -20,8 +20,10 @@ fi
 for INTERPRETER in "${!TESTS[@]}"; do
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
     for TEST in "$INTERPRETER"/[a-z]*."${TESTS[$INTERPRETER]}"; do
-      echo "[$(date --iso-8601=seconds)] -- $TEST"
-      ${INTERPRETER} "$TEST"
+      if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
+        echo "[$(date --iso-8601=seconds)] -- $TEST"
+        ${INTERPRETER} "$TEST"
+      fi
     done
   fi
 done
