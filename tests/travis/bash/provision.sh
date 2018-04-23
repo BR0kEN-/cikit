@@ -9,9 +9,8 @@ export EXTRA_VARS="--web-server=nginx --php-version=7.1 --nodejs-version=6 --rub
 cikit init --project="$PROJECT_NAME" --cmf=drupal
 cd "$PROJECT_NAME"
 
-cikit ssh env
-
 cikit env/start
+cikit ssh env
 cikit provision
 
 # Test (re-)installation of Drupal
