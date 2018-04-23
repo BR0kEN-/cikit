@@ -10,9 +10,10 @@ cikit init --project="$PROJECT_NAME" --cmf=drupal
 cd "$PROJECT_NAME"
 
 cikit env/start
-cikit provision
-
-# Test (re-)installation of Drupal
-# @todo Think about WordPress and other CMFs.
-#cikit ssh "cikit reinstall"
-docker exec -i test-project.loc su root -c -- "cikit reinstall"
+cikit ssh env
+#cikit provision
+#
+## Test (re-)installation of Drupal
+## @todo Think about WordPress and other CMFs.
+##cikit ssh "cikit reinstall"
+#docker exec -i test-project.loc su root -c -- "cikit reinstall"
