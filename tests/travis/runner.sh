@@ -14,7 +14,7 @@ if [ -v TRAVIS_COMMIT_MESSAGE ]; then
 fi
 
 for INTERPRETER in "${!TESTS[@]}"; do
-  bash ./tests/travis/test.sh
+  bash test.sh
 
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
     while read -r TEST; do
