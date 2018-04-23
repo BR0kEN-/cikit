@@ -34,8 +34,9 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - cikit init --project=test_project --without-sources
-  - cikit env/start
+  - sudo cikit init --project=test_project --without-sources
+  - cd test_project
+  - sudo cikit env/start
   - cikit ssh env
   - sudo ./tests/travis/runner.sh
   - env
