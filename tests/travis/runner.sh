@@ -3,9 +3,11 @@
 cd ./tests/travis
 declare -A TESTS=()
 
+# Iterate all over subdirectories.
 for INTERPRETER in [a-z]*/; do
   EXTENSION="$INTERPRETER/.extension"
 
+  # Assume tests are in a directory that has the ".extension" file.
   if [ -f "$EXTENSION" ]; then
     TESTS["${INTERPRETER%%/}"]="$(head -n1 "$EXTENSION")"
   fi
