@@ -44,3 +44,4 @@ matrix/*
 *.py[co]
 Gemfile.lock
 !*.md
+!.extension

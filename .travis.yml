@@ -4,8 +4,12 @@
 # - The "[skip ci]" handled by Travis personally so the build even won't be created.
 # Examples:
 # - git commit -m '#200: [skip bash] Add Python stuff'
-# - git commit -m '#201: [skip bash/init.sh][bash/provision.sh] Improve inventory handling'
-# - git commit -m '#202: [skip python][bash/provision.sh] Add new CMF'
+# - git commit -m '#201: [skip bash/init][bash/provision] Improve inventory handling'
+# - git commit -m '#202: [skip python][bash/provision] Add new CMF'
+# IMPORTANT:
+# - When skipping a test the extension of a file MUST NOT be specified. If file
+#   is "bash/init.sh" then you just use "[skip bash/init]". For "python/test.py"
+#   it'll be "[skip python/test]" and so on.
 sudo: required
 dist: trusty
 
@@ -17,7 +21,7 @@ python:
 
 env:
   VAGRANT_VERSION: 2.0.2
-  ANSIBLE_VERBOSITY: 2
+  ANSIBLE_VERBOSITY: 1
 
 install:
   # @todo See lib/variables.py
@@ -32,3 +36,6 @@ install:
 script:
   - sudo ./tests/travis/runner.sh
   - env
+
+notifications:
+  slack: cikit:aT0Y9ZQggfbkLoxONJ7Hg1OO

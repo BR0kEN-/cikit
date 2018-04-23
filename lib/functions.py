@@ -7,6 +7,9 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import shlex
 
+ANSIBLE_COMMAND = 'ansible-playbook'
+ANSIBLE_VERBOSITY = int(environ['ANSIBLE_VERBOSITY']) if 'ANSIBLE_VERBOSITY' in environ else 0
+
 
 def playbooks_print(directory, prefix=''):
     for playbook in glob(directory + '/' + prefix + '*.yml'):
@@ -33,6 +36,16 @@ def call(*nargs, **kwargs):
 
 def parse_extra_vars(args, bag):
     if 'EXTRA_VARS' in environ:
+        if ANSIBLE_VERBOSITY >= 2:
+            warn(
+                'Be aware that CLI options may be overridden by values from "EXTRA_VARS" environment '
+                'variable, that is "%s".'
+                %
+                (
+                    environ['EXTRA_VARS']
+                )
+            )
+
         args += shlex.split(environ['EXTRA_VARS'])
 
     copy = list(args)
@@ -53,18 +66,22 @@ def parse_extra_vars(args, bag):
 def is_version_between(version_current, versions):
     versions.update({'cur': version_current})
 
-    def fail(version_type, message):
-        error(message % (versions[version_type], versions['cur']), EINVAL)
-
     for key, value in versions.iteritems():
         versions[key] = LooseVersion(value)
         # Allow 3 parts maximum.
         versions[key].version = versions[key].version[:3]
 
-    if versions['cur'] < versions['min']:
-        fail('min', 'You must have at least Ansible %s while the current version is %s.')
-    elif versions['cur'] > versions['max']:
-        fail('max', 'Maximum allowed version of Ansible must not be greater than %s while the current one is %s.')
+    if versions['cur'] < versions['min'] or versions['cur'] > versions['max']:
+        error(
+            'You must have Ansible version in between of %s and %s while the current one is %s.'
+            %
+            (
+                versions['min'],
+                versions['max'],
+                versions['cur'],
+            ),
+            EINVAL
+        )
 
     return versions['cur']
 
