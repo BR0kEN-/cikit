@@ -10,7 +10,7 @@ cikit init --project="$PROJECT_NAME" --cmf=drupal
 cd "$PROJECT_NAME"
 
 cikit env/start
-#cikit provision
+cikit provision
 
 # Test (re-)installation of Drupal
 # @todo Think about WordPress and other CMFs.
