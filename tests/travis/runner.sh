@@ -15,12 +15,10 @@ fi
 
 for INTERPRETER in "${!TESTS[@]}"; do
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
-    while read -r TEST; do
+    for TEST in "$INTERPRETER"/[a-z]*."${TESTS[$INTERPRETER]}"; do
       bash test.sh
-      if [[ ! "$PARAMS" =~ \|skip${TEST%%.${TESTS[$INTERPRETER]}}\| ]]; then
-        echo "[$(date --iso-8601=seconds)] -- $TEST"
-        ${INTERPRETER} "$TEST"
-      fi
-    done < <(find "$INTERPRETER" -name "[a-z]*.${TESTS[$INTERPRETER]}" -type f)
+      echo "[$(date --iso-8601=seconds)] -- $TEST"
+      ${INTERPRETER} "$TEST"
+    done
   fi
 done
