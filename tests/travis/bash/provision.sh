@@ -10,7 +10,6 @@ cikit init --project="$PROJECT_NAME" --cmf=drupal
 cd "$PROJECT_NAME"
 
 cikit env/start
-cikit ssh env
 cikit provision
 
 # Test (re-)installation of Drupal

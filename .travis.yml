@@ -34,5 +34,8 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - sudo -s ./tests/travis/runner.sh
+  - sudo ./tests/travis/runner.sh
   - env
+
+notifications:
+  slack: cikit:aT0Y9ZQggfbkLoxONJ7Hg1OO
