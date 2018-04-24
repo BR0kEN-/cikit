@@ -1,17 +1,25 @@
+# Rules:
+#   - The "name" and "if" keys are optional for every item.
+#   - The value in "if" must be evaluated first, i.e. "{{ variable }}".
+#   - If "name" is missing the "Running a WP command" is used.
+#   - The key that is not the "name" or "if" is a WP command.
+#   - The "--allow-root" option is added by default to every command.
+#   - The arguments may be a list or string.
 ---
-- name: Process WP-CLI command
-  set_fact:
-    utility: "{{ command | default('') }}"
-    subcommand: "{{ item | join(' ') }}"
+- name: "{{ item.name | default('Running a WP command') }}"
+  shell: >-
+    {%- set unset = [item.pop('name', None), item.pop('if', None)] -%}
+    {%- set utility = item.keys() | first -%}
+    {%- set arguments = item[utility] -%}
 
-- name: Set WP-CLI command arguments
-  set_fact:
-    arguments: "{{ (item[subcommand] or []) | join(' ') }}"
+    {%- if arguments is not string and arguments is sequence -%}
+      {%- set arguments = arguments | join(' ') -%}
+    {%- endif -%}
 
-- name: "{{ name | default('command') }}"
-  shell: "wp {{ utility }} {{ subcommand }} {{ arguments }} --allow-root"
+    wp {{ utility }} {{ arguments }} --allow-root
+  when: "item.if | default(True)"
   args:
     chdir: "{{ project_workspace }}"
-  when: arguments | length
   register: wp_cli_result
   environment: "{{ env_vars }}"
+  ignore_errors: "{{ ignore_errors | default(False) }}"

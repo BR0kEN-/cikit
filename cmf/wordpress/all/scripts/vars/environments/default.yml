@@ -1,12 +1,12 @@
 ---
-plugins:
-  - install: []
-  - uninstall: []
-
 commands:
   bash: []
   wp-cli:
-    - theme: ["status"]
+    - name: "Checking theme status"
+      theme: ["status"]
+    - name: "Installing environment-specific plugins"
+      plugin: ["install", "plugin-name"]
+    - plugin: ["uninstall", "plugin-name1", "plugin-name2"]
 
 wordpress:
   user:

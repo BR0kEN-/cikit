@@ -12,9 +12,11 @@
     src: templates/wp-config.j2
     dest: "{{ project_workspace }}/{{ settings }}"
 
-- include_tasks: tasks/wp.yml name="Installing WordPress" command="core"
+- include_tasks: tasks/wp.yml
   with_items:
-    - install:
+    - name: "Installing WordPress"
+      core:
+      - "install"
       - "--url={{ site_url }}"
       - "--title={{ project | capitalize }}"
       - "--admin_user={{ wordpress.user.name }}"
@@ -27,36 +29,22 @@
   with_dict: "{{ databases }}"
   when: "sql_workflow and 'source' in item.value"
 
-# Unique way for both workflows.
-- include_tasks: tasks/wp.yml name="Set username for super user" command="db"
+- include_tasks: tasks/wp.yml
   with_items:
-    - query: ["\"UPDATE wp_users SET user_login = '{{ wordpress.user.name }}' WHERE id = 1\""]
+    - name: "Set a username for a superuser to '{{ wordpress.user.name }}'"
+      db: ["query", "'UPDATE wp_users SET user_login = \"{{ wordpress.user.name }}\" WHERE id = 1'"]
+    - name: "Set a password for a superuser to '{{ wordpress.user.pass }}'"
+      user: ["update", "1", "--user_pass='{{ wordpress.user.pass }}'"]
+    - name: "Set home URL"
+      option: ["update", "home", "{{ site_url }}"]
+    - name: "Set site URL"
+      option: ["update", "siteurl", "{{ site_url }}"]
+    - name: "Update site domain"
+      db: ["query", "'update wp_site s, wp_blogs b set s.domain = \"{{ site_domain }}\", b.domain = s.domain'"]
+      if: "{{ sql_workflow }}"
 
-# Unique way for both workflows.
-- include_tasks: tasks/wp.yml name="Set password for super user" command="user"
-  with_items:
-    - update:
-      # User ID.
-      - "1"
-      - "--user_pass={{ wordpress.user.pass }}"
-
-- include_tasks: tasks/wp.yml name="Set site URL" command="option update"
-  with_items:
-    - home: ["{{ site_url }}"]
-    - siteurl: ["{{ site_url }}"]
-
-- include_tasks: tasks/wp.yml name="Update site domain" command="db"
-  with_items:
-    - query: ["'update wp_site s, wp_blogs b set s.domain = \"{{ site_domain }}\", b.domain = s.domain'"]
-  when: sql_workflow
-
-- include_tasks: tasks/wp.yml name="Manage plugins" command="plugin"
-  with_items: "{{ plugins }}"
-
-- shell: "{{ item }}"
-  args:
-    executable: bash
+- include_tasks: tasks/bash.yml
   with_items: "{{ commands.bash }}"
 
-- include_tasks: tasks/wp.yml name="Execute command"
+- include_tasks: tasks/wp.yml
   with_items: "{{ commands['wp-cli'] }}"

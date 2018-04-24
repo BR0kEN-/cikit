@@ -56,6 +56,8 @@ documentation:
         url: /documentation/project/cmf-integration/
       - title: Environment configuration
         url: /documentation/project/env-config/
+      - title: Project (re-)installation
+        url: /documentation/project/reinstall/
       - title: MySQL import strategies
         url: /documentation/project/mysql-import-strategies/
       - title: Microsoft SQL server
