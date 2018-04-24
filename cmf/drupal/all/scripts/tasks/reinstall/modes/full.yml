@@ -30,11 +30,7 @@
   with_dict: "{{ databases }}"
   when: "sql_workflow and 'source' in item.value"
 
-- shell: "{{ item.run }}"
-  when: "item.if | default(True)"
-  args:
-    executable: bash
-  environment: "{{ env_vars }}"
+- include_tasks: tasks/bash.yml
   with_items: "{{ commands.bash }}"
 
 - include_tasks: tasks/drush.yml
