@@ -6,7 +6,6 @@ platform: x64
 skip_commits:
   files:
     - README.md
-#  message: /\[skip ci\]/
 
 build:
   verbosity: normal
