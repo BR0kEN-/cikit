@@ -1,20 +1,35 @@
+# Rules:
+#   - The "name" and "if" keys are optional for every item.
+#   - The value in "if" must be evaluated first, i.e. "{{ variable }}".
+#   - If "name" is missing the "Running a Drush command" is used.
+#   - The key that is not the "name" or "if" is a Drush command.
+#   - The "-y" option is added by default to every command.
+#   - The arguments may be a list or string.
+#
+# Example:
+#   include_tasks: drush.yml
+#   with_items:
+#     - si: standard
+#     - cset: ["system.site", "uuid", "2171f30c-4ee7-4d15-9b85-b18ea2b41e73", "-y"]
+#     - name: "Running database updates"
+#       if: "{{ sql_workflow }}"
+#       updb: ~
+#     - uli: ~
 ---
-- name: Process Drush command
-  set_fact:
-    utility: "{{ command | default('') }}"
-    subcommand: ""
-    arguments: ""
+- name: "{{ item.name | default('Running a Drush command') }}"
+  shell: >-
+    {%- set unset = [item.pop('name', None), item.pop('if', None)] -%}
+    {%- set command = item.keys() | first -%}
+    {%- set arguments = item[command] -%}
 
-- name: Set Drush command arguments
-  set_fact:
-    subcommand: "{{ item.key if 'key' in item else item | join(' ') }}"
-    arguments: "{{ item.value if 'key' in item else (item[item | join(' ')] or []) | join(' ') }}"
-  when: item is defined
+    {%- if arguments is not string and arguments is sequence -%}
+      {%- set arguments = arguments | join(' ') -%}
+    {%- endif -%}
 
-- name: "{{ name | default('drush ' + utility + ' ' + subcommand + ' ' + arguments) }}"
-  shell: "drush {{ utility }} {{ subcommand }} {{ arguments }} -y"
+    drush {{ command }} {{ arguments }} -y
+  when: "item.if | default(True)"
   args:
     chdir: "{{ project_workspace }}"
   register: drush_result
   environment: "{{ env_vars }}"
-  ignore_errors: "{{ ignore_errors | default(false) }}"
+  ignore_errors: "{{ ignore_errors | default(False) }}"
