@@ -1,7 +1,26 @@
 #!/usr/bin/env bash
 
+set -e
+
 VAGRANT_VERSION="$2"
 : "${VAGRANT_VERSION:="2.0.3"}"
+
+# ==============================================================================
+# Utilities.
+
+has() {
+  command -v "$1" > /dev/null && return 0 || return 1
+}
+
+symlink() {
+  if [ ! -f "$2" ]; then
+    echo "The \"$1\" cannot be found at \"$2\". $3"
+    exit 1
+  elif ! has "$1"; then
+    # WSL interoperability. Vagrant will use exactly this "Linux" binary.
+    sudo ln -s "$2" "/usr/bin/$1"
+  fi
+}
 
 # ==============================================================================
 # Set up the runtime variables.
@@ -10,33 +29,16 @@ VAGRANT_VERSION="$2"
 WINDOWS_SYSDRV="$(powershell.exe -Command '$env:SYSTEMDRIVE.replace(":", "").ToLower()')"
 # Trim trailing whitespaces.
 WINDOWS_SYSDRV="${WINDOWS_SYSDRV%"${WINDOWS_SYSDRV##*[![:space:]]}"}"
-VIRTUALBOX_EXE="/mnt/${WINDOWS_SYSDRV}/Program Files/Oracle/VirtualBox/VBoxManage.exe"
-POWERSHELL_EXE="/mnt/${WINDOWS_SYSDRV}/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+VBOXMANAGE_EXE="/mnt/$WINDOWS_SYSDRV/Program Files/Oracle/VirtualBox/VBoxManage.exe"
+POWERSHELL_EXE="/mnt/$WINDOWS_SYSDRV/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 
 # ==============================================================================
-# Check whether PowerShell is available and symlink it to the WSL.
+# Create symlinks for VBoxManage and PowerShell.
 
-if [ ! -f "${POWERSHELL_EXE}" ]; then
-  echo "PowerShell cannot be found at \"${POWERSHELL_EXE}\". Are you sure Windows system drive is \"${WINDOWS_SYSDRV^^}:\\\"?"
-  exit 1
-elif ! command -v "powershell" > /dev/null; then
-  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
-  sudo ln -s "${POWERSHELL_EXE}" /usr/bin/powershell
-fi
-
+symlink powershell "$POWERSHELL_EXE" "Are you sure Windows system drive is \"${WINDOWS_SYSDRV^^}:\\\"?"
 powershell -Command "Get-Host"
 
-# ==============================================================================
-# Check whether VBoxManage is available and symlink it to the WSL.
-
-if [ ! -f "${VIRTUALBOX_EXE}" ]; then
-  echo "VirtualBox cannot be found at \"${VIRTUALBOX_EXE}\". Is it installed?"
-  exit 2
-elif ! command -v "VBoxManage" > /dev/null; then
-  # WSL interoperability. Vagrant will use exactly this "Linux" binary.
-  sudo ln -s "${VIRTUALBOX_EXE}" /usr/bin/VBoxManage
-fi
-
+symlink VBoxManage "$VBOXMANAGE_EXE" "Is it installed?"
 VBoxManage --version
 
 # ==============================================================================
@@ -45,15 +47,15 @@ VBoxManage --version
 LINUX_DISTRO_ID=""
 
 for PYTHON_COMMAND in "python" "python2" "python3"; do
-  if command -v "${PYTHON_COMMAND}" > /dev/null; then
+  if has "$PYTHON_COMMAND"; then
     LINUX_DISTRO_ID="$(${PYTHON_COMMAND} -c "import platform;print(platform.linux_distribution()[0].split(' ')[0])")"
     break
   fi
 done
 
-case "${LINUX_DISTRO_ID}" in
+case "$LINUX_DISTRO_ID" in
   openSUSE|SUSE)
-    if ! command -v "easy_install" > /dev/null; then
+    if ! has easy_install; then
       sudo zypper addrepo --no-gpgcheck --check --refresh --name "openSUSE-42.2-OSS" http://download.opensuse.org/distribution/leap/42.2/repo/oss/ oss > /dev/null 2>&1
       sudo zypper update
       sudo zypper install --auto-agree-with-licenses --no-confirm python-setuptools
@@ -64,7 +66,7 @@ case "${LINUX_DISTRO_ID}" in
     ;;
 
   Ubuntu)
-    if ! command -v "easy_install" > /dev/null; then
+    if ! has easy_install; then
       sudo apt update
       sudo apt install python-setuptools -y
     fi
@@ -79,7 +81,7 @@ case "${LINUX_DISTRO_ID}" in
     ;;
 
   *)
-    echo "The \"${LINUX_DISTRO_ID}\" Linux distribution is not supported."
+    echo "The \"$LINUX_DISTRO_ID\" Linux distribution is not supported."
     exit 4
     ;;
 esac
@@ -89,30 +91,24 @@ easy_install --version
 # ==============================================================================
 # Install PIP.
 
-if ! command -v "pip" > /dev/null; then
-  sudo easy_install pip
-fi
-
+has pip || sudo easy_install pip
 pip --version
 
 # ==============================================================================
 # Install Ansible.
 
-if ! command -v "ansible" > /dev/null; then
-  sudo pip install ansible
-fi
-
+has ansible || sudo pip install ansible
 ansible --version
 
 # ==============================================================================
 # Install Vagrant.
 
-if ! command -v "vagrant" > /dev/null; then
-  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.${PACKAGE_EXT}"
+if ! has vagrant; then
+  VAGRANT_FILENAME="vagrant_${VAGRANT_VERSION}_x86_64.$PACKAGE_EXT"
 
-  wget -q "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/${VAGRANT_FILENAME}"
-  sudo ${PACKAGE_UTIL} -i "${VAGRANT_FILENAME}"
-  rm "${VAGRANT_FILENAME}"
+  wget -q "https://releases.hashicorp.com/vagrant/$VAGRANT_VERSION/$VAGRANT_FILENAME"
+  sudo ${PACKAGE_UTIL} -i "$VAGRANT_FILENAME"
+  rm "$VAGRANT_FILENAME"
 fi
 
 vagrant --version
