@@ -15,6 +15,8 @@ pull_requests:
   do_not_increment_build_number: true
 
 install:
+  - ps: systeminfo | Select-String "^OS Name", "^OS Version"
+  # https://docs.microsoft.com/en-us/windows/wsl/install-on-server
   - ps: Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
   - ps: Invoke-WebRequest -Uri https://aka.ms/wsl-ubuntu-1604 -OutFile ~/Ubuntu1604.zip -UseBasicParsing
   - ps: Expand-Archive ~/Ubuntu1604.zip ~/Ubuntu
