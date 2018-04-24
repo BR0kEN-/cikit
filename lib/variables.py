@@ -2,7 +2,7 @@ import os
 import json
 import functions
 
-ANSIBLE_EXECUTABLE = functions.call('which', functions.ANSIBLE_COMMAND)
+ANSIBLE_EXECUTABLE = functions.which(functions.ANSIBLE_COMMAND)
 
 dirs = {
     'lib': os.path.realpath(__file__ + '/..'),
@@ -64,11 +64,12 @@ if '' == ANSIBLE_EXECUTABLE:
 #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
 # Just works.
 with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
+    python_system = functions.which('python')
     python_ansible = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
 
     # Do not apply the workaround if an exactly same interpreter is used for
     # running CIKit and Ansible.
-    if functions.call('which', 'python').strip() == python_ansible:
+    if python_system == python_ansible:
         import ansible.release
         import yaml
 
@@ -99,6 +100,17 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
                     return json.loads(result)
 
             return {}
+
+        functions.warn(
+            'A system-wide Python interpreter is "%s" and it differs from "%s", that is used for '
+            'running Ansible.'
+            %
+            (
+                python_system,
+                python_ansible,
+            ),
+            1
+        )
 
 functions.is_version_between(ANSIBLE_VERSION, {
     'min': '2.4.3',

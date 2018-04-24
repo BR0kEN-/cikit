@@ -31,20 +31,20 @@ def is_project_root(directory):
 
 
 def call(*nargs, **kwargs):
-    return Popen(nargs, stdout=PIPE, **kwargs).stdout.read().rstrip()
+    return Popen(nargs, stdout=PIPE, **kwargs).stdout.read().strip()
 
 
 def parse_extra_vars(args, bag):
     if 'EXTRA_VARS' in environ:
-        if ANSIBLE_VERBOSITY >= 2:
-            warn(
-                'Be aware that CLI options may be overridden by values from "EXTRA_VARS" environment '
-                'variable, that is "%s".'
-                %
-                (
-                    environ['EXTRA_VARS']
-                )
-            )
+        warn(
+            'Be aware that CLI options may be overridden by values from "EXTRA_VARS" environment '
+            'variable, that is "%s".'
+            %
+            (
+                environ['EXTRA_VARS']
+            ),
+            2
+        )
 
         args += shlex.split(environ['EXTRA_VARS'])
 
@@ -106,10 +106,15 @@ def get_hostname(config):
     return ''
 
 
+def which(program):
+    return call('which', program)
+
+
 def error(message, code=1):
     print('\033[91mERROR: ' + message + '\033[0m', file=stderr)
     exit(code)
 
 
-def warn(message):
-    print('\033[93mWARNING: ' + message + '\033[0m')
+def warn(message, needed_verbosity):
+    if ANSIBLE_VERBOSITY >= needed_verbosity:
+        print('\033[93mWARNING: ' + message + '\033[0m')
