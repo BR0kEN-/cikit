@@ -97,7 +97,8 @@ pip --version
 # ==============================================================================
 # Install Ansible.
 
-has ansible || sudo pip install ansible
+# @todo See lib/variables.py
+has ansible || sudo pip install ansible==2.5.0
 ansible --version
 
 # ==============================================================================

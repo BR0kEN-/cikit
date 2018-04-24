@@ -36,6 +36,7 @@ matrix/*
 !.eslint*
 !.version
 !.codespellignore
+!.appveyor.yml
 !.rubocop.yml
 !.travis.yml
 
