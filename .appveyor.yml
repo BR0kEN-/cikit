@@ -1,12 +1,15 @@
 image: Visual Studio 2017
 build: off
-version: '{build}'
+version: 1.0.{build}
 platform: x64
 
 skip_commits:
   files:
     - README.md
 #  message: /\[skip ci\]/
+
+build:
+  verbosity: normal
 
 # There's no need to alter the build number for a Pull Request (PR)
 # since they don't modify anything.
@@ -23,5 +26,8 @@ install:
 notifications:
   - provider: Slack
     auth_token:
-      secure: 2CRn8pK+wW0y2WfQFQU6dINb4IRbiJdUQhHwlV4oTjChqfhWifADCsy5Ne92vt1I
+      secure: D6cxJ/Hs7jf2UnblHSkQi/XvBLrBjg6ElBAOrOd8752O/iboRfyaZRyRbY3dqzq9LCY9/OFH4yrYZ29cKu981WjR5Vr18sNqDzjQIIvygYA=
     channel: notifications
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: false
