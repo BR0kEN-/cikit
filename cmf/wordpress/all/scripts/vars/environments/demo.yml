@@ -1,8 +1,4 @@
 ---
-plugins:
-  - install: []
-  - uninstall: []
-
 commands:
   bash: []
   wp-cli: []

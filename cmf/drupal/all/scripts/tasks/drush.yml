@@ -19,14 +19,14 @@
 - name: "{{ item.name | default('Running a Drush command') }}"
   shell: >-
     {%- set unset = [item.pop('name', None), item.pop('if', None)] -%}
-    {%- set command = item.keys() | first -%}
-    {%- set arguments = item[command] -%}
+    {%- set utility = item.keys() | first -%}
+    {%- set arguments = item[utility] -%}
 
     {%- if arguments is not string and arguments is sequence -%}
       {%- set arguments = arguments | join(' ') -%}
     {%- endif -%}
 
-    drush {{ command }} {{ arguments }} -y
+    drush {{ utility }} {{ arguments }} -y
   when: "item.if | default(True)"
   args:
     chdir: "{{ project_workspace }}"
