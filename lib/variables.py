@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import functions
 
@@ -64,57 +65,40 @@ if '' == ANSIBLE_EXECUTABLE:
 #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
 # Just works.
 with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
-    python_system = functions.which('python')
-    python_ansible = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
+    PYTHON_SYSTEM = functions.which('python')
+    PYTHON_ANSIBLE = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
 
-    # Do not apply the workaround if an exactly same interpreter is used for
-    # running CIKit and Ansible.
-    if python_system == python_ansible:
-        import ansible.release
-        import yaml
-
-        ANSIBLE_VERSION = ansible.release.__version__
-
-        def read_yaml(path):
-            if os.path.isfile(path):
-                result = yaml.load(open(path))
-
-                if None is not result:
-                    return json.loads(json.dumps(result))
-
-            return {}
-    else:
-        ANSIBLE_VERSION = functions\
-            .call(python_ansible, '-c', 'from ansible.release import __version__\nprint __version__')\
-            .strip()
-
-        def read_yaml(path):
-            if os.path.isfile(path):
-                result = functions.call(
-                    python_ansible,
-                    '-c',
-                    'import yaml, json\nprint json.dumps(yaml.load(open(\'%s\')))' % path,
-                )
-
-                if 'null' != result:
-                    return json.loads(result)
-
-            return {}
+    if PYTHON_SYSTEM != PYTHON_ANSIBLE:
+        # This covers the installation on macOS via Homebrew.
+        # Installation via Pip uses system-wide Python so there shouldn't be a problem.
+        sys.path.append(PYTHON_ANSIBLE.replace('/bin/', '/lib/') + '/site-packages')
 
         functions.warn(
             'A system-wide Python interpreter is "%s" and it differs from "%s", that is used for '
             'running Ansible.'
             %
             (
-                python_system,
-                python_ansible,
+                PYTHON_SYSTEM,
+                PYTHON_ANSIBLE,
             ),
             1
         )
 
+    import ansible.release
+    import yaml
+
+    def read_yaml(path):
+        if os.path.isfile(path):
+            result = yaml.load(open(path))
+
+            if None is not result:
+                return json.loads(json.dumps(result))
+
+        return {}
+
 functions.ensure_version({
     'min': '2.4.3',
-    'current': ANSIBLE_VERSION,
+    'current': ansible.release.__version__,
 }, {
     '2.5.1': [
         'https://github.com/ansible/ansible/issues/39007',
