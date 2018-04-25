@@ -63,27 +63,73 @@ def parse_extra_vars(args, bag):
     return copy
 
 
-def is_version_between(version_current, versions):
-    versions.update({'cur': version_current})
-
+def ensure_version(versions, unsupported=None):
+    """
+    :param dict[str, str] versions:
+        The required keys are "min" and "current". The value must be a valid X.Y.Z semver.
+        Example:
+        {
+            'min': '2.4.3',
+            'current': '2.0.1',
+        }
+    :param dict[str, list[str]] unsupported:
+        Example:
+        {
+            '2.5.1': [
+                # The list of issues that break the stuff.
+                'https://github.com/ansible/ansible/issues/39007',
+                'https://github.com/ansible/ansible/issues/39014',
+            ],
+        }
+    :return LooseVersion:
+        An instance of the "versions['current']".
+    """
     for key, value in versions.iteritems():
-        versions[key] = LooseVersion(value)
+        value = value.strip()
+
+        if '' == value:
+            raise ValueError('The version must be in "X.Y.Z" format.')
+
+        versions[key] = LooseVersion(value.strip())
         # Allow 3 parts maximum.
         versions[key].version = versions[key].version[:3]
 
-    if versions['cur'] < versions['min'] or versions['cur'] > versions['max']:
-        error(
-            'You must have Ansible version in between of %s and %s while the current one is %s.'
+    version_current = str(versions['current'])
+    error_message = []
+
+    if unsupported is None:
+        unsupported = {}
+
+    def add_issues(text, version, spaces=2):
+        return error_message.append(text % (version, ('\n%s- ' % (' ' * spaces)).join([''] + unsupported.pop(version))))
+
+    if versions['current'] < versions['min']:
+        error_message.append(
+            'You must have Ansible version greater or equal to %s while the current one is %s.'
             %
             (
                 versions['min'],
-                versions['max'],
-                versions['cur'],
-            ),
-            EINVAL
+                versions['current'],
+            )
         )
 
-    return versions['cur']
+    if version_current in unsupported:
+        add_issues('Ansible %s is not supported due to the following issues:%s', version_current)
+
+    # An error exists when the current version is less than minimum required or when it's denied for usage.
+    if bool(error_message):
+        # The "add_issues()" pops the key from the "unsupported" dictionary so if there is only one item
+        # and the current version isn't supported the dictionary will become empty.
+        if bool(unsupported):
+            error_message.append('Please bear in mind the following versions are not supported too:')
+
+            # Show the other unsupported versions.
+            for version_unsupported in unsupported.keys():
+                add_issues('  - %s%s', version_unsupported, 4)
+
+        error('\n'.join(error_message), EINVAL)
+
+    return versions['current']
 
 
 def process_credentials_dir(directory):
@@ -115,6 +161,6 @@ def error(message, code=1):
     exit(code)
 
 
-def warn(message, needed_verbosity):
+def warn(message, needed_verbosity=0):
     if ANSIBLE_VERBOSITY >= needed_verbosity:
         print('\033[93mWARNING: ' + message + '\033[0m')

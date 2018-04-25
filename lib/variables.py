@@ -112,12 +112,14 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
             1
         )
 
-functions.is_version_between(ANSIBLE_VERSION, {
+functions.ensure_version({
     'min': '2.4.3',
-    # @todo Set to highest when the regressions introduced in 2.5.1 will be resolved.
-    # - https://github.com/ansible/ansible/issues/39007
-    # - https://github.com/ansible/ansible/issues/39014
-    'max': '2.5.0',
+    'current': ANSIBLE_VERSION,
+}, {
+    '2.5.1': [
+        'https://github.com/ansible/ansible/issues/39007',
+        'https://github.com/ansible/ansible/issues/39014',
+    ],
 })
 
 CONFIG_FILE = dirs['cikit'] + '/config.yml'
