@@ -3,4 +3,4 @@
 # The file must be ".tar.gz" and contain a directory inside since will be processed using "tar" command with
 # the "--strip-components=1" option.
 download_url: "https://wordpress.org/wordpress-VERSION.tar.gz"
-default_version: "4.9.4"
+default_version: "4.9.5"
