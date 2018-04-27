@@ -1,16 +1,14 @@
 ---
-- name: Set accesses for directories
+- name: Ensure access
   file:
-    mode: 0755
-    dest: "{{ item }}"
-    state: directory
+    mode: "{{ item.mode | default('0755') }}"
+    path: "{{ item.path }}"
+    state: "{{ item.state | default('directory') }}"
   with_items:
-    - "{{ tmproot }}"
-    - "{{ webroot }}/backup"
-    - "{{ project_workspace }}/{{ filesystem }}"
-
-- name: Ensure correct permissions for settings
-  file:
-    mode: 0666
-    dest: "{{ project_workspace }}/{{ settings }}"
-    state: touch
+    - path: "{{ tmproot }}"
+      mode: "1777"
+    - path: "{{ webroot }}/backup"
+    - path: "{{ project_workspace }}/{{ filesystem }}"
+    - path: "{{ project_workspace }}/{{ settings }}"
+      mode: "0664"
+      state: touch

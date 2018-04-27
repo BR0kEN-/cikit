@@ -1,0 +1,23 @@
+# Rules:
+#   - The "name" and "if" keys are optional for every item.
+#   - The value in "if" must be evaluated first, i.e. "{{ variable }}".
+#   - If "name" is missing the "Running a Bash command" is used.
+#   - The "run" key must contain an inline script or path to file.
+#
+# Example:
+#   include_tasks: bash.yml
+#   with_items:
+#     - run: "echo 21"
+#     - run: "/path/to/script.sh 12"
+#     - name: "Deploy"
+#       run: "do deploy"
+#       if: "{{ sql_workflow }}"
+---
+- name: "{{ item.name | default('Running a Bash command') }}"
+  shell: "{{ item.run }}"
+  when: "item.if | default(True)"
+  args:
+    executable: bash
+  register: bash_result
+  environment: "{{ env_vars }}"
+  ignore_errors: "{{ ignore_errors | default(False) }}"

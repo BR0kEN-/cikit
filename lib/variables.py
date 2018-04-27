@@ -1,40 +1,8 @@
 import os
-import json
+import sys
 import functions
 
-ANSIBLE_COMMAND = 'ansible-playbook'
-ANSIBLE_EXECUTABLE = functions.call('which', ANSIBLE_COMMAND)
-
-dirs = {
-    'lib': os.path.realpath(__file__ + '/..'),
-    'self': os.path.realpath(__file__ + '/../..'),
-    'project': os.environ.get('CIKIT_PROJECT_DIR'),
-}
-
-if None is dirs['project']:
-    dirs['project'] = os.getcwd()
-    dirs['scripts'] = dirs['self']
-
-    INSIDE_VM_OR_CI = False
-else:
-    # The environment variable must point to a project root.
-    dirs['scripts'] = dirs['project']
-
-    INSIDE_VM_OR_CI = True
-
-dirs['cikit'] = dirs['project'] + '/.cikit'
-
-if functions.is_project_root(dirs['project']):
-    dirs['credentials'] = dirs['cikit']
-
-    INSIDE_PROJECT_DIR = True
-else:
-    dirs['credentials'] = dirs['self']
-
-    INSIDE_PROJECT_DIR = False
-
-dirs['scripts'] += '/scripts'
-dirs['credentials'] += '/credentials'
+ANSIBLE_EXECUTABLE = functions.which(functions.ANSIBLE_COMMAND)
 
 if '' == ANSIBLE_EXECUTABLE:
     functions.error(
@@ -44,7 +12,7 @@ if '' == ANSIBLE_EXECUTABLE:
         )
         %
         (
-            ANSIBLE_COMMAND
+            functions.ANSIBLE_COMMAND
         )
     )
 
@@ -65,48 +33,64 @@ if '' == ANSIBLE_EXECUTABLE:
 #   $(cat $(which "ansible-playbook") | head -n1 | tr -d '#!') -c 'import yaml'
 # Just works.
 with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
-    python_ansible = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
+    PYTHON_SYSTEM = functions.which('python')
+    PYTHON_ANSIBLE = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
 
-    # Do not apply the workaround if an exactly same interpreter is used for
-    # running CIKit and Ansible.
-    if functions.call('which', 'python').strip() == python_ansible:
-        import ansible.release
-        import yaml
+    if PYTHON_SYSTEM != PYTHON_ANSIBLE:
+        # This covers the installation on macOS via Homebrew.
+        # Installation via Pip uses system-wide Python so there shouldn't be a problem.
+        sys.path.append(PYTHON_ANSIBLE.replace('/bin/', '/lib/') + '/site-packages')
 
-        ANSIBLE_VERSION = ansible.release.__version__
+        functions.warn(
+            'A system-wide Python interpreter is "%s" and it differs from "%s", that is used for '
+            'running Ansible.'
+            %
+            (
+                PYTHON_SYSTEM,
+                PYTHON_ANSIBLE,
+            ),
+            1
+        )
 
-        def read_yaml(path):
-            if os.path.isfile(path):
-                result = yaml.load(open(path))
+    import ansible.release
 
-                if None is not result:
-                    return json.loads(json.dumps(result))
-
-            return {}
-    else:
-        ANSIBLE_VERSION = functions\
-            .call(python_ansible, '-c', 'from ansible.release import __version__\nprint __version__')\
-            .strip()
-
-        def read_yaml(path):
-            if os.path.isfile(path):
-                result = functions.call(
-                    python_ansible,
-                    '-c',
-                    'import yaml, json\nprint json.dumps(yaml.load(open(\'%s\')))' % path,
-                )
-
-                if 'null' != result:
-                    return json.loads(result)
-
-            return {}
-
-functions.is_version_between(ANSIBLE_VERSION, {
+functions.ensure_version({
     'min': '2.4.3',
-    # @todo Set to highest when the regressions introduced in 2.5.1 will be resolved.
-    # - https://github.com/ansible/ansible/issues/39007
-    # - https://github.com/ansible/ansible/issues/39014
-    'max': '2.5.0',
+    'current': ansible.release.__version__,
+}, {
+    '2.5.1': [
+        'https://github.com/ansible/ansible/issues/39007',
+        'https://github.com/ansible/ansible/issues/39014',
+    ],
 })
 
-CONFIG_FILE = dirs['cikit'] + '/config.yml'
+dirs = {
+    'lib': os.path.realpath(__file__ + '/..'),
+    'self': os.path.realpath(__file__ + '/../..'),
+    'project': os.environ.get('CIKIT_PROJECT_DIR'),
+}
+
+if None is dirs['project']:
+    dirs['project'] = os.getcwd()
+    dirs['scripts'] = dirs['self']
+
+    INSIDE_VM_OR_CI = False
+else:
+    # The environment variable must point to a project root.
+    dirs['scripts'] = dirs['project']
+
+    INSIDE_VM_OR_CI = True
+
+dirs['cikit'] = dirs['project'] + '/.cikit'
+dirs['scripts'] += '/scripts'
+
+if functions.is_project_root(dirs['project']):
+    dirs['credentials'] = dirs['cikit']
+
+    INSIDE_PROJECT_DIR = True
+else:
+    dirs['credentials'] = dirs['self']
+
+    INSIDE_PROJECT_DIR = False
+
+dirs['credentials'] += '/credentials'

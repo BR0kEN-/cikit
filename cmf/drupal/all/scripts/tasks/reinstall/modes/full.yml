@@ -13,9 +13,13 @@
     dest: "{{ project_workspace }}/{{ settings }}"
     line: "{{ lookup('template', 'templates/settings.php.j2') }}"
 
-- include_tasks: tasks/drush.yml name="Installing Drupal"
-  with_dict:
-    si: "{{ profile }} --db-url=mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ mysql.host | default('127.0.0.1') }}:{{ mysql.port | default('3306') }}/{{ databases.default.name }} --uri={{ site_url }}"
+- include_tasks: tasks/drush.yml
+  with_items:
+    - name: "Installing Drupal"
+      si:
+        - "{{ profile }}"
+        - "--db-url=mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ mysql.host | default('127.0.0.1') }}:{{ mysql.port | default('3306') }}/{{ databases.default.name }}"
+        - "--uri={{ site_url }}"
   when: not sql_workflow
 
 - include_tasks: tasks/environment/prepare.yml
@@ -26,18 +30,16 @@
   with_dict: "{{ databases }}"
   when: "sql_workflow and 'source' in item.value"
 
-- include_tasks: tasks/drush.yml
-  with_items: "{{ commands.pre }}"
+- include_tasks: tasks/bash.yml
+  with_items: "{{ commands.bash }}"
 
-- include_tasks: tasks/drush.yml name="Run database updates" command="updb"
-  when: sql_workflow
+- include_tasks: tasks/drush.yml
+  with_items: "{{ commands.drush }}"
 
 # Unique way for both workflows.
-- name: "Set credentials for super user: ({{ drupal.user.name }}/{{ drupal.user.pass }})"
-  include_tasks: tasks/drush.yml
-  with_dict:
-    sqlq: "'UPDATE <USERS_INFO_TABLE> SET name=\"{{ drupal.user.name }}\" WHERE uid=1'"
-    upwd: "{{ drupal.user.name }} --password={{ drupal.user.pass }}"
-
 - include_tasks: tasks/drush.yml
-  with_items: "{{ commands.post }}"
+  with_items:
+    - name: "Set a username for a superuser to '{{ drupal.user.name }}'"
+      sqlq: "'UPDATE <USERS_INFO_TABLE> SET name=\"{{ drupal.user.name }}\" WHERE uid=1'"
+    - name: "Set a password for a superuser to '{{ drupal.user.pass }}'"
+      upwd: "{{ drupal.user.name }} --password='{{ drupal.user.pass }}'"

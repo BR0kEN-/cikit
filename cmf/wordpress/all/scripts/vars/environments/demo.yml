@@ -1,9 +1,7 @@
 ---
-plugins:
-  - install: []
-  - uninstall: []
-
-commands: []
+commands:
+  bash: []
+  wp-cli: []
 
 wordpress:
   user:

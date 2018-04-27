@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 TEST_PROJECT="cikit_test_project"
 TEST_HOSTNAME="${TEST_PROJECT//_/-}.loc"
 
@@ -75,6 +77,22 @@ fi
 rm "$TEST_PROJECT/.cikit/environment.yml" > /dev/null 2>&1
 
 export ANSIBLE_VERBOSITY=2
+
+########################################################################################################################
+# Docker-based tests.
+
+if command -v docker > /dev/null; then
+  declare -A TESTS=([ssh]="login to" [provision]="provision")
+
+  for ACTION in "${!TESTS[@]}"; do
+    __cikit_test \
+      200 \
+      "cikit $ACTION" \
+      "" \
+      "ERROR: You are trying to ${TESTS[$ACTION]} the container but its hostname cannot be determined. Did you break the \"site_url\" variable in \"$SELF_DIR/.cikit/config.yml\"?"
+  done
+fi
+
 
 ########################################################################################################################
 # Try to use undefined playbook.

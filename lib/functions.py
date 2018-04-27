@@ -7,6 +7,9 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import shlex
 
+ANSIBLE_COMMAND = 'ansible-playbook'
+ANSIBLE_VERBOSITY = int(environ['ANSIBLE_VERBOSITY']) if 'ANSIBLE_VERBOSITY' in environ else 0
+
 
 def playbooks_print(directory, prefix=''):
     for playbook in glob(directory + '/' + prefix + '*.yml'):
@@ -28,11 +31,21 @@ def is_project_root(directory):
 
 
 def call(*nargs, **kwargs):
-    return Popen(nargs, stdout=PIPE, **kwargs).stdout.read().rstrip()
+    return Popen(nargs, stdout=PIPE, **kwargs).stdout.read().strip()
 
 
 def parse_extra_vars(args, bag):
     if 'EXTRA_VARS' in environ:
+        warn(
+            'Be aware that CLI options may be overridden by values from "EXTRA_VARS" environment '
+            'variable, that is "%s".'
+            %
+            (
+                environ['EXTRA_VARS']
+            ),
+            2
+        )
+
         args += shlex.split(environ['EXTRA_VARS'])
 
     copy = list(args)
@@ -50,23 +63,73 @@ def parse_extra_vars(args, bag):
     return copy
 
 
-def is_version_between(version_current, versions):
-    versions.update({'cur': version_current})
-
-    def fail(version_type, message):
-        error(message % (versions[version_type], versions['cur']), EINVAL)
-
+def ensure_version(versions, unsupported=None):
+    """
+    :param dict[str, str] versions:
+        The required keys are "min" and "current". The value must be a valid X.Y.Z semver.
+        Example:
+        {
+            'min': '2.4.3',
+            'current': '2.0.1',
+        }
+    :param dict[str, list[str]] unsupported:
+        Example:
+        {
+            '2.5.1': [
+                # The list of issues that break the stuff.
+                'https://github.com/ansible/ansible/issues/39007',
+                'https://github.com/ansible/ansible/issues/39014',
+            ],
+        }
+    :return LooseVersion:
+        An instance of the "versions['current']".
+    """
     for key, value in versions.iteritems():
-        versions[key] = LooseVersion(value)
+        value = value.strip()
+
+        if '' == value:
+            raise ValueError('The version must be in "X.Y.Z" format.')
+
+        versions[key] = LooseVersion(value.strip())
         # Allow 3 parts maximum.
         versions[key].version = versions[key].version[:3]
 
-    if versions['cur'] < versions['min']:
-        fail('min', 'You must have at least Ansible %s while the current version is %s.')
-    elif versions['cur'] > versions['max']:
-        fail('max', 'Maximum allowed version of Ansible must not be greater than %s while the current one is %s.')
+    version_current = str(versions['current'])
+    error_message = []
 
-    return versions['cur']
+    if unsupported is None:
+        unsupported = {}
+
+    def add_issues(text, version, spaces=2):
+        return error_message.append(text % (version, ('\n%s- ' % (' ' * spaces)).join([''] + unsupported.pop(version))))
+
+    if versions['current'] < versions['min']:
+        error_message.append(
+            'You must have Ansible version greater or equal to %s while the current one is %s.'
+            %
+            (
+                versions['min'],
+                versions['current'],
+            )
+        )
+
+    if version_current in unsupported:
+        add_issues('Ansible %s is not supported due to the following issues:%s', version_current)
+
+    # An error exists when the current version is less than minimum required or when it's denied for usage.
+    if bool(error_message):
+        # The "add_issues()" pops the key from the "unsupported" dictionary so if there is only one item
+        # and the current version isn't supported the dictionary will become empty.
+        if bool(unsupported):
+            error_message.append('Please bear in mind the following versions are not supported too:')
+
+            # Show the other unsupported versions.
+            for version_unsupported in unsupported.keys():
+                add_issues('  - %s%s', version_unsupported, 4)
+
+        error('\n'.join(error_message), EINVAL)
+
+    return versions['current']
 
 
 def process_credentials_dir(directory):
@@ -89,10 +152,15 @@ def get_hostname(config):
     return ''
 
 
+def which(program):
+    return call('which', program)
+
+
 def error(message, code=1):
     print('\033[91mERROR: ' + message + '\033[0m', file=stderr)
     exit(code)
 
 
-def warn(message):
-    print('\033[93mWARNING: ' + message + '\033[0m')
+def warn(message, needed_verbosity=0):
+    if ANSIBLE_VERBOSITY >= needed_verbosity:
+        print('\033[93mWARNING: ' + message + '\033[0m')

@@ -12,7 +12,7 @@ tags:
   - copyright wars
 ---
 
-![DCMA Copyright](/assets/posts/2018-01-08-cikit-dmca-takedown/dmca-copyright.png)
+![{{ page.title }}]({{ page.header.teaser }})
 
 On January 2 I got an email from Github that was stating that [CIKit has received the takedown notice](https://github.com/github/dmca/blob/master/2018/2018-01-02-CIKit.md) due to the [Digital Millennium Copyright Act](https://help.github.com/articles/dmca-takedown-policy) and repository will be disabled within 24 hours if the content, infringing the copyright of CIBox, will not be removed.
 
