@@ -24,8 +24,7 @@ env:
   ANSIBLE_VERBOSITY: 1
 
 install:
-  # @todo See lib/variables.py
-  - sudo pip install ansible==2.5.0
+  - sudo pip install ansible
   - sudo bash ./install.sh --no-requirements-check
   - sudo wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
   - sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb

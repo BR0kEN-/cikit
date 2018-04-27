@@ -43,8 +43,25 @@ The script uses `-v` option of `awk` that is not available in BSD version.
 ```bash
 #!/usr/bin/env bash
 
+# Restrictions:
+#   - Will not work with BSD "awk" (i.e. on macOS) due to "awk: invalid -v option".
+#
+# Usage:
+#   - Run all tests.
+#     bash runner.sh
+#
+#   - Run non-bash tests.
+#     TRAVIS_COMMIT_MESSAGE="[skip bash]" bash runner.sh
+#
+#   - List available tests.
+#     bash runner.sh --list
+#
+#   - List non-bash tests.
+#     TRAVIS_COMMIT_MESSAGE="[skip bash]" bash runner.sh --list
+
 cd ./tests/travis
 declare -A TESTS=()
+declare -r OPTION="$1"
 
 # Iterate all over subdirectories.
 for INTERPRETER in [a-z]*/; do
@@ -66,8 +83,12 @@ for INTERPRETER in "${!TESTS[@]}"; do
   if [[ ! "$PARAMS" =~ \|skip$INTERPRETER\| ]]; then
     for TEST in "$INTERPRETER"/[a-z]*."${TESTS[$INTERPRETER]}"; do
       if [[ ! "$PARAMS" =~ \|skip$TEST\| ]]; then
-        echo "[$(date --iso-8601=seconds)] -- $TEST"
-        ${INTERPRETER} "$TEST"
+        if [ "--list" == "$OPTION" ]; then
+          echo "- $TEST"
+        else
+          echo "[$(date --iso-8601=seconds)] -- $TEST"
+          ${INTERPRETER} "$TEST"
+        fi
       fi
     done
   fi
