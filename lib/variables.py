@@ -1,40 +1,8 @@
 import os
 import sys
-import json
 import functions
 
 ANSIBLE_EXECUTABLE = functions.which(functions.ANSIBLE_COMMAND)
-
-dirs = {
-    'lib': os.path.realpath(__file__ + '/..'),
-    'self': os.path.realpath(__file__ + '/../..'),
-    'project': os.environ.get('CIKIT_PROJECT_DIR'),
-}
-
-if None is dirs['project']:
-    dirs['project'] = os.getcwd()
-    dirs['scripts'] = dirs['self']
-
-    INSIDE_VM_OR_CI = False
-else:
-    # The environment variable must point to a project root.
-    dirs['scripts'] = dirs['project']
-
-    INSIDE_VM_OR_CI = True
-
-dirs['cikit'] = dirs['project'] + '/.cikit'
-
-if functions.is_project_root(dirs['project']):
-    dirs['credentials'] = dirs['cikit']
-
-    INSIDE_PROJECT_DIR = True
-else:
-    dirs['credentials'] = dirs['self']
-
-    INSIDE_PROJECT_DIR = False
-
-dirs['scripts'] += '/scripts'
-dirs['credentials'] += '/credentials'
 
 if '' == ANSIBLE_EXECUTABLE:
     functions.error(
@@ -85,16 +53,6 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
         )
 
     import ansible.release
-    import yaml
-
-    def read_yaml(path):
-        if os.path.isfile(path):
-            result = yaml.load(open(path))
-
-            if None is not result:
-                return json.loads(json.dumps(result))
-
-        return {}
 
 functions.ensure_version({
     'min': '2.4.3',
@@ -106,4 +64,33 @@ functions.ensure_version({
     ],
 })
 
-CONFIG_FILE = dirs['cikit'] + '/config.yml'
+dirs = {
+    'lib': os.path.realpath(__file__ + '/..'),
+    'self': os.path.realpath(__file__ + '/../..'),
+    'project': os.environ.get('CIKIT_PROJECT_DIR'),
+}
+
+if None is dirs['project']:
+    dirs['project'] = os.getcwd()
+    dirs['scripts'] = dirs['self']
+
+    INSIDE_VM_OR_CI = False
+else:
+    # The environment variable must point to a project root.
+    dirs['scripts'] = dirs['project']
+
+    INSIDE_VM_OR_CI = True
+
+dirs['cikit'] = dirs['project'] + '/.cikit'
+dirs['scripts'] += '/scripts'
+
+if functions.is_project_root(dirs['project']):
+    dirs['credentials'] = dirs['cikit']
+
+    INSIDE_PROJECT_DIR = True
+else:
+    dirs['credentials'] = dirs['self']
+
+    INSIDE_PROJECT_DIR = False
+
+dirs['credentials'] += '/credentials'

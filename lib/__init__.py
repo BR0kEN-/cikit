@@ -4,14 +4,19 @@ import json
 import errno
 import functions
 import variables
+from ansible.parsing.dataloader import DataLoader
 from subprocess import call
 from arguments import args
 from re import search
 
+loader = DataLoader()
+PARAMS = []
+
 
 def get_hostname(action_description):
+    config_file = variables.dirs['cikit'] + '/config.yml'
     # Read the configuration of a project we're currently in.
-    hostname = functions.get_hostname(variables.read_yaml(variables.CONFIG_FILE))
+    hostname = functions.get_hostname(loader.load_from_file(config_file))
 
     if '' == hostname:
         functions.error(
@@ -22,15 +27,13 @@ def get_hostname(action_description):
             %
             (
                 action_description,
-                variables.CONFIG_FILE,
+                config_file,
             ),
             200
         )
 
     return hostname
 
-
-PARAMS = []
 
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
@@ -115,7 +118,7 @@ else:
                     errno.EPERM
                 )
 
-    for key, value in variables.read_yaml(variables.dirs['cikit'] + '/environment.yml').iteritems():
+    for key, value in loader.load_from_file(variables.dirs['cikit'] + '/environment.yml').iteritems():
         # Add the value from environment config only if it's not specified as
         # an option to the command.
         if key not in args.extra:
