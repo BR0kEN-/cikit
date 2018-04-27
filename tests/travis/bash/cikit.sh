@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 TEST_PROJECT="cikit_test_project"
 TEST_HOSTNAME="${TEST_PROJECT//_/-}.loc"
 
