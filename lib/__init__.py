@@ -9,14 +9,17 @@ from subprocess import call
 from arguments import args
 from re import search
 
-loader = DataLoader()
 PARAMS = []
+yaml_data_loader = DataLoader()
+project_config_paths = {
+    'main': variables.dirs['cikit'] + '/config.yml',
+    'environment': variables.dirs['cikit'] + '/environment.yml',
+}
 
 
 def get_hostname(action_description):
-    config_file = variables.dirs['cikit'] + '/config.yml'
     # Read the configuration of a project we're currently in.
-    hostname = functions.get_hostname(loader.load_from_file(config_file))
+    hostname = functions.get_hostname(yaml_data_loader.load_from_file(project_config_paths['main']))
 
     if '' == hostname:
         functions.error(
@@ -27,7 +30,7 @@ def get_hostname(action_description):
             %
             (
                 action_description,
-                config_file,
+                project_config_paths['main'],
             ),
             200
         )
@@ -118,11 +121,12 @@ else:
                     errno.EPERM
                 )
 
-    for key, value in loader.load_from_file(variables.dirs['cikit'] + '/environment.yml').iteritems():
-        # Add the value from environment config only if it's not specified as
-        # an option to the command.
-        if key not in args.extra:
-            args.extra[key] = value
+    if yaml_data_loader.is_file(project_config_paths['environment']):
+        for key, value in yaml_data_loader.load_from_file(project_config_paths['environment']).iteritems():
+            # Add the value from environment config only if it's not specified as
+            # an option to the command.
+            if key not in args.extra:
+                args.extra[key] = value
 
     if 'ANSIBLE_INVENTORY' in os.environ:
         PARAMS.append("-i '%s'" % os.environ['ANSIBLE_INVENTORY'])
