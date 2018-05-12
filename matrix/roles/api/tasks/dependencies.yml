@@ -1,0 +1,16 @@
+---
+- include_tasks: "{{ __selfdir__ }}/scripts/tasks/pip-install.yml"
+  args:
+    pip_packages: "{{ api.pip }}"
+
+- include_tasks: "{{ __selfdir__ }}/scripts/tasks/cikit-install.yml"
+
+- include_role:
+    name: "{{ __selfdir__ }}/scripts/roles/cikit-nodejs"
+  vars:
+    nodejs_version: "{{ api.nodejs_version }}"
+
+- include_role:
+    name: "{{ __selfdir__ }}/scripts/roles/ansible-role-mongodb"
+  vars:
+    mongodb_version: "{{ api.mongodb_version }}"

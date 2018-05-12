@@ -1,0 +1,31 @@
+---
+- include_tasks: dependencies.yml
+  when: "'deploy' != rest_api"
+
+- name: Upload the implementation of the REST server
+  synchronize:
+    src: files/cikit-rest-api/docroot/
+    dest: "{{ api.dest }}"
+
+- name: Install Node modules
+  shell: npm stop && npm install
+  args:
+    chdir: "{{ api.dest }}"
+
+- name: Ensure an administrative user exists
+  # This action also invalidates authentication of an existing owner.
+  shell: "node ./lib/cli/commands/create-user.js -u {{ api.owner }} -g owner"
+  args:
+    chdir: "{{ api.dest }}"
+  register: api_admin
+
+- name: Start production server
+  shell: nohup npm start < /dev/null > /dev/null 2>&1 &
+  args:
+    chdir: "{{ api.dest }}"
+  environment:
+    NODE_ENV: production
+
+- name: Print the credentials of API owner
+  debug:
+    var: api_admin.stdout

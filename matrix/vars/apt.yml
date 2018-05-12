@@ -17,3 +17,5 @@ apt:
     #- "linux-headers-{{ ansible_kernel }}"
     - "nginx"
     - "python-passlib"
+    # To get the "easy_install".
+    - python-setuptools

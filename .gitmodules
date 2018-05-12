@@ -10,3 +10,9 @@
 [submodule "scripts/roles/ansible-role-memcached"]
 	path = scripts/roles/ansible-role-memcached
 	url = https://github.com/geerlingguy/ansible-role-memcached.git
+[submodule "scripts/roles/ansible-role-mongodb"]
+	path = scripts/roles/ansible-role-mongodb
+	url = https://github.com/UnderGreen/ansible-role-mongodb.git
+[submodule "matrix/roles/api/files/cikit-rest-api"]
+	path = matrix/roles/api/files/cikit-rest-api
+	url = https://github.com/BR0kEN-/cikit-rest-api.git

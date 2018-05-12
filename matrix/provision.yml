@@ -8,6 +8,10 @@
     DEBIAN_FRONTEND: noninteractive
 
   vars:
+    # Allow to pass "--rest-api" to install REST API for managing droplets (Node.js + MongoDB).
+    # It's also possible to pass "--rest-api=deploy" to redeploy/update the codebase,
+    # invalidate authentication of an owner and restart a server.
+    rest_api: no
     only_droplet: no
     application: cikit
     # Allow to pass "--restart=nginx,jenkins,apache" to this script and restart necessary services.
@@ -66,6 +70,10 @@
     - role: droplet
       when: only_droplet
       tags: ["droplet"]
+
+    - role: api
+      when: not only_droplet and rest_api
+      tags: ["api"]
 
   tasks:
     - name: Restart service

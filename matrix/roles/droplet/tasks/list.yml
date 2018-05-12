@@ -5,6 +5,7 @@
   # An empty list will return the "1" exit code.
   failed_when: droplets.rc > 1
 
+# This name is also used to match the command result in REST.
 - name: Store the list of all droplets
   debug:
     msg: "{{ droplets.stdout_lines }}"

@@ -34,6 +34,8 @@ documentation:
         url: /documentation/matrix/droplet-ssh/
       - title: Protect droplet via HTTP auth
         url: /documentation/matrix/droplet-http-auth/
+      - title: REST API
+        url: /documentation/matrix/rest-api/
 
   - title: CI server (droplet)
     url: /documentation/jenkins/
