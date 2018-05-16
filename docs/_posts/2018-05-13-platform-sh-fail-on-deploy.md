@@ -14,31 +14,31 @@ tags:
 
 ![{{ page.title }}]({{ page.header.teaser }}){: .align-center}
 
-The [Platform.sh](https://platform.sh) is relatively new and promising hosting service that uses [Git flow](https://nvie.com/posts/a-successful-git-branching-model) and [containerization](https://en.wikipedia.org/wiki/Operating-system-level_virtualization). I personally choose it for sure in favor of [Acquia](https://acquia.com) or [Pantheon.io](https://pantheon.io). But there are not all features in the ideal state and you have something to tune before getting the desired result. In this post, we'll cover nasty moments of deployment process and techniques to overcome them for achieving a good automation.
+The [Platform.sh](https://platform.sh) is relatively new and promising Platform-as-a-Service solution that uses [Git flow](https://nvie.com/posts/a-successful-git-branching-model) and [containerization](https://en.wikipedia.org/wiki/Operating-system-level_virtualization), so I'll choose it for sure in favor of [Acquia](https://acquia.com) or [Pantheon.io](https://pantheon.io). But there are not all features in the ideal state and you have something to tune before getting the desired result. In this post, we'll cover deployment process drawbacks and techniques to overcome them for achieving a good automation.
 
-## What's the problem?
+## Issue
 
-The hosting gives you two steps for completing the deployment: [build](https://docs.platform.sh/configuration/app/build.html#build-hook) and [deploy](https://docs.platform.sh/configuration/app/build.html#deploy-hook). During the `build` you have a writable filesystem, but no services available (like MariaDB, Redis, RabbitMQ, etc.). At the `deploy` the FS is switched to read-only mode and all the services are ready for usage.
+Platform.sh gives you two steps for completing the deployment: [build](https://docs.platform.sh/configuration/app/build.html#build-hook) and [deploy](https://docs.platform.sh/configuration/app/build.html#deploy-hook). During the `build` you have a writable filesystem, but no services available (like MariaDB, Redis, RabbitMQ, etc.). At the `deploy` stage the FS is switched to read-only mode and all services are ready to use.
 
-The problem is completely tethered to the `deploy` operation and its technical description is the following: **unable to bubble up the exit code of deployment to handle it properly and mark process as failed.**
+The issue is completely tethered to the `deploy` operation and its technical description looks the following: **unable to bubble up the exit code of deployment to handle it properly and mark the process as failed.**
 
-The `build` hook executes outside of a container so any exit code can easily stop the process. That cannot be said about the `deploy` hook because its area of operation is within a container and there's no technical solution exists at desks of Platform.sh development team to pass it out to the level where it can be handled.
+The `build` hook is executed outside of the container so any exit code can easily stop the process. In the meantime `deploy` hook works in a different way and is being executed inside the container which means there's no easy solution for the Platform.sh to pass it out to the level where it can be handled.
 
 Here is what [Damien Tournoud](https://twitter.com/damz), Platform.sh CTO says:
 
 > There is no way to fail the deployment if the deploy hook fails. It runs  deep inside the deployment process and we don't have a way to bubble up the return code at this point. We have on our roadmap to change the deployment process to allow that, but I cannot give you an ETA for it.
 
-All this means that failed deploy will produce you a working environment and you won't know about the problems until login to an environment via SSH and manually trace the [/var/log/deploy.log](https://docs.platform.sh/development/logs.html#deploylog) in there.
+In other words, deployment goes smooth and silently despite the errors. Thus you might mistakenly believe your environment was constructed correctly, but to affirm this you would need to go to the container via SSH and manually ensure there are no errors in [/var/log/deploy.log](https://docs.platform.sh/development/logs.html#deploylog).
 
-## The solution
+## Solution
 
 ### Preamble
 
-At the `deploy` we can know the exit codes but the Platform.sh cannot. We have services like MariaDB available, so when our process ends up in a non-zero exit code we can set a flag in a database to rely on it in the future.
+At the `deploy` stage we can know exit codes on the level where our hook is executed - inside the container. Since the process cannot go out the container, allowing Platform.sh to gracefully track the errors, we can use MariaDB to set a special flag in the database in case if any of processes returns a non-zero exit code.
 
-### Implementation
+### Hooks definition
 
-Here is a part of [.platform.app.yaml](https://docs.platform.sh/configuration/app-containers.html) declaring the hooks.
+Here is the part of [.platform.app.yaml](https://docs.platform.sh/configuration/app-containers.html) for declaring the hooks.
 
 ```yaml
 hooks:
@@ -46,12 +46,12 @@ hooks:
   deploy: 'bash scripts/.platform/hooks/hook.sh deploy'
 ```
 
-The `.platform` directory (in a project root) isn't available on Platform.sh environments during `deploy` operation so that's why the directory with the same name is in `scripts` subdirectory. There we will store our custom, Platform.sh related scripts.
+The `.platform` directory in a project root isn't available on Platform.sh environments during `deploy` so that's why we create the same-named subdirectory inside the `scripts` and store our custom scripts there.
 {: .notice--info}
 
 ### hook.sh: implementation
 
-The `scripts/.platform/hooks/hook.sh` is general for every project and all you have to modify per project is the `APP_DIR_RELATIVE` and `PROCESS_SUBDIRS` (read the description for every one of them in the code).
+The `scripts/.platform/hooks/hook.sh` is general and all you have to modify per project is the `APP_DIR_RELATIVE` and `PROCESS_SUBDIRS` (read the description for each of them in the code).
 
 ```bash
 #!/usr/bin/env bash
@@ -150,20 +150,12 @@ declare -rA PROCESS_SUBDIRS=(
 
 it means inside of newly created directories we're optionally can place the `crawler.sh` and `drupal.sh` to build/deploy the specific part of our application.
 
-### hook.sh: configuration
-
-To setup a runner properly you may need to edit available variables at the top of the file.
-
-- `ACTION` - the argument position to the runner, defaults to `$1`.
-- `APP_DIR_RELATIVE` - the path to project root, relative to the directory with the runner, defaults to `../../..`.
-- `PROCESS_SUBDIRS` - the list of directories where to execute the action. The key is a name of `*.sh` file in `scripts/.platform/hooks/<ACTION>`. E.g., if the action is `deploy` then the path will be `scripts/.platform/hooks/deploy/<KEY>.sh`. Defaults to `([drupal]="docroot")`.
-
 ### hook.sh: process
 
 Within the `scripts/.platform/hooks/<ACTION>` you may consider creating two handlers:
 
-  - `_succeeded.sh` - the file that will be included in a runtime once all commands in a process will successfully end.
-  - `_failed.sh` - the same as above, but only after first non-zero return code (a process will be terminated).
+  - `_succeeded.sh` - the file that will be included in a runtime once all commands in a process successfully end.
+  - `_failed.sh` - the same as above, but only after first non-zero exit code (a process will be terminated).
 
 Available environment variables:
 
@@ -192,7 +184,7 @@ As a sample we'll consider the following scripts:
   composer install --no-ansi --no-interaction --no-progress --optimize-autoloader
   ```
 
-  [Platform.sh automatically processes the `composer.json`](https://docs.platform.sh/configuration/app/build.html#php-composer-by-default) in a root directory of a project but the `crawler` is a subproject with its own dependencies so we're building it separately.
+  [Platform.sh automatically processes the `composer.json`](https://docs.platform.sh/configuration/app/build.html#php-composer-by-default) in a root directory of a project but the `crawler` is a subproject with its own dependencies so we're building them separately.
   {: .notice--info}
 
 - `scripts/.platform/hooks/build/drupal.sh`
@@ -236,7 +228,7 @@ As a sample we'll consider the following scripts:
   drush php-eval "\Drupal::state()->delete('psh_deploy_fail')"
   ```
 
-You may see Drupal 8 is used here and we're creating some state for it. Now we need the logic around this state to handle a failure of deploy gracefully. To tackle this we'll create the HTTP middleware that reads the state and deduces a project out of work.
+You may see Drupal 8 is used here and we're creating some state for it. Now we need the logic around it, in order to handle deploy failure elegantly. To tackle this we add the HTTP middleware to read the state and deduce a project out of work.
 
 ### Drupal 8 HTTP middleware
 
@@ -245,7 +237,7 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
   ```yaml
   services:
     PROFILE_OR_MODULE.http_middleware.platformsh:
-      class: Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShDeployHookFailedHttpMiddleware
+      class: Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShMiddleware
       arguments:
         - '@state'
       tags:
@@ -254,7 +246,7 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
           priority: 1000
   ```
 
-- `src/HttpMiddleware/PlatformShDeployHookFailedHttpMiddleware.php`
+- `src/HttpMiddleware/PlatformShMiddleware.php`
 
   ```php
   namespace Drupal\PROFILE_OR_MODULE\HttpMiddleware;
@@ -276,7 +268,7 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
    *
    * @link https://platformsh.slack.com/archives/C0JHEUHQD/p1523719755000057
    */
-  class PlatformShDeployHookFailedHttpMiddleware implements HttpKernelInterface {
+  class PlatformShMiddleware implements HttpKernelInterface {
 
     /**
      * The error message.
@@ -359,13 +351,13 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
   }
   ```
 
-- `tests/Unit/HttpMiddleware/PlatformShDeployHookFailedHttpMiddlewareTest.php`
+- `tests/Unit/HttpMiddleware/PlatformShMiddlewareTest.php`
 
   ```php
   namespace Drupal\Tests\PROFILE_OR_MODULE\Unit\HttpMiddleware;
 
   use Drupal\Core\State\StateInterface;
-  use Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShDeployHookFailedHttpMiddleware;
+  use Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShMiddleware;
   use Drupal\Tests\UnitTestCase;
   use Symfony\Component\HttpFoundation\Request;
   use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -373,10 +365,10 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
   /**
    * Tests "platformsh" HTTP middleware.
    *
-   * @coversDefaultClass \Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShDeployHookFailedHttpMiddleware
+   * @coversDefaultClass \Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShMiddleware
    * @group PROFILE_OR_MODULE
    */
-  class PlatformShDeployHookFailedHttpMiddlewareTest extends UnitTestCase {
+  class PlatformShMiddlewareTest extends UnitTestCase {
 
     /**
      * The application.
@@ -399,7 +391,7 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
     /**
      * The instance of "platformsh" HTTP middleware.
      *
-     * @var \Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShDeployHookFailedHttpMiddleware
+     * @var \Drupal\PROFILE_OR_MODULE\HttpMiddleware\PlatformShMiddleware
      */
     protected $middleware;
 
@@ -418,7 +410,7 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
         ->getMock();
 
       $this->request = Request::create('/');
-      $this->middleware = new PlatformShDeployHookFailedHttpMiddleware($this->app, $this->state);
+      $this->middleware = new PlatformShMiddleware($this->app, $this->state);
     }
 
     /**
@@ -445,11 +437,11 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
       $this->state
         ->expects(static::once())
         ->method('get')
-        ->with(PlatformShDeployHookFailedHttpMiddleware::MARKER)
+        ->with(PlatformShMiddleware::MARKER)
         ->willReturn(TRUE);
 
       $this
-        ->expectOutputRegex('/' . PlatformShDeployHookFailedHttpMiddleware::MESSAGE . '/');
+        ->expectOutputRegex('/' . PlatformShMiddleware::MESSAGE . '/');
 
       $this->middleware->handle($this->request);
     }
@@ -459,6 +451,10 @@ You may see Drupal 8 is used here and we're creating some state for it. Now we n
 
 ## Conclusion
 
-The Platform.sh is a good hosting with its container dedication and configuration flexibilities. However, as usual, there is a lot of work to do for improving the service.
+The Platform.sh provides a good service with unique container dedication and configuration flexibilities. However, there are some issues like this that didn't get an attention yet.
 
-I was also trying to use it as continuous integration tool but it really built in a way to stop you from doing this. For instance, you can't have Xdebug installed in some environments to generate PHPUnit coverage reports. If you are adding something, it'll be added everywhere. Everywhere means `master` environment too. The PHPUnit tests, PHPCS or HTMLCS checks etc. cannot be run during the `build` but can be at `deploy`. When the `build` has passed it means the application is ready for usage... I believe you've got the point - use dedicated CI instruments for achieving continuous delivery to Platform.sh and don't try to put everything to its shoulders. At the bottom line, it's just a hosting!
+I was also trying to use it as continuous integration tool but it really built in a way to stop you from doing this. For instance, you can't have Xdebug installed in some environments to generate PHPUnit coverage reports. If you are adding something - it will be added everywhere. Everywhere means `master` environment too.
+
+The PHPUnit or Behat tests, PHPCS or HTMLCS checks etc. cannot be run during the `build` but can during `deploy`. When the `build` has passed it means an application is ready for usage, therefore failed tests won't help it to stay in the previous, working state. You even won't know something went wrong unless check the logs manually via SSH.
+
+Concluding the article, I would say it is better to use dedicated CI instruments for achieving continuous delivery to Platform.sh and don't try to put everything on its shoulders. At the bottom line, it's just a cloud service for web applications!
