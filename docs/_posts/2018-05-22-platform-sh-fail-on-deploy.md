@@ -1,11 +1,11 @@
 ---
-date: 2018-05-13 01:37:00
+date: 2018-05-22 06:00:00
 title: "Control deployment on Platform.sh"
 excerpt: "Fail of deploy on Platform.sh cannot be identified by standard toolset but we are able to overcome this."
 toc_label: "Paragraphs"
 toc: true
 header:
-  teaser: /assets/posts/2018-05-13-platform-sh-fail-on-deploy/platform.sh.png
+  teaser: /assets/posts/2018-05-22-platform-sh-fail-on-deploy/platform.sh.png
 tags:
   - platform.sh
   - deploy
@@ -457,4 +457,7 @@ I was also trying to use it as continuous integration tool but it really built i
 
 The PHPUnit or Behat tests, PHPCS or HTMLCS checks etc. cannot be run during the `build` but can during `deploy`. When the `build` has passed it means an application is ready for usage, therefore failed tests won't help it to stay in the previous, working state. You even won't know something went wrong unless check the logs manually via SSH.
 
-Concluding the article, I would say it is better to use dedicated CI instruments for achieving continuous delivery to Platform.sh and don't try to put everything on its shoulders. At the bottom line, it's just a cloud service for web applications!
+Concluding the article, I would say it is better to use dedicated CI instruments for achieving continuous delivery to Platform.sh and don't try to put everything on its shoulders. At the bottom line, Platform.sh - is an amazing cloud service for web applications, but it has nothing in common with CI.
+
+*Thanks to [Mikhail Sokolovskiy](https://github.com/lokeoke) and [Roman Liashenko](https://github.com/sirko) who have helped in reviewing this article.*
+{: .notice}
