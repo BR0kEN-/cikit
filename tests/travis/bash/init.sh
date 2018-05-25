@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 CIKIT_PATH="/usr/local/share/cikit"
 PROJECT_NAME="test_project"
 

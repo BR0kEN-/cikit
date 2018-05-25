@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 CIKIT_PATH="/usr/local/share/cikit"
 MATRIX_HOSTNAME="example.com"
 MATRIX_NAME="matrix1"
