@@ -38,6 +38,10 @@ def get_hostname(action_description):
     return hostname
 
 
+functions.check_updates(variables.dirs['lib'], 'cikit', (
+    'The new version is available. Consider "cikit self-update" to get new features and bug fixes.'
+))
+
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
@@ -47,7 +51,6 @@ if '' == args.playbook:
             functions.playbooks_print(variables.dirs['self'], '%s/' % group)
 
     functions.playbooks_print(variables.dirs['scripts'])
-
     sys.exit(0)
 elif 'ssh' == args.playbook:
     options = ['-i']
@@ -65,7 +68,7 @@ elif 'ssh' == args.playbook:
         print COMMAND
 
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
-    sys.exit(call([COMMAND], shell=True))
+    sys.exit(call(COMMAND, shell=True))
 
 PLAYBOOK = functions.playbooks_find(
     variables.dirs['scripts'] + '/' + args.playbook,

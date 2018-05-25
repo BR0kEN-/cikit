@@ -2,7 +2,9 @@ from __future__ import print_function
 from os import path, environ
 from sys import exit, stderr
 from glob import glob
+from time import strftime
 from errno import EINVAL
+from tempfile import gettempdir
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import shlex
@@ -141,6 +143,43 @@ def process_credentials_dir(directory):
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     return directory.replace('.', '/')
+
+
+def git(command, directory):
+    process = Popen('git ' + command, cwd=directory, shell=True, stderr=PIPE, stdout=PIPE)
+    out, err = process.communicate()
+
+    if process.poll() > 0:
+        raise Exception(err.strip())
+
+    return out.strip()
+
+
+def check_updates(directory, program, warning):
+    try:
+        branch = git('rev-parse --abbrev-ref HEAD', directory)
+        cache_path = '%s/%s-revision-%s-%s.txt' % (gettempdir(), program, branch, strftime('%d-%m-%Y'))
+        last_commit = ''
+
+        if path.exists(cache_path):
+            with open(cache_path, 'r') as tmp:
+                last_commit = tmp.readline().strip()
+
+        # Cache file wasn't created or empty.
+        if '' == last_commit:
+            last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % branch, directory)
+
+            if '' == last_commit:
+                raise Exception('Unable to check for the updates.')
+
+            with open(cache_path, 'w') as tmp:
+                tmp.write(last_commit)
+
+        # Compare hashes of the last commit in current and remote branches.
+        if git('rev-parse HEAD', directory) != last_commit:
+            warn(warning)
+    except Exception, e:
+        error(e.message, 14)
 
 
 def get_hostname(config):
