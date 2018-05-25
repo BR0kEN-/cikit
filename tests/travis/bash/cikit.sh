@@ -23,6 +23,13 @@ locate_path()
   \echo "$DIR"
 }
 
+rm_safe()
+{
+  if [ -f "$1" ]; then
+    rm -rf "$1"
+  fi
+}
+
 # @param int $1
 #   The expected exit code.
 # @param string $2
@@ -74,7 +81,7 @@ if [ ! -d "$TEST_PROJECT" ]; then
 fi
 
 # Ensure no environment configuration exist.
-rm "$TEST_PROJECT/.cikit/environment.yml" > /dev/null 2>&1
+rm_safe "$TEST_PROJECT/.cikit/environment.yml"
 
 export ANSIBLE_VERBOSITY=2
 
@@ -92,7 +99,6 @@ if command -v docker > /dev/null; then
       "ERROR: You are trying to ${TESTS[$ACTION]} the container but its hostname cannot be determined. Did you break the \"site_url\" variable in \"$SELF_DIR/.cikit/config.yml\"?"
   done
 fi
-
 
 ########################################################################################################################
 # Try to use undefined playbook.

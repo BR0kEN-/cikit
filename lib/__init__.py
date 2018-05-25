@@ -18,8 +18,11 @@ project_config_paths = {
 
 
 def get_hostname(action_description):
-    # Read the configuration of a project we're currently in.
-    hostname = functions.get_hostname(yaml_data_loader.load_from_file(project_config_paths['main']))
+    hostname = ''
+
+    if variables.INSIDE_PROJECT_DIR:
+        # Read the configuration of a project we're currently in.
+        hostname = functions.get_hostname(yaml_data_loader.load_from_file(project_config_paths['main']))
 
     if '' == hostname:
         functions.error(
@@ -174,4 +177,4 @@ if functions.ANSIBLE_VERBOSITY > 0:
     print COMMAND
 
 if not args.dry_run:
-    sys.exit(call([COMMAND], shell=True))
+    sys.exit(call(COMMAND, shell=True))
