@@ -1,4 +1,5 @@
 from __future__ import print_function
+from re import escape
 from os import path, environ
 from sys import exit, stderr
 from glob import glob
@@ -155,10 +156,12 @@ def git(command, directory):
     return out.strip()
 
 
-def check_updates(directory, program, warning):
+def check_updates(directory, prog, warning):
     try:
         branch = git('rev-parse --abbrev-ref HEAD', directory)
-        cache_path = '%s/%s-revision-%s-%s.txt' % (gettempdir(), program, branch, strftime('%d-%m-%Y'))
+        # - Use "d-m-Y" format in the name of a file to check for the updates every day.
+        # - Replace slashes in Git branch in order to not try writing the file to a missing directory.
+        cache_path = '%s/%s-revision-%s-%s.txt' % (gettempdir(), prog, branch.replace('/', '-'), strftime('%d-%m-%Y'))
         last_commit = ''
 
         if path.exists(cache_path):
@@ -167,7 +170,7 @@ def check_updates(directory, program, warning):
 
         # Cache file wasn't created or empty.
         if '' == last_commit:
-            last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % branch, directory)
+            last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % escape(branch), directory)
 
             if '' == last_commit:
                 raise Exception('Unable to check for the updates.')
