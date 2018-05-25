@@ -7,6 +7,7 @@ PROJECT_NAME="test_project"
 TEST_HOSTNAME="${PROJECT_NAME//_/-}.loc"
 
 source "$CIKIT_PATH/tests/travis/bash/__cikit_test.sh"
+cd "$CIKIT_PATH"
 
 ########################################################################################################################
 # Functions
@@ -106,7 +107,7 @@ for ARGSET in "" "--limit"; do
   "$(cat <<-HERE
 ansible-playbook \
 '$CIKIT_PATH/scripts/provision.yml' \
--i 'cikit-test-project.loc,' \
+-i '$TEST_HOSTNAME,' \
 -c docker \
 -u root \
 -l '$TEST_HOSTNAME,' \

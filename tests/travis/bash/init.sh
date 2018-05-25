@@ -7,7 +7,6 @@ PROJECT_NAME="test_project"
 TEST_HOSTNAME="${PROJECT_NAME//_/-}.loc"
 
 source "$CIKIT_PATH/tests/travis/bash/__cikit_test.sh"
-
 cd "$CIKIT_PATH"
 
 # Default Drupal version.
