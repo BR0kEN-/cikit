@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Restrictions:
 #   - Will not work with BSD "awk" (i.e. on macOS) due to "awk: invalid -v option".
 #
