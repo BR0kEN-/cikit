@@ -3,9 +3,7 @@ from re import escape
 from os import path, environ
 from sys import exit, stderr
 from glob import glob
-from time import strftime
 from errno import EINVAL
-from tempfile import gettempdir
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import shlex
