@@ -156,31 +156,19 @@ def git(command, directory):
     return out.strip()
 
 
-def check_updates(directory, prog, warning):
+def check_updates(directory):
     try:
         branch = git('rev-parse --abbrev-ref HEAD', directory)
-        # - Use "d-m-Y" format in the name of a file to check for the updates every day.
-        # - Replace slashes in Git branch in order to not try writing the file to a missing directory.
-        cache_path = '%s/%s-revision-%s-%s.txt' % (gettempdir(), prog, branch.replace('/', '-'), strftime('%d-%m-%Y'))
-        last_commit = ''
+        last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % escape(branch), directory)
 
-        if path.exists(cache_path):
-            with open(cache_path, 'r') as tmp:
-                last_commit = tmp.readline().strip()
-
-        # Cache file wasn't created or empty.
         if '' == last_commit:
-            last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % escape(branch), directory)
-
-            if '' == last_commit:
-                raise Exception('Unable to check for the updates.')
-
-            with open(cache_path, 'w') as tmp:
-                tmp.write(last_commit)
+            raise Exception('Unable to check for the updates.')
 
         # Compare hashes of the last commit in current and remote branches.
-        if git('rev-parse HEAD', directory) != last_commit:
-            warn(warning)
+        if git('rev-parse HEAD', directory) == last_commit:
+            print('You are using the latest version. There are no updates available.')
+        else:
+            warn('The new version is available. Consider "cikit self-update" to get new features and bug fixes.')
     except Exception, e:
         error(e.message, 14)
 

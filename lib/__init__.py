@@ -41,6 +41,10 @@ def get_hostname(action_description):
     return hostname
 
 
+if args.check_updates:
+    functions.check_updates(variables.dirs['lib'])
+    sys.exit(0)
+
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
@@ -75,11 +79,6 @@ PLAYBOOK = functions.playbooks_find(
     variables.dirs['self'] + '/' + args.playbook,
     args.playbook,
 )
-
-if not variables.INSIDE_VM_OR_CI:
-    functions.check_updates(variables.dirs['lib'], 'cikit', (
-        'The new version is available. Consider "cikit self-update" to get new features and bug fixes.'
-    ))
 
 if None is PLAYBOOK:
     functions.error('The "%s" command is not available.' % args.playbook, errno.ENFILE)
