@@ -3,7 +3,7 @@
 set -e
 
 CIKIT_PATH="/usr/local/share/cikit"
-PROJECT_NAME="test_project"
+PROJECT_NAME="cikit_test_project"
 TEST_HOSTNAME="${PROJECT_NAME//_/-}.loc"
 
 source "$CIKIT_PATH/tests/travis/bash/__cikit_test.sh"
