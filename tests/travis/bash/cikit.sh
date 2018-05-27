@@ -2,79 +2,32 @@
 
 set -e
 
-TEST_PROJECT="cikit_test_project"
-TEST_HOSTNAME="${TEST_PROJECT//_/-}.loc"
+CIKIT_PATH="/usr/local/share/cikit"
+PROJECT_NAME="cikit_test_project"
+TEST_HOSTNAME="${PROJECT_NAME//_/-}.loc"
+
+source "$CIKIT_PATH/tests/travis/bash/__cikit_test.sh"
+cd "$CIKIT_PATH"
 
 ########################################################################################################################
 # Functions
 
-locate_path()
+rm_safe()
 {
-  local DIR="$1"
-
-  if [ -L "$DIR" ]; then
-    while [ -L "$DIR" ]; do
-      DIR="$(\cd "$(\dirname -- "$(\readlink -- "$DIR")")" && \pwd)"
-    done
-  else
-    DIR="$(\cd -P -- "$(\dirname -- "$DIR")" && \pwd -P)"
-  fi
-
-  \echo "$DIR"
-}
-
-# @param int $1
-#   The expected exit code.
-# @param string $2
-#   The command to execute.
-# @param string $3
-#   The expected stdout.
-# @param string $4
-#   The expected stderr.
-__cikit_test()
-{
-  local EXPECTED_EC="$1"
-  local COMMAND="$2"
-  local EXPECTED_OUT="$3"
-  local EXPECTED_ERR="$4"
-  local EC
-  local OUT
-  local ERR
-
-  echo "Testing \"$COMMAND\" in \"$(pwd)\"."
-
-  # The "eval" is needed to fully follow the arguments.
-  . <({ ERR=$({ OUT=$(eval "${COMMAND}"); EC=$?; } 2>&1; declare -p OUT EC >&2); declare -p ERR; } 2>&1)
-
-  if [ "$EXPECTED_EC" != "$EC" ]; then
-    echo -e "\nThe expected exit code is \"$EXPECTED_EC\" when actual is \"$EC\".\n"
-    exit 1
-  fi
-
-  if [[ -n "$EXPECTED_OUT" && ! "$OUT" = *"$EXPECTED_OUT"* ]]; then
-    echo -e "\nThe expected output is:\n  $EXPECTED_OUT\nwhen actual is:\n  $OUT\n"
-    exit 1
-  fi
-
-  if [[ -n "$EXPECTED_ERR" && ! "$ERR" = *"$EXPECTED_ERR"* ]]; then
-    echo -e "\nThe expected error is:\n  $EXPECTED_ERR\nwhen actual is:\n  $ERR\n"
-    exit 1
+  if [ -f "$1" ]; then
+    rm -rf "$1"
   fi
 }
 
 ########################################################################################################################
 # Set up
 
-cd "$(locate_path "$0")/../../../"
-
-SELF_DIR="$(pwd)"
-
-if [ ! -d "$TEST_PROJECT" ]; then
-  cikit init --project="$TEST_PROJECT"
+if [ ! -d "$PROJECT_NAME" ]; then
+  cikit init --project="$PROJECT_NAME"
 fi
 
 # Ensure no environment configuration exist.
-rm "$TEST_PROJECT/.cikit/environment.yml" > /dev/null 2>&1
+rm_safe "$PROJECT_NAME/.cikit/environment.yml"
 
 export ANSIBLE_VERBOSITY=2
 
@@ -89,10 +42,9 @@ if command -v docker > /dev/null; then
       200 \
       "cikit $ACTION" \
       "" \
-      "ERROR: You are trying to ${TESTS[$ACTION]} the container but its hostname cannot be determined. Did you break the \"site_url\" variable in \"$SELF_DIR/.cikit/config.yml\"?"
+      "ERROR: You are trying to ${TESTS[$ACTION]} the container but its hostname cannot be determined. Did you break the \"site_url\" variable in \"$CIKIT_PATH/.cikit/config.yml\"?"
   done
 fi
-
 
 ########################################################################################################################
 # Try to use undefined playbook.
@@ -117,17 +69,17 @@ done
 # Try to use a full path to the playbook.
 __cikit_test \
   0 \
-  "cikit $SELF_DIR/scripts/init.yml --dry-run --project=test" \
+  "cikit $CIKIT_PATH/scripts/init.yml --dry-run --project=test" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/init.yml' \
+'$CIKIT_PATH/scripts/init.yml' \
 -c 'local' \
 -i 'localhost,' \
 -e '{"project": "test"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR' \
--e __credentialsdir__='$SELF_DIR/credentials'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH' \
+-e __credentialsdir__='$CIKIT_PATH/credentials'
 HERE
 )"
 
@@ -140,7 +92,7 @@ __cikit_test \
   "" \
   "ERROR: Execution of the \"provision\" is available only within the CIKit-project directory."
 
-cd "$TEST_PROJECT"
+cd "$PROJECT_NAME"
 
 __cikit_test \
   1 \
@@ -154,16 +106,16 @@ for ARGSET in "" "--limit"; do
     "cikit provision --dry-run $ARGSET" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
--i 'cikit-test-project.loc,' \
+'$CIKIT_PATH/scripts/provision.yml' \
+-i '$TEST_HOSTNAME,' \
 -c docker \
 -u root \
 -l '$TEST_HOSTNAME,' \
 -e '{"limit": "$TEST_HOSTNAME,"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/$TEST_HOSTNAME'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/$TEST_HOSTNAME'
 HERE
 )"
 done
@@ -173,13 +125,13 @@ __cikit_test \
   "cikit provision --dry-run --limit=test" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"limit": "test"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 
@@ -188,13 +140,13 @@ __cikit_test \
   "cikit provision --dry-run --limit=test --bla=12 --bla1" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"bla1": true, "limit": "test", "bla": "12"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 
@@ -212,13 +164,13 @@ __cikit_test \
   "cikit provision --dry-run --limit=test --bla=12 --bla1" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"nodejs_version": "6", "solr_version": "5.5.5", "bla1": true, "mssql_install": "yes", "ruby_version": "2.4.0", "limit": "test", "php_version": "5.6", "bla": "12"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 
@@ -227,13 +179,13 @@ __cikit_test \
   "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.3" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.3", "limit": "test", "php_version": "5.6", "bla": "12"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 
@@ -246,13 +198,13 @@ HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.3", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 
@@ -267,13 +219,13 @@ HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
-'$SELF_DIR/scripts/provision.yml' \
+'$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
 -e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.3", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
--i '$SELF_DIR/lib/inventory' \
--e __selfdir__='$SELF_DIR' \
--e __targetdir__='$SELF_DIR/$TEST_PROJECT' \
--e __credentialsdir__='$SELF_DIR/$TEST_PROJECT/.cikit/credentials/test'
+-i '$CIKIT_PATH/lib/inventory' \
+-e __selfdir__='$CIKIT_PATH' \
+-e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
+-e __credentialsdir__='$CIKIT_PATH/$PROJECT_NAME/.cikit/credentials/test'
 HERE
 )"
 

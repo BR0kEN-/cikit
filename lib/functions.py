@@ -1,4 +1,5 @@
 from __future__ import print_function
+from re import escape
 from os import path, environ
 from sys import exit, stderr
 from glob import glob
@@ -141,6 +142,33 @@ def process_credentials_dir(directory):
     # represents the name of a matrix that stores a droplet "b". If no
     # dots in string, then it could be a matrix or an external droplet.
     return directory.replace('.', '/')
+
+
+def git(command, directory):
+    process = Popen('git ' + command, cwd=directory, shell=True, stderr=PIPE, stdout=PIPE)
+    out, err = process.communicate()
+
+    if process.poll() > 0:
+        raise Exception(err.strip())
+
+    return out.strip()
+
+
+def check_updates(directory):
+    try:
+        branch = git('rev-parse --abbrev-ref HEAD', directory)
+        last_commit = git("ls-remote --refs | awk '/refs\/heads\/%s/ {print $1}'" % escape(branch), directory)
+
+        if '' == last_commit:
+            raise Exception('Unable to check for the updates.')
+
+        # Compare hashes of the last commit in current and remote branches.
+        if git('rev-parse HEAD', directory) == last_commit:
+            print('You are using the latest version. There are no updates available.')
+        else:
+            warn('The new version is available. Consider "cikit self-update" to get new features and bug fixes.')
+    except Exception, e:
+        error(e.message, 14)
 
 
 def get_hostname(config):

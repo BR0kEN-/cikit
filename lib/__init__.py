@@ -18,8 +18,11 @@ project_config_paths = {
 
 
 def get_hostname(action_description):
-    # Read the configuration of a project we're currently in.
-    hostname = functions.get_hostname(yaml_data_loader.load_from_file(project_config_paths['main']))
+    hostname = ''
+
+    if variables.INSIDE_PROJECT_DIR:
+        # Read the configuration of a project we're currently in.
+        hostname = functions.get_hostname(yaml_data_loader.load_from_file(project_config_paths['main']))
 
     if '' == hostname:
         functions.error(
@@ -38,6 +41,10 @@ def get_hostname(action_description):
     return hostname
 
 
+if args.check_updates:
+    functions.check_updates(variables.dirs['lib'])
+    sys.exit(0)
+
 if variables.INSIDE_VM_OR_CI and not variables.INSIDE_PROJECT_DIR:
     functions.error('The "%s" directory does not store CIKit project.' % variables.dirs['project'], errno.ENOTDIR)
 
@@ -47,7 +54,6 @@ if '' == args.playbook:
             functions.playbooks_print(variables.dirs['self'], '%s/' % group)
 
     functions.playbooks_print(variables.dirs['scripts'])
-
     sys.exit(0)
 elif 'ssh' == args.playbook:
     options = ['-i']
@@ -65,7 +71,7 @@ elif 'ssh' == args.playbook:
         print COMMAND
 
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
-    sys.exit(call([COMMAND], shell=True))
+    sys.exit(call(COMMAND, shell=True))
 
 PLAYBOOK = functions.playbooks_find(
     variables.dirs['scripts'] + '/' + args.playbook,
@@ -171,4 +177,4 @@ if functions.ANSIBLE_VERBOSITY > 0:
     print COMMAND
 
 if not args.dry_run:
-    sys.exit(call([COMMAND], shell=True))
+    sys.exit(call(COMMAND, shell=True))

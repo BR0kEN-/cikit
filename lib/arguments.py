@@ -18,6 +18,13 @@ parser.add_argument(
 options = parser.add_mutually_exclusive_group()
 
 options.add_argument(
+    '-c',
+    action='store_true',
+    dest='check_updates',
+    help='Check available updates.'
+)
+
+options.add_argument(
     '-h',
     action='help',
     help='Show this help message and exit.',
