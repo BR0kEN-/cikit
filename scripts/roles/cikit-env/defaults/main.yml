@@ -1,0 +1,14 @@
+---
+cikit_env:
+  # The list of per-file variables to unconditionally add everywhere.
+  global:
+    /etc/environment:
+      CIKIT_PROJECT: "{{ project }}"
+  # The list of per-file variables to add to development environment only (VM).
+  local:
+    /etc/profile:
+      CIKIT_PROJECT_URI: "{{ site_url }}"
+  # The list of per-file variables for CI environment (remote CI server).
+  ci:
+    /etc/environment:
+      CIKIT_CI: true
