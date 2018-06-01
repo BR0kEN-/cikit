@@ -313,6 +313,9 @@
     - role: cikit-project
       tags: ["project"]
 
+    - role: cikit-env
+      tags: ["env"]
+
   tasks:
     - name: Starting random rnd-tools service
       shell: rngd -r /dev/urandom

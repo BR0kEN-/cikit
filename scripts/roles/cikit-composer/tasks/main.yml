@@ -2,7 +2,7 @@
 - name: Set environment variable
   lineinfile:
     dest: /etc/environment
-    line: 'export {{ item.key }}="{{ item.value }}"'
+    line: '{{ item.key }}="{{ item.value }}"'
     regexp: "{{ item.value | regex_escape }}"
     insertbefore: BOF
   with_dict:

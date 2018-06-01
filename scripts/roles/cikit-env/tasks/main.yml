@@ -1,0 +1,6 @@
+---
+- include_tasks: define.yml
+  with_dict: "{{ cikit_env.global }}"
+
+- include_tasks: define.yml target="{{ ' (VM only)' if localhost else ' (CI only)' }}"
+  with_dict: "{{ cikit_env['local' if localhost else 'ci'] }}"
