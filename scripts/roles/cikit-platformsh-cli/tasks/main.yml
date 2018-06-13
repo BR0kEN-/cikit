@@ -12,8 +12,9 @@
     creates: "{{ cikit_platformsh_cli.bin }}"
 
 - name: Create executable
-  become_user: "{{ ansible_user }}"
   file:
-    src: "{{ cikit_platformsh_cli.bin }}"
+    src: "{{ cikit_platformsh_cli.bin | replace('~', user_home) }}"
     dest: "/usr/local/bin/{{ cikit_platformsh_cli.bin | basename }}"
     state: link
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
