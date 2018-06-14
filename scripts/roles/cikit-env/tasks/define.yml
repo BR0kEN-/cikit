@@ -10,7 +10,7 @@
     # The "/etc/environment" is a non-regular Shell executable. We
     # must avoid using "export" in there.
     line: '{{ "" if item.key == "/etc/environment" else "export " }}{{ variable.key }}="{{ variable.value }}"'
-    regexp: "{{ variable.value | regex_escape }}"
+    regexp: "{{ variable.key | regex_escape }}"
     insertbefore: BOF
   with_dict: "{{ item.value }}"
   loop_control:

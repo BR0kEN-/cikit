@@ -2,6 +2,8 @@
 ---
 tmproot: /tmp
 webroot: /var/www
+# The directory to "cd" into after "vagrant ssh". Defaults to the value of "webroot".
+ssh_home: ~
 APPLICATION_CONFIG: ~
 vm:
   ip: 192.168.56.132
