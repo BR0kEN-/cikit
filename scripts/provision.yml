@@ -181,14 +181,6 @@
       when: not localhost and not docker
       tags: ["always"]
 
-    - name: Ensure default directory of CIKit project is set as environment variable
-      lineinfile:
-        dest: /etc/environment
-        line: 'CIKIT_PROJECT_DIR="{{ webroot }}"'
-        regexp: "{{ webroot | regex_escape }}"
-        insertbefore: BOF
-      when: localhost
-
     - name: Create CIKit command line utility
       file:
         # This directory is explicitly mounted in the Vagrantfile.

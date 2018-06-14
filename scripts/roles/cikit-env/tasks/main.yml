@@ -4,3 +4,12 @@
 
 - include_tasks: define.yml target="{{ ' (VM only)' if localhost else ' (CI only)' }}"
   with_dict: "{{ cikit_env['local' if localhost else 'ci'] }}"
+
+- name: "Add handling the 'SSH_HOME' variable"
+  lineinfile:
+    path: "{{ user_home }}/.profile"
+    line: "{{ item }}"
+    regexp: "{{ item | regex_escape }}"
+    insertbefore: EOF
+  with_items:
+    - '[[ -e "$SSH_HOME" && -d "$SSH_HOME" ]] && cd "$SSH_HOME"'
