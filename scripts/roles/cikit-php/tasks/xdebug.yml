@@ -20,7 +20,7 @@
   lineinfile:
     dest: /etc/environment
     line: '{{ item.key }}="{{ item.value }}"'
-    regexp: "{{ item.value | regex_escape }}"
+    regexp: "{{ item.key | regex_escape }}"
     insertbefore: BOF
   with_dict:
     XDEBUG_CONFIG: "idekey={{ php.extensions.xdebug.config.idekey }}"
