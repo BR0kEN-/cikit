@@ -8,6 +8,7 @@
   lineinfile:
     dest: "/etc/dnsmasq.conf"
     line: "{{ item.key }}={{ item.value }}"
+    regexp: "^{{ item.key | regex_escape }}="
     insertbefore: BOF
   with_dict:
     # https://github.com/nicolasff/docker-cassandra/issues/8#issuecomment-36922132
