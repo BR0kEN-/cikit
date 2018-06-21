@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import functions
 
 ANSIBLE_EXECUTABLE = functions.which(functions.ANSIBLE_COMMAND)
@@ -37,9 +38,11 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
     PYTHON_ANSIBLE = ANSIBLE_EXECUTABLE.readline().lstrip('#!').strip()
 
     if PYTHON_SYSTEM != PYTHON_ANSIBLE:
-        # This covers the installation on macOS via Homebrew.
-        # Installation via Pip uses system-wide Python so there shouldn't be a problem.
-        sys.path.append(PYTHON_ANSIBLE.replace('/bin/', '/lib/') + '/site-packages')
+        import ast
+
+        for site_packages in ast.literal_eval(functions.call(PYTHON_ANSIBLE, '-c', 'import site; print(site.getsitepackages())')):
+            if site_packages not in sys.path:
+                sys.path.append(site_packages)
 
         functions.warn(
             'A system-wide Python interpreter is "%s" and it differs from "%s", that is used for '
