@@ -164,13 +164,7 @@
 
     - include_tasks: tasks/project-variable.yml
       when: not localhost
-      tags: ["jenkins"]
-
-    - name: Set name for Jenkins job
-      set_fact:
-        jenkins_job: "{{ project }}"
-      when: not localhost
-      tags: ["jenkins"]
+      tags: ["ci"]
 
     - name: Configure hostname
       hostname:
