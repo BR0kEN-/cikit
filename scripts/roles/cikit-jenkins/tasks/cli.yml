@@ -9,7 +9,7 @@
     url: "{{ jenkins_host }}/jnlpJars/jenkins-cli.jar"
     dest: "{{ jenkins.cli }}"
     mode: 0440
-  until: not "failed" in cli_downloaded
+  until: cli_downloaded is success
   register: cli_downloaded
   retries: 5
   delay: 10
