@@ -29,6 +29,7 @@ location ~ (^|/)\. {
 }
 
 location / {
+    include {{ nginx_conf_dir }}/snippets/cors-preflight.conf;
     try_files $uri /index.php?$query_string;
 }
 

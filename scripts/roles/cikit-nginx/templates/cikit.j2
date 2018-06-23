@@ -46,6 +46,10 @@
                     }
                 {% else %}
                     location {{ location }} {
+                        {# Allow preflight requests for a web application. #}
+                        {% if "/" == location %}
+                          include                 {{ nginx_conf_dir }}/snippets/cors-preflight.conf;
+                        {% endif %}
                         proxy_pass              http://127.0.0.1:{{ spec.port | string }};
                         include                 {{ nginx_conf_dir }}/snippets/proxy-pass.conf;
                     }
