@@ -25,8 +25,8 @@
       tags: ["php", "php-stack"]
 
     - name: nodejs_version
-      prompt: Which version of Node.js you'd want to install? (4/5/6/7/8/9)
-      default: "6"
+      prompt: Which version of Node.js you'd want to install? (4/5/6/7/8/9/10)
+      default: "10"
       private: no
       tags: ["nodejs", "phantomjs"]
 
