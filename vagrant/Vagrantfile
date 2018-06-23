@@ -130,8 +130,8 @@ end
 Vagrant.configure(VAGRANT_API_VERSION) do |config|
   project_aliases = []
 
-  if config.hostsupdater && File.exist?('.cikit/vars/web-server.yml')
-    web_server_config = YAML.load_file('.cikit/vars/web-server.yml')
+  if config.hostsupdater && File.exist?(project_root + '/.cikit/vars/web-server.yml')
+    web_server_config = YAML.load_file(project_root + '/.cikit/vars/web-server.yml')
 
     if web_server_config.key?('web_server_vhosts')
       project_aliases = []
