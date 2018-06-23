@@ -44,14 +44,15 @@ build/run:
     - export BUILD_ACTIONS="$(php -r "echo json_encode(array_map('trim', array_filter(explode(PHP_EOL, '$(git log -n1 --pretty=%B | awk -vRS="]" -vFS="[" '{print $2}')'))));")"
     # Dump all available variables for debugging purposes.
     - env
+    # @todo Unify hooks triggers as it's done for Jenkins.
+    - [ -f "${CI_PROJECT_DIR}/.cikit/ci/pre-deploy.yml" ] && cikit "${CI_PROJECT_DIR}/.cikit/ci/pre-deploy.yml" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}" --dist="${DESTINATION}"
     # Reinstall a project.
     - CIKIT_PROJECT_DIR="${CI_PROJECT_DIR}" cikit reinstall --actions="${BUILD_ACTIONS}" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}"
     # Copy codebase to the "web" directory.
     - sudo rsync -ra --delete --chown=www-data:www-data ./ "${DESTINATION}"
     # Run sniffers.
     - CIKIT_PROJECT_DIR="${DESTINATION}" cikit sniffers --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${DESTINATION}"
-    # Copy artifacts.
-    - cp -r "${DESTINATION}/docroot/reports/" "${CI_PROJECT_DIR}/artifacts/"
+    - [ -f "${CI_PROJECT_DIR}/.cikit/ci/post-deploy.yml" ] && cikit "${CI_PROJECT_DIR}/.cikit/ci/post-deploy.yml" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}" --dist="${DESTINATION}"
   artifacts:
     paths:
       - artifacts/
