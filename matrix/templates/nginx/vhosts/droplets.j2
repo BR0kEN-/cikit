@@ -1,14 +1,23 @@
 {{ ansible_managed | comment }}
 
-server {
-    listen                          80;
-    server_name                     {{ domain }};
-    root                            /var/www/html;
+{% for listened_port in ["80", "443 ssl http2"] %}
+    {# Do not use integer here! #}
+    {% set http = "80" == listened_port %}
 
-    location / {
-        try_files                   $uri $uri/ / =404;
+    server {
+        listen                          {{ listened_port }};
+        server_name                     {{ domain }};
+        root                            /var/www/html;
+
+        {% if not http %}
+            include ssl;
+        {% endif %}
+
+        location / {
+            try_files                   $uri $uri/ / =404;
+        }
     }
-}
+{% endfor %}
 
 {% for port, data in nginx.port_forwarding.iteritems() %}
   {% if data.vhost %}
@@ -16,7 +25,7 @@ server {
       server_name "~^.*{{ application }}(?P<port_id>\d{2})\.{{ domain | regex_replace }}$";
 
       {% if data.ssl %}
-        listen {{ port }} ssl spdy;
+        listen {{ port }} ssl http2;
         include ssl;
       {% else %}
         listen {{ port }};
