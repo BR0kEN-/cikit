@@ -82,3 +82,4 @@
         state: restarted
       with_items: "{{ restart.split(',') }}"
       when: restart | length > 0
+      tags: ["always"]

@@ -2,5 +2,6 @@
 - name: Copy SSL ceriticate
   copy:
     src: "{{ item }}"
-    dest: "{{ ssl.dest }}/ssl.{{ item.split('.') | last }}"
-  with_fileglob: "{{ ssl_src }}/*.{{ item }}"
+    dest: "{{ ssl.dest }}/{{ item | basename }}"
+    force: yes
+  with_fileglob: "{{ ssl_src }}/*.{{ extension }}"

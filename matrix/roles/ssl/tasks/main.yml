@@ -17,4 +17,6 @@
 
 - include_tasks: tasks/copy.yml
   with_items: ["crt", "key"]
+  loop_control:
+    loop_var: extension
   when: ssl_src
