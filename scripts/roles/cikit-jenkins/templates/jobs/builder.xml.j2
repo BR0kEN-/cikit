@@ -104,10 +104,16 @@ deploy_hook() {
   local HOOK_PLAYBOOK="$WORKSPACE/.cikit/ci/$1.yml"
 
   if [ -f "$HOOK_PLAYBOOK" ]; then
-    cikit "$HOOK_PLAYBOOK" "${ARGS[@]}" --dist="$DESTINATION"
+    cikit "$HOOK_PLAYBOOK" "${ARGS[@]}" --dist="$DESTINATION" --rc="$2"
   fi
 }
 
+handle_shutdown() {
+  deploy_hook post-deploy $?
+  sudo chown -R jenkins:jenkins "$WORKSPACE"
+}
+
+trap handle_shutdown EXIT
 deploy_hook pre-deploy
 cikit reinstall "${ARGS[@]}" --reinstall-mode="$BUILD_MODE"
 
@@ -122,9 +128,6 @@ fi
 if ${RUN_TESTS}; then
   cikit tests "${ARGS[@]}" --run --headless
 fi
-
-deploy_hook post-deploy
-sudo chown -R jenkins:jenkins ./
 </command>
     </hudson.tasks.Shell>
   </builders>

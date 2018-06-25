@@ -12,6 +12,7 @@ cikit_sniffers:
       Drupal:
         version: 8.x-2.x
         repo: git://git.drupal.org/project/coder.git
+        build: composer install
       DrupalSecure:
         version: master
         repo: http://git.drupal.org/sandbox/coltrane/1921926.git
@@ -25,5 +26,6 @@ cikit_sniffers:
         version: master
         repo: https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git
       HTML:
-        version: 2.1.1
+        version: 2.2.0
         repo: https://github.com/squizlabs/HTML_CodeSniffer.git
+        build: npm install && ./node_modules/.bin/grunt build

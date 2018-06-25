@@ -3,6 +3,7 @@
 # the same set of input variables but will run early, before any other tasks.
 #
 # Available variables:
+# - rc: an exit code of the build process. If it's not "0" then a build failed;
 # - dist: an absolute path to the project's destination;
 # - env: a name of the environment being built;
 # - site-url: a URL of a website being built;

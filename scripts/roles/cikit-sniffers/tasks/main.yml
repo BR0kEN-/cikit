@@ -6,6 +6,13 @@
     version: "{{ item.value.version }}"
   with_dict: "{{ cikit_sniffers.coding_standards.list }}"
 
+- name: "Build '{{ item.key }}'"
+  shell: "{{ item.value.build }}"
+  args:
+    chdir: "{{ cikit_sniffers.coding_standards.dest }}/{{ item.key }}"
+  when: item.value.build is defined
+  with_dict: "{{ cikit_sniffers.coding_standards.list }}"
+
 - name: Create HTMLCS binary
   template:
     src: htmlcs.j2
