@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+set -e
+export PYTHONUNBUFFERED=1
+
+# ------------------------------------------------------------------------------
+# The required configuration of a process.
+# ------------------------------------------------------------------------------
+
+declare -rA VARIABLES=(
+  [BUILD_NUMBER]="either \"stable\" or any custom value"
+  [BUILD_MODE]="either \"full\" or \"pull\""
+  [BUILD_ENV]="the name of an environment to build or \"default\""
+  [CIKIT_PROJECT_DIR]="the path to directory where repository clones to"
+  [CIKIT_PROJECT_HOSTNAME]="the hostname where the project can be accessed"
+  [RUN_SNIFFERS]="either \"yes\" or whatever"
+  [RUN_TESTS]="either \"yes\" or whatever"
+)
+
+for VARIABLE in "${!VARIABLES[@]}"; do
+  if [ -z ${!VARIABLE+x} ]; then
+    echo "The \"$VARIABLE\" variable is missing! It's value must be ${VARIABLES[$VARIABLE]}."
+    exit 1
+  fi
+done
+
+# ------------------------------------------------------------------------------
+# Read CIKit configuration.
+# ------------------------------------------------------------------------------
+
+declare -A CIKIT_PROJECT_CONFIG=()
+
+for VARIABLE in webroot project build_slug; do
+  VALUE="$(awk '/'"$VARIABLE"':/ {print $2}' < "$CIKIT_PROJECT_DIR/.cikit/config.yml")"
+
+  if [ -z "$VALUE" ]; then
+    echo "The value of \"$VARIABLE\" variable cannot be empty!"
+    exit 2
+  fi
+
+  CIKIT_PROJECT_CONFIG["$VARIABLE"]="$VALUE"
+done
+
+# ------------------------------------------------------------------------------
+# Compute build parameters.
+# ------------------------------------------------------------------------------
+
+BUILD_ID="${CIKIT_PROJECT_CONFIG['project']}-"
+
+if [ "$BUILD_NUMBER" == "stable" ]; then
+  IS_COMMIT=false
+  BUILD_ID+="$BUILD_ENV"
+else
+  IS_COMMIT=true
+  BUILD_ID+="${CIKIT_PROJECT_CONFIG['build_slug']}-$BUILD_NUMBER"
+fi
+
+# Replace underscores by dashes in the ID of a build.
+BUILD_ID="${BUILD_ID//_/-}"
+# Form an absolute path to directory where the project is accessible from web.
+DESTINATION="${CIKIT_PROJECT_CONFIG['webroot']}/$BUILD_ID"
+PLAYBOOK_ARGS=(
+  "--site-url=https://$BUILD_ID.$CIKIT_PROJECT_HOSTNAME"
+  "--build-id=$BUILD_ID"
+  "--workspace=$CIKIT_PROJECT_DIR"
+)
+
+# Pass the environment name to Ansible playbooks if it's not a default one.
+if [ "$BUILD_ENV" != "default" ]; then
+  PLAYBOOK_ARGS+=("--env=$BUILD_ENV")
+fi
+
+# ------------------------------------------------------------------------------
+# Define functions.
+# ------------------------------------------------------------------------------
+
+ci_hook() {
+  local HOOK_PLAYBOOK="$CIKIT_PROJECT_DIR/.cikit/ci/$1.yml"
+
+  if [ -f "$HOOK_PLAYBOOK" ]; then
+    cikit "$HOOK_PLAYBOOK" "${PLAYBOOK_ARGS[@]}" --dist="$DESTINATION" --rc="$2"
+  fi
+}
+
+handle_exit() {
+  ci_hook post-deploy $?
+
+  # The drive space is occupied by more than 90%.
+  if [ $(df -H | head -2 | tail -1 | awk '{printf "%d", $5}') -gt 90 ]; then
+    ci_hook server-cleaner 0
+  fi
+
+  # The "$USER" must be either "jenkins" or "gitlab-runner".
+  sudo chown -R "$USER":"$USER" "$CIKIT_PROJECT_DIR"
+  sudo chown -R "$USER":"$USER" "$HOME"
+}
+
+trap handle_exit EXIT
+env
+ci_hook pre-deploy 0
+
+# Install a project.
+if ${IS_COMMIT}; then
+  cikit reinstall "${PLAYBOOK_ARGS[@]}" --actions="$(php -r "echo json_encode(array_map('trim', array_filter(explode(PHP_EOL, '$(git log -n1 --pretty=%B | awk -vRS="]" -vFS="[" '{print $2}')'))));")"
+else
+  cikit reinstall "${PLAYBOOK_ARGS[@]}" --reinstall-mode="$BUILD_MODE"
+fi
+
+# Copy codebase to directory accessible from the web.
+sudo rsync -ra --delete --chown=www-data:www-data ./ "$DESTINATION/"
+
+if [ "$RUN_SNIFFERS" == "yes" ]; then
+  cikit sniffers "${PLAYBOOK_ARGS[@]}"
+fi
+
+if [ "$RUN_TESTS" == "yes" ]; then
+  cikit tests "${PLAYBOOK_ARGS[@]}" --run --headless
+fi

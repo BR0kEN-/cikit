@@ -4,6 +4,12 @@ tmproot: /tmp
 webroot: /var/www
 # The directory to "cd" into after "vagrant ssh". Defaults to the value of "webroot".
 ssh_home: ~
+# The part of a directory/database name for CI builds.
+build_slug: build
+# Do not try changing these values.
+mysql:
+  user: root
+  pass: root
 APPLICATION_CONFIG: ~
 vm:
   ip: 192.168.56.132

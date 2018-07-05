@@ -97,70 +97,19 @@
 
 set -e
 
-export PROJECT="$(echo "${JOB_NAME//_BUILDER/}" | tr '[:upper:]' '[:lower:]')"
-export BUILD_NAME="${PROJECT}_build_${BUILD_NUMBER}"
-export SITE_URL="https://$BUILD_NAME.$(php -r "echo parse_url('${JOB_URL}')['host'];")"
-export DESTINATION="/var/www/$BUILD_NAME"
-export CIKIT_PROJECT_DIR="$WORKSPACE"
-export PYTHONUNBUFFERED=1
 export ANSIBLE_VERBOSITY=2
-export BUILD_ACTIONS=$(php -r "echo json_encode(array_map('trim', array_filter(
-  explode(PHP_EOL, '$(git log --format=%B -n1 ${ghprbActualCommit} | awk -vRS="]" -vFS="[" '{print $2}')')
-)));")
+export BUILD_MODE="full"
+export BUILD_ENV="default"
+export CIKIT_PROJECT_DIR="$WORKSPACE"
+export CIKIT_PROJECT_HOSTNAME="$(php -r "echo parse_url('$JOB_URL')['host'];")"
+export RUN_SNIFFERS="yes"
+export RUN_TESTS="no"
 
-ARGS=(
-  "--site-url=$SITE_URL"
-  "--build-id=$BUILD_NAME"
-  "--workspace=$WORKSPACE"
-)
-
-deploy_hook() {
-  local HOOK_PLAYBOOK="$WORKSPACE/.cikit/ci/$1.yml"
-
-  if [ -f "$HOOK_PLAYBOOK" ]; then
-    cikit "$HOOK_PLAYBOOK" "${ARGS[@]}" --dist="$DESTINATION" --rc="$2"
-  fi
-}
-
-handle_shutdown() {
-  deploy_hook post-deploy $?
-  sudo chown -R jenkins:jenkins "$WORKSPACE"
-}
-
-trap handle_shutdown EXIT
-deploy_hook pre-deploy
-cikit reinstall "${ARGS[@]}" --actions="$BUILD_ACTIONS"
-
-# Copy codebase to directory, accessible from web.
-sudo rsync --delete -ra ./ "$DESTINATION/"
-sudo chown -R www-data:jenkins $_
-
-cikit sniffers "${ARGS[@]}"
+/var/ci-builder.sh
 </command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.33">
-      <configs>
-        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-          <configs>
-            <hudson.plugins.parameterizedtrigger.BooleanParameters>
-              <configs>
-                <hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
-                  <name>FORCE</name>
-                  <value>false</value>
-                </hudson.plugins.parameterizedtrigger.BooleanParameterConfig>
-              </configs>
-            </hudson.plugins.parameterizedtrigger.BooleanParameters>
-          </configs>
-          <projects>SERVER_CLEANER</projects>
-          <condition>ALWAYS</condition>
-          <triggerWithNoParameters>false</triggerWithNoParameters>
-          <triggerFromChildProjects>false</triggerFromChildProjects>
-        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-      </configs>
-    </hudson.plugins.parameterizedtrigger.BuildTrigger>
-  </publishers>
+  <publishers/>
   <buildWrappers>
     <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.3">
       <colorMapName>xterm</colorMapName>

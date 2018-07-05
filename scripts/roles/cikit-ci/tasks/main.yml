@@ -1,5 +1,17 @@
 ---
+- name: Determine CI service
+  set_fact:
+    cikit_ci: "{{ 'gitlab-ci' if gitlab_ci_token | default or gitlab_ci_url | default else 'jenkins' }}"
+
 - include_role:
     # Install Gitlab CI if either "--gitlab-ci-token" or "--gitlab-ci-url"
     # is passed. Use Jenkins otherwise.
-    name: "cikit-{{ 'gitlab-ci' if gitlab_ci_token | default or gitlab_ci_url | default else 'jenkins' }}"
+    name: "cikit-{{ cikit_ci }}"
+
+- name: Deploy CI builder
+  template:
+    src: ci-builder.sh.j2
+    dest: /var/ci-builder.sh
+    mode: a+x
+    owner: "{{ jenkins_data.user if cikit_ci == 'jenkins' else 'root' }}"
+    group: "{{ jenkins_data.group if cikit_ci == 'jenkins' else 'root' }}"

@@ -8,9 +8,6 @@ jenkins_data:
   user: jenkins
   group: jenkins
   jobs:
-    - name: SERVER_CLEANER
-      template: server_cleaner.xml.j2
-
     - name: "{{ jenkins_job }}_BUILDER"
       template: builder.xml.j2
 

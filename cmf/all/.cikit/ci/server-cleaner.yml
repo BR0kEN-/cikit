@@ -1,0 +1,31 @@
+# This is a playbook that runs if CI server has less than 90% of a drive space
+# available.
+#
+# Available variables:
+# - rc: an exit code of the build process. If it's not "0" then a build failed;
+# - dist: an absolute path to the project's destination;
+# - env: a name of the environment being built;
+# - site-url: a URL of a website being built;
+# - build-id: an ID of CI build;
+# - workspace: an absolute path to the sandbox directory on CI server.
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+
+  vars:
+    mysql_query: "mysql -u{{ mysql.user }} -p{{ mysql.pass }} -se"
+
+  tasks:
+    - name: Remove all builds
+      shell: "{{ item }}"
+      args:
+        warn: no
+        executable: bash
+      with_items:
+        - '{{ mysql_query }} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" {{ mysql_query }} "DROP DATABASE @@"'
+        - 'rm -rf {{ webroot }}/*{{ build_slug }}*'
