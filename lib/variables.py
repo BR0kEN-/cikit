@@ -17,6 +17,12 @@ if '' == ANSIBLE_EXECUTABLE:
         )
     )
 
+dirs = {
+    'lib': os.path.realpath(__file__ + '/..'),
+    'self': os.path.realpath(__file__ + '/../..'),
+    'project': os.environ.get('CIKIT_PROJECT_DIR'),
+}
+
 # It's an interesting trick for detecting Python interpreter. Sometimes it
 # may differ. Especially on MacOS, when Ansible installed via Homebrew. For
 # instance, "which python" returns the "/usr/local/Cellar/python/2.7.13/
@@ -40,7 +46,7 @@ with open(ANSIBLE_EXECUTABLE) as ANSIBLE_EXECUTABLE:
     if PYTHON_SYSTEM != PYTHON_ANSIBLE:
         import ast
 
-        for site_packages in ast.literal_eval(functions.call(PYTHON_ANSIBLE, '-c', 'import site; print(site.getsitepackages())')):
+        for site_packages in ast.literal_eval(functions.call(PYTHON_ANSIBLE, dirs['lib'] + '/getsitepackages.py')):
             if site_packages not in sys.path:
                 sys.path.append(site_packages)
 
@@ -66,12 +72,6 @@ functions.ensure_version({
         'https://github.com/ansible/ansible/issues/39014',
     ],
 })
-
-dirs = {
-    'lib': os.path.realpath(__file__ + '/..'),
-    'self': os.path.realpath(__file__ + '/../..'),
-    'project': os.environ.get('CIKIT_PROJECT_DIR'),
-}
 
 if None is dirs['project']:
     dirs['project'] = os.getcwd()
