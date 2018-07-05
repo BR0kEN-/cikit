@@ -1,13 +1,9 @@
 variables:
-  # The name of a project from the ".cikit/config.yml" (underscores
-  # are replaced by dashes).
+  # The value of a "project" variable from the ".cikit/config.yml" (underscores
+  # should be replaced by dashes).
   PROJECT: "{{ project | replace('_', '-') }}"
-  # A value of the "webroot" variable from the ".cikit/config.yml".
-  WEBROOT: "{{ webroot }}"
-
-after_script:
-  # Restore possibly broken permissions to prevent failures of next builds.
-  - sudo chown -R gitlab-runner:gitlab-runner ${CI_PROJECT_DIR}
+  # The value of a "build_slug" variable from the ".cikit/config.yml".
+  BUILD_SLUG: "{{ build_slug }}"
 
 # Consider changing "CI_BUILD_REF_SLUG" by the "CI_BUILD_ID" if you are
 # interested in creating a build per commit. The default behavior is to
@@ -18,11 +14,10 @@ build/run:
     # IMPORTANT! Bear in mind that substitution of nested variables is
     # not working. There's a bug in Gitlab CI.
     # https://gitlab.com/gitlab-org/gitlab-ce/issues/27098
-    url: "https://${PROJECT}-${CI_BUILD_REF_SLUG}.${CI_RUNNER_DESCRIPTION}"
+    url: "https://$PROJECT-$BUILD_SLUG-$CI_BUILD_REF_SLUG.$CI_RUNNER_DESCRIPTION"
     # IMPORTANT! Do not use slashes here! They'll be treated as directory
     # separators.
-    name: "${PROJECT}-${CI_BUILD_REF_SLUG}"
-    on_stop: build/stop
+    name: "$PROJECT-$BUILD_SLUG-$CI_BUILD_REF_SLUG"
   # Valid branch names:
   # - "feature/*"
   # - "bug/*"
@@ -31,51 +26,44 @@ build/run:
   # - "dev"
   only:
     - /^(feature|bug|NOJIRA)\/.+?$/
-    - master
     - dev
   variables:
     # Display useful verbosity. Max - 4, min - 1.
     ANSIBLE_VERBOSITY: 2
+    BUILD_NUMBER: "$CI_BUILD_REF_SLUG"
+    BUILD_MODE: "full"
+    BUILD_ENV: "default"
+    CIKIT_PROJECT_DIR: "$CI_PROJECT_DIR"
+    CIKIT_PROJECT_HOSTNAME: "$CI_RUNNER_DESCRIPTION"
+    RUN_SNIFFERS: "yes"
+    RUN_TESTS: "no"
   script:
     # IMPORTANT: Multiline YAML declaration ("- |", or "- >") not working here.
     # https://gitlab.com/gitlab-org/gitlab-runner/issues/166#note_3805463
-    - export DESTINATION="${WEBROOT}/${CI_ENVIRONMENT_NAME}"
-    # Seek for actions definitions in the commit message.
-    - export BUILD_ACTIONS="$(php -r "echo json_encode(array_map('trim', array_filter(explode(PHP_EOL, '$(git log -n1 --pretty=%B | awk -vRS="]" -vFS="[" '{print $2}')'))));")"
-    # Dump all available variables for debugging purposes.
-    - env
-    # @todo Add "trap" to run "post-deploy" anyway.
-    # @todo Unify hooks triggers as it's done for Jenkins.
-    - [ -f "${CI_PROJECT_DIR}/.cikit/ci/pre-deploy.yml" ] && cikit "${CI_PROJECT_DIR}/.cikit/ci/pre-deploy.yml" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}" --dist="${DESTINATION}"
-    # Reinstall a project.
-    - CIKIT_PROJECT_DIR="${CI_PROJECT_DIR}" cikit reinstall --actions="${BUILD_ACTIONS}" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}"
-    # Copy codebase to the "web" directory.
-    - sudo rsync -ra --delete --chown=www-data:www-data ./ "${DESTINATION}"
-    # Run sniffers.
-    - CIKIT_PROJECT_DIR="${DESTINATION}" cikit sniffers --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${DESTINATION}"
-    - [ -f "${CI_PROJECT_DIR}/.cikit/ci/post-deploy.yml" ] && cikit "${CI_PROJECT_DIR}/.cikit/ci/post-deploy.yml" --site-url="${CI_ENVIRONMENT_URL}" --build-id="${CI_ENVIRONMENT_NAME}" --workspace="${CI_PROJECT_DIR}" --dist="${DESTINATION}"
+    - /var/ci-builder.sh
   artifacts:
     paths:
       - artifacts/
     expire_in: 1 day
 
-build/stop:
+build/demo:
   stage: deploy
   environment:
-    name: "${PROJECT}-${CI_BUILD_REF_SLUG}"
-    action: stop
+    url: "https://$PROJECT-$BUILD_ENV.$CI_RUNNER_DESCRIPTION"
+    name: "$PROJECT-$BUILD_ENV"
   only:
-    - /^(feature|bug|NOJIRA)\/.+?$/
     - master
-    - dev
   variables:
-    # https://docs.gitlab.com/ee/ci/environments.html#stopping-an-environment
-    GIT_STRATEGY: none
+    ANSIBLE_VERBOSITY: 2
+    BUILD_NUMBER: "stable"
+    BUILD_MODE: "full"
+    BUILD_ENV: "demo"
+    CIKIT_PROJECT_DIR: "$CI_PROJECT_DIR"
+    CIKIT_PROJECT_HOSTNAME: "$CI_RUNNER_DESCRIPTION"
+    RUN_SNIFFERS: "no"
+    RUN_TESTS: "no"
   script:
-    - export DESTINATION="${WEBROOT}/${CI_ENVIRONMENT_NAME}"
-    - env
-    - if [ -d "${DESTINATION}" ]; then
-    -   drush sql-drop -r "${DESTINATION}/docroot" -y
-    -   sudo rm -rf "${DESTINATION}"
-    - fi
-  when: manual
+    - /var/ci-builder.sh
+  artifacts:
+    paths:
+      - artifacts/

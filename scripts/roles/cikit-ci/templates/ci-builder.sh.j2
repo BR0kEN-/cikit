@@ -92,6 +92,7 @@ handle_exit() {
 
   # The "$USER" must be either "jenkins" or "gitlab-runner".
   sudo chown -R "$USER":"$USER" "$CIKIT_PROJECT_DIR"
+  # The "$HOME" will be for the "$USER".
   sudo chown -R "$USER":"$USER" "$HOME"
 }
 
