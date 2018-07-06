@@ -27,7 +27,7 @@
       shell: |-
         COMMAND="mysql -u{{ mysql.user }} -p{{ mysql.pass }} -se"
 
-        ${COMMAND} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" ${COMMAND} "DROP DATABASE @@"
+        ${COMMAND} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" ${COMMAND} "DROP DATABASE \`@@\`"
         rm -rf {{ webroot }}/*{{ build_slug }}*
       args:
         warn: no

@@ -86,6 +86,8 @@ cikit_hook() {
 
   if [ -f "$HOOK_PLAYBOOK" ]; then
     cikit_run "$HOOK_PLAYBOOK" --dist="$DESTINATION" --rc="$PROCESS_EXIT_CODE"
+  else
+    echo "==> There's no \"$HOOK_PLAYBOOK\" hook to run."
   fi
 }
 
