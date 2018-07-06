@@ -15,6 +15,10 @@
   connection: local
   become: yes
 
+  vars_files:
+    - ../config.yml
+    - ../../scripts/vars/main.yml
+
   tasks:
     - name: Move reports to the website directory
       shell: "cp -r {{ workspace }}/docroot/reports/ {{ dist }}/docroot"

@@ -16,16 +16,21 @@
 
   vars_files:
     - ../config.yml
-
-  vars:
-    mysql_query: "mysql -u{{ mysql.user }} -p{{ mysql.pass }} -se"
+    - ../../scripts/vars/main.yml
 
   tasks:
-    - name: Remove all builds
-      shell: "{{ item }}"
+    - name: Compute disk usage
+      shell: df -H | head -2 | tail -1 | awk '{printf "%d", $5}'
+      register: disk_usage
+
+    - name: Remove builds
+      shell: |-
+        COMMAND="mysql -u{{ mysql.user }} -p{{ mysql.pass }} -se"
+
+        ${COMMAND} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" ${COMMAND} "DROP DATABASE @@"
+        rm -rf {{ webroot }}/*{{ build_slug }}*
       args:
         warn: no
         executable: bash
-      with_items:
-        - '{{ mysql_query }} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" {{ mysql_query }} "DROP DATABASE @@"'
-        - 'rm -rf {{ webroot }}/*{{ build_slug }}*'
+      # The drive space is occupied by more than 90%.
+      when: disk_usage.stdout > 90

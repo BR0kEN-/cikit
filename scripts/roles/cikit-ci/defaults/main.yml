@@ -1,0 +1,7 @@
+---
+cikit_ci:
+  process_controller:
+    repo: https://github.com/BR0kEN-/bash-process-controller.git
+    dest: /var/ci/process-controller
+    # Either branch name or tag is also allowed.
+    version: HEAD

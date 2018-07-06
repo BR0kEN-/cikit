@@ -105,7 +105,9 @@ export CIKIT_PROJECT_HOSTNAME="$(php -r "echo parse_url('$JOB_URL')['host'];")"
 export RUN_SNIFFERS="yes"
 export RUN_TESTS="no"
 
-/var/ci-builder.sh
+# The "BUILD_TAG" is provided by Jenkins.
+# See https://wiki.jenkins.io/display/JENKINS/Building+a+software+project
+/var/ci/process-controller/main.sh "/tmp/$BUILD_TAG" "/var/ci/tasks.sh"
 </command>
     </hudson.tasks.Shell>
   </builders>

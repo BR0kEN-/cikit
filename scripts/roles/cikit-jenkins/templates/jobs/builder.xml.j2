@@ -90,7 +90,7 @@ export BUILD_NUMBER="stable"
 export CIKIT_PROJECT_DIR="$WORKSPACE"
 export CIKIT_PROJECT_HOSTNAME="$(php -r "echo parse_url('$JOB_URL')['host'];")"
 
-/var/ci-builder.sh
+/var/ci/process-controller/main.sh "/tmp/$BUILD_TAG" "/var/ci/tasks.sh"
 </command>
     </hudson.tasks.Shell>
   </builders>

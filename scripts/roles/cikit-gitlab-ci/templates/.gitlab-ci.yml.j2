@@ -37,10 +37,12 @@ build/run:
     CIKIT_PROJECT_HOSTNAME: "$CI_RUNNER_DESCRIPTION"
     RUN_SNIFFERS: "yes"
     RUN_TESTS: "no"
+  # IMPORTANT: Multiline YAML declaration ("- |", or "- >") not working here.
+  # https://gitlab.com/gitlab-org/gitlab-runner/issues/166#note_3805463
   script:
-    # IMPORTANT: Multiline YAML declaration ("- |", or "- >") not working here.
-    # https://gitlab.com/gitlab-org/gitlab-runner/issues/166#note_3805463
-    - /var/ci-builder.sh
+    # The "CI_JOB_ID" is provided by Gitlab CI.
+    # See https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables
+    - /var/ci/process-controller/main.sh "/tmp/$CI_JOB_ID" "/var/ci/tasks.sh"
   artifacts:
     paths:
       - artifacts/
@@ -63,7 +65,7 @@ build/demo:
     RUN_SNIFFERS: "no"
     RUN_TESTS: "no"
   script:
-    - /var/ci-builder.sh
+    - /var/ci/process-controller/main.sh "/tmp/$CI_JOB_ID" "/var/ci/tasks.sh"
   artifacts:
     paths:
       - artifacts/
