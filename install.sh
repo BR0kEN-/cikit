@@ -4,7 +4,7 @@ INSTALL_PATH="/usr/local/share/cikit"
 NOCHECK="--no-requirements-check"
 ARGS="$*"
 
-if [[ "$ARGS" =~ .*$NOCHECK.* ]]; then
+if [[ ! "$ARGS" =~ .*$NOCHECK.* ]]; then
   MISSING=""
 
   for COMMAND in vagrant VBoxManage ansible-playbook; do
