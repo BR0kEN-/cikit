@@ -19,7 +19,7 @@ declare -rA VARIABLES=(
 
 for VARIABLE in "${!VARIABLES[@]}"; do
   if [ -z ${!VARIABLE+x} ]; then
-    echo "The \"$VARIABLE\" variable is missing! It's value must be ${VARIABLES[$VARIABLE]}."
+    echo "The \"$VARIABLE\" variable is missing! Its value must be ${VARIABLES[$VARIABLE]}."
     exit 101
   fi
 

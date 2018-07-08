@@ -2,8 +2,8 @@
 - name: Seeking CIKit projects
   shell: |-
     vagrant global-status | awk '{print $5}' | while read -r PROJECT_PATH; do
-      if [ -d "${PROJECT_PATH}/.cikit/" ]; then
-        echo ${PROJECT_PATH}
+      if [ -d "$PROJECT_PATH/.cikit" ]; then
+        echo "$PROJECT_PATH"
       fi
     done
   register: cikit_projects_list
