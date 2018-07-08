@@ -158,3 +158,7 @@ When skipping a test the extension of a file **MUST NOT** be specified. If file 
 ## Check in action
 
 The [.travis.yml](https://github.com/BR0kEN-/cikit/blob/c37173b93d1eaee9b090fe4655cf6e5081122942/.travis.yml#L37) of CIKit uses exactly same [runner](https://github.com/BR0kEN-/cikit/blob/c37173b93d1eaee9b090fe4655cf6e5081122942/tests/travis/runner.sh#L1), which is responsible for launching [Bash](https://github.com/BR0kEN-/cikit/tree/c37173b93d1eaee9b090fe4655cf6e5081122942/tests/travis/bash) and [Python](https://github.com/BR0kEN-/cikit/tree/c37173b93d1eaee9b090fe4655cf6e5081122942/tests/travis/python) tests.
+
+## Project page
+
+Project codebase is available at [https://github.com/BR0kEN-/tests-runner](https://github.com/BR0kEN-/tests-runner).

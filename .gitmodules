@@ -19,3 +19,6 @@
 [submodule "scripts/roles/cikit-ci/files/bash-process-controller"]
 	path = scripts/roles/cikit-ci/files/bash-process-controller
 	url = https://github.com/BR0kEN-/bash-process-controller.git
+[submodule "tests/travis/tests-runner"]
+	path = tests/travis/tests-runner
+	url = https://github.com/BR0kEN-/tests-runner.git

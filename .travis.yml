@@ -33,7 +33,7 @@ install:
   - sudo git checkout ${TRAVIS_BRANCH}
 
 script:
-  - sudo ./tests/travis/runner.sh
+  - sudo ./tests/travis/tests-runner/runner.sh
   - env
 
 notifications:
