@@ -19,6 +19,9 @@ cikit_sniffers:
       Security:
         version: master
         repo: https://github.com/FloeDesignTechnologies/phpcs-security-audit.git
+      PHPCompatibility:
+        version: 8.1.0
+        repo: https://github.com/wimg/PHPCompatibility.git
       Symfony2:
         version: master
         repo: https://github.com/podarok/Symfony2-coding-standard.git
