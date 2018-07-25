@@ -8,7 +8,7 @@
 
 - name: Link items from Composer's "bin-dir" to /usr/local/bin
   shell: >-
-    BINDIR="{{ composer_json.config['bin-dir'] | default(composer_json.config['vendor-dir'] + '/bin') }}"
+    BINDIR="$(pwd)/{{ composer_json.config['bin-dir'] | default(composer_json.config['vendor-dir'] + '/bin') }}"
 
     if [ ! -d "$BINDIR" ]; then
       composer install
