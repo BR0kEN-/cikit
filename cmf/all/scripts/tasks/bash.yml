@@ -18,6 +18,7 @@
   when: "item.if | default(True)"
   args:
     executable: bash
+  become: "{{ item.become if 'become' in item else True }}"
   register: bash_result
   environment: "{{ env_vars }}"
   ignore_errors: "{{ ignore_errors | default(False) }}"
