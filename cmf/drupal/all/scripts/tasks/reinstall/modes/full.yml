@@ -11,7 +11,7 @@
       cp "default.$CONFIGURATION" "$CONFIGURATION"
     fi
 
-    {% if 'yml' in item %}
+    {% if '.yml.' in item %}
       echo "" > "$CONFIGURATION"
     {% endif %}
 
