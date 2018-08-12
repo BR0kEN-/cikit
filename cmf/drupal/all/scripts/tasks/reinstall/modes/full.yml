@@ -3,15 +3,34 @@
 - include_tasks: tasks/database/database.yml name="Create databases" state="present"
 - include_tasks: tasks/environment/prepare.yml
 
-- name: Create settings.php
-  shell: "cp default.settings.php {{ settings | basename }}"
-  args:
-    chdir: "{{ project_workspace }}/{{ settings | dirname }}"
+- name: Locate configurations
+  shell: |-
+    CONFIGURATION="{{ item | basename | splitext | first }}"
 
-- name: Update settings.php
+    if [ -f "default.$CONFIGURATION" ]; then
+      cp "default.$CONFIGURATION" "$CONFIGURATION"
+    fi
+
+    {% if '.yml.' in item %}
+      echo "" > "$CONFIGURATION"
+    {% endif %}
+
+    chmod 644 "$CONFIGURATION"
+    echo "$CONFIGURATION"
+  args:
+    # Do not warn about plain shell commands.
+    warn: no
+    chdir: "{{ project_workspace }}/{{ settings | dirname }}"
+  register: configurations
+  with_fileglob:
+    - templates/settings.php.j2
+    - templates/services.yml.j2
+
+- name: Update configuration
   lineinfile:
-    dest: "{{ project_workspace }}/{{ settings }}"
-    line: "{{ lookup('template', 'templates/settings.php.j2') }}"
+    dest: "{{ item.invocation.module_args.chdir }}/{{ item.stdout }}"
+    line: "{{ lookup('template', item.item) }}"
+  with_items: "{{ configurations.results }}"
 
 - include_tasks: tasks/drush.yml
   with_items:
