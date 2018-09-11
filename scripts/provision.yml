@@ -60,12 +60,6 @@
       private: no
       tags: ["mongodb"]
 
-    - name: psql_install
-      prompt: Do you want to install Postgre SQL Server? (yes/no)
-      default: "no"
-      private: no
-      tags: ["psql"]
-
   vars:
     basic_packages:
       apt:
@@ -207,7 +201,6 @@
         install_mssql: "{{ mssql_install }}"
         install_psql: "{{ psql_install }}"
         install_mongodb: "{{ mongodb_install }}"
-        install_psql: "{{ psql_install }}"
       tags: ["always"]
 
     - name: Spoof Sendmail if not installed
@@ -283,10 +276,6 @@
     - role: ansible-role-mongodb
       when: install_mongodb
       tags: ["mongodb"]
-
-    - role: cikit-psql
-      when: install_psql
-      tags: ["psql"]
 
     - role: cikit-phantomjs
       tags: ["phantomjs"]
