@@ -1,0 +1,10 @@
+---
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Install APT package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ cikit_psql.apt.packages }}"
