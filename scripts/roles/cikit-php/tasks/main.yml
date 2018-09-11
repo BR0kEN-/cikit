@@ -23,6 +23,9 @@
     php_packages: "{{ php_packages | difference(cikit_php.removed_packages[php_version]) }}"
   when: php_version in cikit_php.removed_packages
 
+- include_tasks: postgre.yml
+  when: "install_psql is defined and install_psql"
+
 - name: Install PHP packages
   shell: "apt install php{{ php_version }}-{{ php_packages | join(' php' + php_version + '-') }} -y"
   args:

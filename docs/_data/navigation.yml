@@ -66,6 +66,8 @@ documentation:
         url: /documentation/project/mysql-import-strategies/
       - title: Microsoft SQL server
         url: /documentation/project/mssql/
+      - title: Postgre SQL server
+        url: /documentation/project/psql/
       - title: Solr
         url: /documentation/project/solr/
       - title: Xdebug

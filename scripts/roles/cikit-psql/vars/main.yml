@@ -1,0 +1,9 @@
+---
+cikit_psql:
+  apt:
+    packages:
+      - postgresql
+      - postgresql-contrib
+  php:
+    packages:
+      - pdo-pgsql

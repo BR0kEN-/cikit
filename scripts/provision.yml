@@ -48,6 +48,12 @@
       private: no
       tags: ["mssql"]
 
+    - name: psql_install
+      prompt: Do you want to install Postgre SQL Server? (yes/no)
+      default: "no"
+      private: no
+      tags: ["psql"]
+
     - name: mongodb_install
       prompt: Do you want to install MongoDB NoSQL Server? (yes/no)
       default: "no"
@@ -193,6 +199,7 @@
       with_dict:
         install_solr: "{{ solr_version }}"
         install_mssql: "{{ mssql_install }}"
+        install_psql: "{{ psql_install }}"
         install_mongodb: "{{ mongodb_install }}"
       tags: ["always"]
 
@@ -250,6 +257,12 @@
     - role: cikit-mssql
       when: install_mssql
       tags: ["mssql"]
+
+    # Should be before installing/configuring PHP since it modifies
+    # the list of PHP packages to install.
+    - role: cikit-psql
+      when: install_psql
+      tags: ["psql"]
 
     - role: cikit-php
       # The "web-server" tag is needed in order to be sure necessary tweaks

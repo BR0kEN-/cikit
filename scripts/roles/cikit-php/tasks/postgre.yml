@@ -1,0 +1,4 @@
+---
+- name: Append PHP packages for the Postgre SQL Server
+  set_fact:
+    php_packages: "{{ php_packages | union(cikit_psql.php.packages) }}"
