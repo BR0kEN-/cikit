@@ -49,7 +49,7 @@
       tags: ["mssql"]
 
     - name: psql_install
-      prompt: Do you want to install Postgre SQL Server? (yes/no)
+      prompt: Do you want to install Postgres SQL Server? (yes/no)
       default: "no"
       private: no
       tags: ["psql"]
