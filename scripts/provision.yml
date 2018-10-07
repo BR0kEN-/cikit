@@ -133,10 +133,10 @@
       tags: ["always"]
 
     - include_tasks: tasks/password.yml
-      args:
+      vars:
         title: "Compute password for basic HTTP authentication"
         name: http_auth_pass
-        for: "{{ http_auth_pass }}"
+        var: "{{ http_auth_pass }}"
       when: not localhost
       tags: ["always"]
 
@@ -223,10 +223,9 @@
 
     - name: Install APT packages
       apt:
-        name: "{{ item }}"
+        name: "{{ basic_packages.apt }}"
         state: present
       register: cikit_apt_needs_cache_update
-      with_items: "{{ basic_packages.apt }}"
 
     - name: Update APT cache
       apt:
@@ -234,7 +233,9 @@
       # Update cache only if new packages were installed.
       when: cikit_apt_needs_cache_update.changed
 
-    - include_tasks: tasks/pip-install.yml pip_packages="{{ basic_packages.pip }}"
+    - include_tasks: tasks/pip-install.yml
+      vars:
+        pip_packages: "{{ basic_packages.pip }}"
 
     # We have to install CIKit after getting all mandatory APT packages
     # because the installer may use some of them (e.g. "curl").
