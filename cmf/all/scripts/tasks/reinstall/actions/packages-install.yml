@@ -8,7 +8,7 @@
 # - command: shell command to install packages.
 ---
 - include_tasks: cache-get.yml
-  args:
+  vars:
     # Note, that "manager" variable migrates into "cache-get" include.
     src: "{{ cache }}"
     dest: "{{ path }}/{{ dirname }}"
@@ -31,7 +31,7 @@
   when: (install or needs_reinstall) and is_packages_definition.stat.exists
 
 - include_tasks: cache-set.yml
-  args:
+  vars:
     # Note, that "manager" variable migrates into "cache-set" include.
     src: "{{ path }}/{{ dirname }}"
     dest: "{{ cache }}"

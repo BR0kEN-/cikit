@@ -6,7 +6,9 @@
 # Used built-in variables:
 # - hostvars: list of data for all defined hosts.
 ---
-- include_tasks: ../../get-hostname.yml name="{{ item.value.source.from }}"
+- include_tasks: ../../get-hostname.yml
+  vars:
+    name: "{{ item.value.source.from }}"
 
 # The "mysql_db" module isn't used because the "mysqldb" module for Python might not be installed on remote.
 - name: Create a snapshot

@@ -1,10 +1,10 @@
 ---
 - include_tasks: stop.yml
-  args:
+  vars:
     droplet_stop: "{{ droplet_delete }}"
 
 - include_tasks: command.yml
-  args:
+  vars:
     droplet: "{{ droplet_delete }}"
     command: rm
     operation: Remove

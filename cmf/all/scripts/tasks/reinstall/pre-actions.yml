@@ -27,7 +27,7 @@
   with_items: ["composer", "npm"]
 
 - include_tasks: actions/packages-install.yml
-  args:
+  vars:
     manager: "Composer"
     command: "composer install"
     filename: "composer.json"

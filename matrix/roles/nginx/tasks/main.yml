@@ -14,7 +14,7 @@
 
 # rm -rf /etc/nginx/sites-[enabled|available]/
 - include_tasks: vhost/disable.yml
-  args:
+  vars:
     arg: "{{ item }}"
   with_items:
     - state: absent
@@ -23,7 +23,7 @@
       recurse: yes
 
 - include_tasks: vhost/enable.yml
-  args:
+  vars:
     host: "{{ item }}"
   with_fileglob: "{{ playbook_dir }}/templates/nginx/vhosts/*.j2"
 
