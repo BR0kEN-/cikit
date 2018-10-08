@@ -9,6 +9,5 @@
 
 - name: Install PIP packages
   pip:
-    name: "{{ item }}"
+    name: "{{ pip_packages }}"
     state: latest
-  with_items: "{{ pip_packages }}"

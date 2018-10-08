@@ -18,12 +18,12 @@
     creates: "{{ cikit_composer.dirs.bin }}/{{ cikit_composer.bin }}"
 
 - include_tasks: packages.yml
-  args:
+  vars:
     name: "Install system packages"
     composer_packages: "{{ cikit_composer.system_packages }}"
 
 - include_tasks: packages.yml
-  args:
+  vars:
     name: "Install packages"
 
 - name: Determine installed binaries

@@ -1,6 +1,6 @@
 ---
 - include_tasks: command.yml
-  args:
+  vars:
     droplet: "{{ droplet_stop }}"
     command: stop
     operation: Stop

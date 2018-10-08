@@ -12,7 +12,9 @@
 
 # Create the virtual hosts for serving Solr, Jenkins etc. on a
 # droplet (proxying a request to them).
-- include_tasks: vhost.yml template="{{ role_path }}/templates/cikit.j2"
+- include_tasks: vhost.yml
+  vars:
+    template: "{{ role_path }}/templates/cikit.j2"
   when: not localhost
 
 # Create a virtual host for serving the application in a case

@@ -5,6 +5,5 @@
 
 - name: Install APT package
   apt:
-    name: "{{ item }}"
+    name: "{{ cikit_psql.apt.packages }}"
     state: present
-  with_items: "{{ cikit_psql.apt.packages }}"

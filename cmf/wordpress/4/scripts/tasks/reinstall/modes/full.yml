@@ -1,6 +1,14 @@
 ---
-- include_tasks: tasks/database/database.yml name="Remove databases" state="absent"
-- include_tasks: tasks/database/database.yml name="Create databases" state="present"
+- include_tasks: tasks/database/database.yml
+  vars:
+    name: "Remove databases"
+    state: "absent"
+
+- include_tasks: tasks/database/database.yml
+  vars:
+    name: "Create databases"
+    state: "present"
+
 - include_tasks: tasks/environment/prepare.yml
 
 - name: Set site domain

@@ -1,6 +1,6 @@
 ---
 - include_tasks: "{{ __selfdir__ }}/scripts/tasks/pip-install.yml"
-  args:
+  vars:
     pip_packages: "{{ api.pip }}"
 
 - include_tasks: "{{ __selfdir__ }}/scripts/tasks/cikit-install.yml"

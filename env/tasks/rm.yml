@@ -2,6 +2,6 @@
 - include_tasks: stop.yml
 
 - include_tasks: do.yml
-  args:
+  vars:
     command: rm
     operation: Remove

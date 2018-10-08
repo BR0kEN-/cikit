@@ -18,11 +18,10 @@
 
 - name: Install APT package
   apt:
-    name: "{{ item }}"
+    name: "{{ cikit_mssql.apt.packages }}"
     state: present
   environment:
     ACCEPT_EULA: Y
-  with_items: "{{ cikit_mssql.apt.packages }}"
 
 - name: Stop existing server
   service:

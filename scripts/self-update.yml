@@ -31,7 +31,8 @@
 
     - name: Get the current version of the package
       set_fact:
-        cikit_current_version: "{{ lookup('file', cikit_version_file) }}"
+#        cikit_current_version: "{{ lookup('file', cikit_version_file) }}"
+        cikit_current_version: "1.0.3"
 
     - name: Update the package
       git:

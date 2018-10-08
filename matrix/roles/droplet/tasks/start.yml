@@ -1,6 +1,6 @@
 ---
 - include_tasks: command.yml
-  args:
+  vars:
     droplet: "{{ droplet_start }}"
     command: start
     operation: Start

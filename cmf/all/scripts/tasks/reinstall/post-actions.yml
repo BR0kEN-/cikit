@@ -6,7 +6,7 @@
   register: theme_path
 
 - include_tasks: actions/packages-install.yml
-  args:
+  vars:
     manager: "NPM"
     command: "sudo npm install"
     filename: "package.json"

@@ -1,8 +1,8 @@
 ---
 - include_tasks: stop.yml
-  args:
+  vars:
     droplet_stop: "{{ droplet_restart }}"
 
 - include_tasks: start.yml
-  args:
+  vars:
     droplet_start: "{{ droplet_restart }}"
