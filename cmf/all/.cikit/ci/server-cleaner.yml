@@ -1,0 +1,36 @@
+# This is a playbook that runs if CI server has less than 90% of a drive space
+# available.
+#
+# Available variables:
+# - rc: an exit code of the build process. If it's not "0" then a build failed;
+# - dist: an absolute path to the project's destination;
+# - env: a name of the environment being built;
+# - site-url: a URL of a website being built;
+# - build-id: an ID of CI build;
+# - workspace: an absolute path to the sandbox directory on CI server.
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+    - ../../scripts/vars/main.yml
+
+  tasks:
+    - name: Compute disk usage
+      shell: df -H | head -2 | tail -1 | awk '{printf "%d", $5}'
+      register: disk_usage
+
+    - name: Remove builds
+      shell: |-
+        COMMAND="mysql -u{{ mysql.user }} -p{{ mysql.pass }} -se"
+
+        ${COMMAND} "SHOW DATABASES" | grep "{{ build_slug }}" | xargs -I "@@" ${COMMAND} "DROP DATABASE \`@@\`"
+        rm -rf {{ webroot }}/*{{ build_slug }}*
+      args:
+        warn: no
+        executable: bash
+      # The drive space is occupied by more than 90%.
+      when: disk_usage.stdout > 90

@@ -1,5 +1,38 @@
 ---
-- include_role:
+- name: Determine CI service
+  set_fact:
     # Install Gitlab CI if either "--gitlab-ci-token" or "--gitlab-ci-url"
     # is passed. Use Jenkins otherwise.
-    name: "cikit-{{ 'gitlab-ci' if gitlab_ci_token | default or gitlab_ci_url | default else 'jenkins' }}"
+    cikit_ci_gitlab: "{{ gitlab_ci_token | default or gitlab_ci_url | default }}"
+
+- include_role:
+    name: "cikit-{{ 'gitlab-ci' if cikit_ci_gitlab else 'jenkins' }}"
+
+- name: Determine the group and owner of CI service
+  set_fact:
+    cikit_ci_owner: "{{ 'root' if cikit_ci_gitlab else jenkins_data.user }}"
+    cikit_ci_group: "{{ 'root' if cikit_ci_gitlab else jenkins_data.group }}"
+
+- name: Ensure the directory for CI scripts exist
+  file:
+    path: "{{ cikit_ci.process_controller.dest | dirname }}"
+    mode: 0755
+    state: directory
+    owner: "{{ cikit_ci_owner }}"
+    group: "{{ cikit_ci_group }}"
+  register: cikit_ci_scripts_path
+
+- name: Install/update CI process controller
+  git:
+    repo: "{{ cikit_ci.process_controller.repo }}"
+    dest: "{{ cikit_ci.process_controller.dest }}"
+    force: yes
+    update: yes
+    version: "{{ cikit_ci.process_controller.version }}"
+
+- name: Deploy CI process handler
+  copy:
+    src: tasks.sh
+    dest: "{{ cikit_ci_scripts_path.path }}"
+    owner: "{{ cikit_ci_owner }}"
+    group: "{{ cikit_ci_group }}"

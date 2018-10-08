@@ -53,4 +53,4 @@
     # Run the migrations only when the version of CIKit has grown.
     - include_tasks: tasks/migrations/run.yml
       # A new version of CIKit is greater than current.
-      when: cikit_version | version_compare(cikit_current_version, 'gt')
+      when: cikit_version is version_compare(cikit_current_version, 'gt')

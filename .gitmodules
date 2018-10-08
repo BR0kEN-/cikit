@@ -16,3 +16,9 @@
 [submodule "matrix/roles/api/files/cikit-rest-api"]
 	path = matrix/roles/api/files/cikit-rest-api
 	url = https://github.com/BR0kEN-/cikit-rest-api.git
+[submodule "scripts/roles/cikit-ci/files/bash-process-controller"]
+	path = scripts/roles/cikit-ci/files/bash-process-controller
+	url = https://github.com/BR0kEN-/bash-process-controller.git
+[submodule "tests/travis/tests-runner"]
+	path = tests/travis/tests-runner
+	url = https://github.com/BR0kEN-/tests-runner.git

@@ -1,3 +1,4 @@
+# This playbook runs by Vagrantfile only.
 ---
 - hosts: localhost
   connection: local

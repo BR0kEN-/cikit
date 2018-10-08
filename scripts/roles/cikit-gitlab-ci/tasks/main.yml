@@ -26,6 +26,11 @@
       --tls-cert-file='{{ ssl_folder }}/ssl.crt' \
       --registration-token='{{ gitlab_ci_token }}'
 
+- name: Add a user to nopasswd sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "gitlab-runner ALL=(ALL) NOPASSWD:ALL"
+
 - name: Create the configuration in a project
   template:
     src: .gitlab-ci.yml.j2

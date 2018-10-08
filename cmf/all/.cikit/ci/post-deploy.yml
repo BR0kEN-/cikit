@@ -1,0 +1,24 @@
+# This is a playbook that runs after a successful build of the application.
+# To do something before the build create the "pre-deploy.yml" that'll have
+# the same set of input variables but will run early, before any other tasks.
+#
+# Available variables:
+# - rc: an exit code of the build process. If it's not "0" then a build failed;
+# - dist: an absolute path to the project's destination;
+# - env: a name of the environment being built;
+# - site-url: a URL of a website being built;
+# - build-id: an ID of CI build;
+# - workspace: an absolute path to the sandbox directory on CI server.
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  become: yes
+
+  vars_files:
+    - ../config.yml
+    - ../../scripts/vars/main.yml
+
+  tasks:
+    - name: Move reports to the website directory
+      shell: "cp -r {{ workspace }}/docroot/reports/ {{ dist }}/docroot"

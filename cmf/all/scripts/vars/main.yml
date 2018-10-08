@@ -10,13 +10,9 @@ reinstall_mode: full
 env_vars:
   APP_ENV: "{{ env }}"
 
-mysql:
-  user: root
-  pass: root
-
 databases:
   default:
-    name: "{{ cmf }}_{{ project | replace('-', '_') }}_{{ build_id | default(env) }}"
+    name: "{{ [cmf, build_id | default(project + '_' + env)] | join('_') | replace('-', '_') }}"
 #    source:
 #      # Database name on remote host.
 #      db: ""

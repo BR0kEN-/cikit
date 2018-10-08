@@ -13,4 +13,4 @@
   with_items: "{{ cikit_migrations }}"
   # This file runs only if a new version of the package is greater than current. This
   # means we have to run only those tasks, which were added only after the current version.
-  when: "item | version_compare(cikit_current_version, 'gt')"
+  when: "item is version_compare(cikit_current_version, 'gt')"

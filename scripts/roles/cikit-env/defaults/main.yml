@@ -1,9 +1,7 @@
 ---
 cikit_env:
   # The list of per-file variables to unconditionally add everywhere.
-  global:
-    /etc/environment:
-      CIKIT_PROJECT: "{{ project }}"
+  global: {}
   # The list of per-file variables to add to development environment only (VM).
   local:
     /etc/environment:
@@ -12,6 +10,4 @@ cikit_env:
       CIKIT_PROJECT_URI: "{{ site_url }}"
       SSH_HOME: "{{ ssh_home if ssh_home | default else webroot }}"
   # The list of per-file variables for CI environment (remote CI server).
-  ci:
-    /etc/environment:
-      CIKIT_CI: true
+  ci: {}

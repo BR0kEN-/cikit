@@ -7,7 +7,6 @@ commands:
 #    - cset: ["system.file", "path.temporary", "{{ tmproot }}"]
 #    - cset: ["system.logging", "error_level", "none"]
     - en: ["dblog"]
-    - dis: ["update"]
 
 drupal:
   # Data for super-admin (UID 1).
