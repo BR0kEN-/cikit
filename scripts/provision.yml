@@ -209,6 +209,7 @@
         path: /usr/sbin/sendmail
         state: link
         force: no
+      ignore_errors: yes
 
     # https://github.com/propeoplemd/cibox/pull/349
     - name: Recover possible fail

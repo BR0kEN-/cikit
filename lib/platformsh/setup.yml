@@ -10,6 +10,12 @@
     config: "{{ lookup('file', webroot + '/' + authfile) | from_json }}"
 
   tasks:
+    - name: 'Seek for the ".environment" files'
+      shell: "ls -aF {{ webroot }}/*/.environment"
+      args:
+        warn: no
+      register: environment_files
+
     - name: Configure environment
       lineinfile:
         dest: /etc/profile
@@ -20,7 +26,9 @@
         - >-
           export PLATFORMSH_CLI_TOKEN="$(json_pp < "$CIKIT_PROJECT_DIR/{{ authfile }}" | awk -F '"' '/token/ {print $4}')"
         - >-
-          source "$CIKIT_PROJECT_DIR/.environment"
+          {%- for path in environment_files.stdout_lines -%}
+            source "{{ path }}"
+          {%- endfor -%}
 
     - name: Set an ID of a project
       command: platform project:set-remote {{ config.id }}

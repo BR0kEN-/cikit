@@ -22,14 +22,13 @@ project_hostname = config_values['site_url'].split('//').last
 
 # Look up YAML or YML Platform.sh configuration.
 %w[yaml yml].each do |extension|
-  platform_file_config = project_root + '/.platform.app.' + extension
   platform_file_auth = project_root + '/.platform.app.json'
 
-  if File.exist?(platform_file_config)
+  if Dir.glob("#{project_root}/*/.platform.app.#{extension}").length > 0
     unless File.exist?(platform_file_auth)
       raise Vagrant::Errors::VagrantError.new, <<-END.chomp.gsub(/^\s+\|/, '')
-        |The "#{platform_file_config}" indicates that the
-        |project has a Platform.sh integration and therefore you have to create
+        |The ".platform.app.#{extension}" indicates that the project has
+        |a Platform.sh integration and therefore you have to create
         |the "#{platform_file_auth}" for local development.
         |
         |See https://cikit.tools/documentation/workflow/platformsh/#configure-hosting.
