@@ -3,8 +3,7 @@
 ---
 - name: Read composer.json
   set_fact:
-    composer_json_path: "{{ composer_json.stat.path }}"
-    composer_json: "{{ lookup('file', composer_json.stat.path) | from_json | combine({'config': {'vendor-dir': 'vendor'}}, recursive=True) }}"
+    composer_json: "{{ lookup('file', item) | from_json | combine({'config': {'vendor-dir': 'vendor'}}, recursive=True) }}"
 
 - name: Link items from Composer's "bin-dir" to /usr/local/bin
   shell: >-
@@ -18,5 +17,5 @@
       find "$BINDIR" -type l -exec ln -fs {} /usr/local/bin/ \;
     fi
   args:
-    chdir: "{{ composer_json_path | dirname }}"
+    chdir: "{{ item | dirname }}"
     executable: bash

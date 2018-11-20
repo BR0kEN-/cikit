@@ -10,12 +10,6 @@
     config: "{{ lookup('file', webroot + '/' + authfile) | from_json }}"
 
   tasks:
-    - name: 'Seek for the ".environment" files'
-      shell: "ls -aF {{ webroot }}/*/.environment"
-      args:
-        warn: no
-      register: environment_files
-
     - name: Configure environment
       lineinfile:
         dest: /etc/profile
@@ -25,10 +19,6 @@
       with_items:
         - >-
           export PLATFORMSH_CLI_TOKEN="$(json_pp < "$CIKIT_PROJECT_DIR/{{ authfile }}" | awk -F '"' '/token/ {print $4}')"
-        - >-
-          {%- for path in environment_files.stdout_lines -%}
-            source "{{ path }}"
-          {%- endfor -%}
 
     - name: Set an ID of a project
       command: platform project:set-remote {{ config.id }}
@@ -39,10 +29,11 @@
         # so we have to explicitly declare it, since "platform" needs it.
         PLATFORMSH_CLI_TOKEN: "{{ config.token }}"
 
-    - name: Check for a project-wide composer.json
-      stat:
-        path: "{{ webroot }}/composer.json"
-      register: composer_json
+    - name: 'Seek for the "composer.json" files'
+      shell: 'find "{{ webroot }}" -maxdepth 2 -type f -name "composer.json"'
+      args:
+        warn: no
+      register: composer_json_files
 
     - include_tasks: tasks/composer.yml
-      when: composer_json.stat.exists
+      with_items: "{{ composer_json_files.stdout_lines }}"
