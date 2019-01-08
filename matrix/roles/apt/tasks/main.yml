@@ -18,8 +18,7 @@
 
 - name: Install package
   apt:
-    pkg: "{{ item }}"
+    name: "{{ apt.packages }}"
     state: latest
     update_cache: yes
     cache_valid_time: 600
-  with_items: "{{ apt.packages }}"
