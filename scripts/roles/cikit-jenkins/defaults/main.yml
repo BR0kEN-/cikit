@@ -42,3 +42,4 @@ jenkins_plugins:
   slack: latest
   simple-theme-plugin: latest
   build-name-setter: latest
+  antisamy-markup-formatter: latest
