@@ -176,6 +176,7 @@ plugins:
   - jekyll-relative-links
   - jekyll-github-metadata
   - jekyll-redirect-from
+  - jekyll-include-cache
 
 # https://help.github.com/articles/configuring-jekyll-plugins/
 whitelist:
