@@ -1,5 +1,7 @@
 ---
 - include_tasks: is-running.yml
 
-- include_tasks: do.yml command=start
+- include_tasks: do.yml
+  vars:
+    command: start
   when: not container_running.stdout | bool
