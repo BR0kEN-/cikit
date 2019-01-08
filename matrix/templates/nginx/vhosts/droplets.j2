@@ -49,6 +49,13 @@
         proxy_read_timeout      9000;
         send_timeout            9000;
 
+        fastcgi_buffers         16 16k;
+        fastcgi_buffer_size     32k;
+
+        proxy_buffers           4 256k;
+        proxy_buffer_size       128k;
+        proxy_busy_buffers_size 256k;
+
         {% if nginx.httpauth %}
           include auth;
         {% endif %}
