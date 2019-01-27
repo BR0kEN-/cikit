@@ -57,7 +57,7 @@
 
 - name: Download configs
   git:
-    repo: git://git.drupal.org/project/search_api_solr.git
+    repo: https://git.drupal.org/project/search_api_solr.git
     dest: "{{ cikit_solr.dirs.home | dirname }}/search_api_solr"
     update: yes
     version: 7.x-1.x
