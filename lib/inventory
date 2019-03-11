@@ -4,7 +4,7 @@ INVENTORY = {}
 
 
 def goodbye():
-    print json.dumps(INVENTORY)
+    print(json.dumps(INVENTORY))
     sys.exit(0)
 
 

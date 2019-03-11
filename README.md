@@ -8,6 +8,16 @@
 
 *Currently based on [Ubuntu 16.04 LTS (64 bit)](https://cikit.tools/documentation/project/vagrant-box)*.
 
+## End of life
+
+I'm glad to say **CIKit has reached its end of usefulness**. Now I have one project less for active development and that's great since we all got a single life (please contact me if you know how to get more) that shouldn't be spent all in work.
+
+Nowadays, **Docker and Kubernetees** are fairly easier than any existing software for building development environments and that's what I suggest you to chose for new projects. Check out the simple presentation of why you should try to avoid using CIKit, DrupalVM, Lando, DDEV, Docksal, etc. - https://docs.google.com/presentation/d/e/2PACX-1vTxP0DG2gNXChfz7DOncwiWOHG0C4eEDL1LqxaMYpjNLRcrIAKuUjBKvU1pKCBig6mxFxYrq_LneGi0/pub?start=false&loop=false&delayms=15000
+
+Nevertheless, I'm still here for doing any necessary bugfixes, consulting and even accepting new features from third-parties.
+
+Have fun!
+
 ## Features
 
 - [Install CIKit package](https://cikit.tools/documentation#installation) just once. This guarantees your minimal involvement in keeping the codebase up to date. [Run `cikit self-update`](https://cikit.tools/documentation#update) and enjoy latest fixes/features that are picked up by every project.

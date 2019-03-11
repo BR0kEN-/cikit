@@ -68,7 +68,7 @@ elif 'ssh' == args.playbook:
     COMMAND = 'docker exec %s %s %s' % (' '.join(options), get_hostname('login to'), runner)
 
     if functions.ANSIBLE_VERBOSITY >= 1:
-        print COMMAND
+        print(COMMAND)
 
     # @todo This leaves Python process to wait for "docker exec". Is it ok?
     sys.exit(call(COMMAND, shell=True))
@@ -174,7 +174,7 @@ COMMAND = "%s '%s' %s" % (functions.ANSIBLE_COMMAND, PLAYBOOK, ' '.join(PARAMS))
 
 # Print entire command if verbosity requested.
 if functions.ANSIBLE_VERBOSITY > 0:
-    print COMMAND
+    print(COMMAND)
 
 if not args.dry_run:
     sys.exit(call(COMMAND, shell=True))
