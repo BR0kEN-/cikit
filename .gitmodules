@@ -1,9 +1,9 @@
 [submodule "cmf/drupal/all/docroot/drush/registry_rebuild"]
 	path = cmf/drupal/all/docroot/drush/registry_rebuild
-	url = https://git.drupal.org/project/registry_rebuild.git
+	url = https://git.drupalcode.org/project/registry_rebuild.git
 [submodule "cmf/drupal/all/docroot/drush/destination_alter"]
 	path = cmf/drupal/all/docroot/drush/destination_alter
-	url = https://git.drupal.org/project/destination_alter.git
+	url = https://git.drupalcode.org/project/destination_alter.git
 [submodule "scripts/roles/ansible-role-nginx"]
 	path = scripts/roles/ansible-role-nginx
 	url = https://github.com/jdauphant/ansible-role-nginx.git

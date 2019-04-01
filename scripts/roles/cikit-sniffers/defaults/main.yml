@@ -11,10 +11,10 @@ cikit_sniffers:
     list:
       Drupal:
         version: 8.x-2.x
-        repo: https://git.drupal.org/project/coder.git
+        repo: https://git.drupalcode.org/project/coder.git
       DrupalSecure:
         version: master
-        repo: http://git.drupal.org/sandbox/coltrane/1921926.git
+        repo: https://git.drupalcode.org/sandbox/coltrane-1921926.git
       Security:
         version: master
         repo: https://github.com/FloeDesignTechnologies/phpcs-security-audit.git
