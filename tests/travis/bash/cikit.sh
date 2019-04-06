@@ -176,12 +176,12 @@ HERE
 
 __cikit_test \
   0 \
-  "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.5" \
+  "cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.6" \
   "$(cat <<-HERE
 ansible-playbook \
 '$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.5", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "mssql_install": "yes", "solr_version": "6.6.6", "limit": "test", "php_version": "5.6", "bla": "12"}' \
 -i '$CIKIT_PATH/lib/inventory' \
 -e __selfdir__='$CIKIT_PATH' \
 -e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
@@ -193,14 +193,14 @@ HERE
 __cikit_test \
   0 \
   "$(cat <<-HERE
-cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.5 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.6 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
 HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
 '$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.5", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 1}}", "mssql_install": "yes", "solr_version": "6.6.6", "ar": "[1, 2, 3]", "limit": "test", "php_version": "5.6", "bla": "12"}' \
 -i '$CIKIT_PATH/lib/inventory' \
 -e __selfdir__='$CIKIT_PATH' \
 -e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
@@ -214,14 +214,14 @@ export EXTRA_VARS="--bla=14 --ob='{\"a\": {\"b\": 2}}' --ar='[1, 2, 4]'"
 __cikit_test \
   0 \
   "$(cat <<-HERE
-cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.5 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
+cikit provision --dry-run --limit=test --bla=12 --bla1 --solr-version=6.6.6 --ob='{"a": {"b": 1}}' --ar='[1, 2, 3]'
 HERE
 )" \
   "$(cat <<-HERE
 ansible-playbook \
 '$CIKIT_PATH/scripts/provision.yml' \
 -l 'test' \
--e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.5", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
+-e '{"nodejs_version": "6", "ruby_version": "2.4.0", "bla1": true, "ob": "{\"a\": {\"b\": 2}}", "mssql_install": "yes", "solr_version": "6.6.6", "ar": "[1, 2, 4]", "limit": "test", "php_version": "5.6", "bla": "14"}' \
 -i '$CIKIT_PATH/lib/inventory' \
 -e __selfdir__='$CIKIT_PATH' \
 -e __targetdir__='$CIKIT_PATH/$PROJECT_NAME' \
