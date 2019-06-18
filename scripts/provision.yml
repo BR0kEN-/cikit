@@ -37,7 +37,7 @@
       tags: ["sniffers", "ruby"]
 
     - name: solr_version
-      prompt: Which version of Solr you'd want to install? (5.5.5/6.6.6/7.7.1/8.0.0/no)
+      prompt: Which version of Solr you'd want to install? (7.7.2/8.1.1/no)
       default: "no"
       private: no
       tags: ["solr"]
@@ -257,13 +257,13 @@
     # Should be before installing/configuring PHP since it may
     # install the "sqlsrv" extension which is based on "mssql".
     - role: cikit-mssql
-      when: install_mssql
+      when: install_mssql | bool
       tags: ["mssql"]
 
     # Should be before installing/configuring PHP since it modifies
     # the list of PHP packages to install.
     - role: cikit-psql
-      when: install_psql
+      when: install_psql | bool
       tags: ["psql"]
 
     - role: cikit-php
@@ -276,7 +276,7 @@
       tags: ["nodejs"]
 
     - role: ansible-role-mongodb
-      when: install_mongodb
+      when: install_mongodb | bool
       tags: ["mongodb"]
 
     - role: cikit-phantomjs
@@ -292,7 +292,7 @@
       tags: ["java", "solr", "sniffers", "jenkins"]
 
     - role: cikit-solr
-      when: install_solr
+      when: install_solr | bool
       tags: ["solr", "php-stack"]
 
     - role: cikit-ruby
