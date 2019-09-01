@@ -1,6 +1,7 @@
 require 'yaml'
 require 'json'
 require_relative 'message'
+require_relative 'find_project_dir'
 
 VAGRANT_API_VERSION ||= '2'.freeze
 VAGRANT_MIN_VERSION ||= '1.9.5'.freeze
@@ -12,7 +13,7 @@ Vagrant.require_version ">= #{VAGRANT_MIN_VERSION}"
 ui = Vagrant::UI::Colored.new
 is_wsl = Vagrant::Util::Platform.wsl?
 arguments = ARGV.join(' ')
-project_root = Vagrant::Environment.new.root_path.to_s
+project_root = find_project_dir.to_s
 config_values = YAML.load_file(project_root + '/.cikit/config.yml')
 vagrantfile_dir = File.dirname(__FILE__)
 cikit_package_dir = File.realdirpath(vagrantfile_dir + '/..')
