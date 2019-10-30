@@ -1,0 +1,37 @@
+image: Visual Studio 2017 Preview
+version: 1.0.{build}
+platform: x64
+
+branches:
+  only:
+  - master
+
+skip_commits:
+  files:
+    - README.md
+
+build:
+  verbosity: normal
+
+# There's no need to alter the build number for a Pull Request (PR)
+# since they don't modify anything.
+pull_requests:
+  do_not_increment_build_number: true
+
+install:
+  - ps: systeminfo | Select-String "^OS Name", "^OS Version"
+  # https://docs.microsoft.com/en-us/windows/wsl/install-on-server
+  - ps: Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+  - ps: Invoke-WebRequest -Uri https://aka.ms/wsl-ubuntu-1604 -OutFile ~/Ubuntu1604.zip -UseBasicParsing
+  - ps: Expand-Archive ~/Ubuntu1604.zip ~/Ubuntu
+
+#test_script:
+
+notifications:
+  - provider: Slack
+    auth_token:
+      secure: D6cxJ/Hs7jf2UnblHSkQi/XvBLrBjg6ElBAOrOd8752O/iboRfyaZRyRbY3dqzq9LCY9/OFH4yrYZ29cKu981WjR5Vr18sNqDzjQIIvygYA=
+    channel: notifications
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: false
