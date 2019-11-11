@@ -20,8 +20,8 @@ python:
   - "2.7"
 
 env:
-  - VAGRANT_VERSION=2.2.6
-  - ANSIBLE_VERBOSITY=1
+  VAGRANT_VERSION: 2.2.6
+  ANSIBLE_VERBOSITY: 1
 
 install:
   - sudo pip install ansible==2.8.6
