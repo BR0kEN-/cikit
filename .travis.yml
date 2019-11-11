@@ -20,11 +20,11 @@ python:
   - "2.7"
 
 env:
-  VAGRANT_VERSION: 2.0.2
-  ANSIBLE_VERBOSITY: 1
+  - VAGRANT_VERSION=2.2.6
+  - ANSIBLE_VERBOSITY=1
 
 install:
-  - sudo pip install ansible
+  - sudo pip install ansible==2.8.6
   - sudo bash ./install.sh --no-requirements-check
   - sudo wget -nv https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
   - sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb

@@ -71,6 +71,9 @@ functions.ensure_version({
         'https://github.com/ansible/ansible/issues/39007',
         'https://github.com/ansible/ansible/issues/39014',
     ],
+    '2.9.0': [
+        'https://github.com/ansible/ansible/issues/61964',
+    ],
 })
 
 if None is dirs['project']:
