@@ -110,7 +110,8 @@
         - jinja2
         - markupsafe
         - MySQL-python
-        - ansible
+        # @todo Remove all "==2.8.6" from the entire repo when a new version with https://github.com/ansible/ansible/issues/61964 is landed.
+        - ansible==2.8.6
 
   pre_tasks:
     - name: Check whether preselected web server is available
