@@ -2,6 +2,6 @@ api:
   dest: /var/www/cikit-rest-api/
   owner: admin
   pip:
-    - ansible
+    - ansible==2.8.6
   nodejs_version: "9"
   mongodb_version: "3.6"

@@ -48,4 +48,4 @@
 
 - name: Print the name of created container
   debug:
-    msg: "The '{{ hostname }}' just have been created."
+    msg: "The '{{ hostname }}' just has been created."
