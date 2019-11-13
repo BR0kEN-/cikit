@@ -40,7 +40,7 @@
       --security-opt seccomp=unconfined \
       --name '{{ hostname }}' \
       {{ options }} \
-      solita/ubuntu-systemd
+      br0ken/ubuntu-systemd
 
 - name: Install the requirements
   shell: |-

@@ -62,7 +62,7 @@
       --tmpfs /run/lock \
       --security-opt seccomp=unconfined \
       {{ ports }} \
-      solita/ubuntu-systemd
+      br0ken/ubuntu-systemd
 
 - name: Generate SSH key-pair for droplet
   shell: |-
@@ -100,11 +100,12 @@
 
 - name: Configure SSH daemon
   shell: |-
-    docker exec -i '{{ droplet }}' bash -c "mkdir -p '{{ ssh_data.destination }}' && apt update && apt install openssh-server -y && service ssh start && systemctl enable ssh"
+    docker exec '{{ droplet }}' mkdir -p "{{ ssh_data.destination }}"
     docker cp '{{ ssh_data.authorized_keys }}' '{{ droplet }}':'{{ ssh_data.destination }}'
     docker stop '{{ droplet }}'
     docker start '{{ droplet }}'
 
 # This name is also used to match the command result in REST.
 - name: Print the name of newly created droplet
-  debug: msg="The '{{ droplet }}' just has been created."
+  debug:
+    msg: "The '{{ droplet }}' just has been created."

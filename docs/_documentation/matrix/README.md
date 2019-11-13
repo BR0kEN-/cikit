@@ -73,7 +73,7 @@ The result of execution will be similar to:
 ```shell
 ok: [matrix1] => {
     "output": [
-        "632fa30ababe        solita/ubuntu-systemd   \"/bin/bash -c 'exe...\"   About an hour ago   Up About an hour    0.0.0.0:2201->22/tcp, 127.0.0.1:8001->80/tcp, 127.0.0.1:44301->443/tcp   cikit01"
+        "632fa30ababe        br0ken/ubuntu-systemd   \"/bin/bash -c 'exe...\"   About an hour ago   Up About an hour    0.0.0.0:2201->22/tcp, 127.0.0.1:8001->80/tcp, 127.0.0.1:44301->443/tcp   cikit01"
     ]
 }
 ```
