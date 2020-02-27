@@ -1,10 +1,10 @@
 ---
-php_version: 7.1
+php_version: 7.4
 php:
   repo: ppa:ondrej/php
   # Xdebug 2.6.x has completely removed support of PHP 5.x so we have to
   # keep latest 2.5.x for it.
-  xdebug: "{{ '2.5.4' if '5.6' == php_version else '2.6.0' }}"
+  xdebug: "{{ '2.5.4' if '5.6' == php_version else '2.9.2' }}"
   config:
     global:
       memory_limit: 512M

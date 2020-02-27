@@ -7,6 +7,8 @@ cikit_php:
     - "7.0"
     - "7.1"
     - "7.2"
+    - "7.3"
+    - "7.4"
   default_packages:
     - dev
     - mcrypt
@@ -37,4 +39,8 @@ cikit_php:
   removed_packages:
     "7.2":
       # https://blog.remirepo.net/post/2015/07/07/About-libmcrypt-and-php-mcrypt
+      - mcrypt
+    "7.3":
+      - mcrypt
+    "7.4":
       - mcrypt
